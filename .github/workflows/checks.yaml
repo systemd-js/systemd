@@ -1,0 +1,31 @@
+name: Checks
+
+on:
+  pull_request:
+    types: [opened, synchronize]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: "Checkout"
+      uses: actions/checkout@v4
+
+    - name: "Use NodeJS 20"
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        cache: 'yarn'
+
+    - name: Install
+      run: yarn install
+
+    - name: Run build
+      run: yarn build
+
+    - name: Run test
+      run: yarn test
+  
+    - name: Run lint
+      run: yarn lint
