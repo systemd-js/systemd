@@ -17,11 +17,10 @@ service
   
 service
  .getServiceSection()
- .setExecStartPre("/usr/bin/echo 'Before'")
- .setExecStart("/usr/bin/echo 'Hello World'")
- .setExecStartPost("/usr/bin/echo 'After'")
  .setType("simple")
  .setWorkingDirectory("/tmp")
  .setRestart("always")
-
+ .setExecStartPre("/usr/bin/echo 'Before'")
+ .setExecStart("/usr/bin/echo 'Hello World'")
+ .setExecStartPost("/usr/bin/echo 'After'")
 ```

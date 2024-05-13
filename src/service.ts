@@ -641,8 +641,7 @@ export interface ServiceSectionConfig {
     services that shall be able to terminate on their own choice (and avoid immediate
     restarting), on-abnormal is an alternative choice.}
   */
-  Restart?:
-  "always" | "no" | "on-abnormal" | "on-abort" | "on-failure" | "on-success" | "on-watchdog";
+  Restart?: "always" | "no" | "on-abnormal" | "on-abort" | "on-failure" | "on-success" | "on-watchdog";
 
   /**
   RestartMode=
@@ -1168,9 +1167,9 @@ export const ServiceSectionConfigSchema: ZodType<ServiceSectionConfig> = z.objec
 });
 
 /**
-   * @see {@link ServiceSectionConfig}
-   * @see {@link ExecSectionConfig}
-   */
+ * @see {@link ServiceSectionConfig}
+ * @see {@link ExecSectionConfig}
+ */
 export const ServiceSectionSchema: ZodType<ServiceSection> = ServiceSectionConfigSchema.and(ExecSectionSchema);
 
 /**

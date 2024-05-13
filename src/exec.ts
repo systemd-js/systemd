@@ -32,7 +32,7 @@ export interface ExecSectionConfig {
   WorkingDirectory?: string;
 
   /**
-  RootDirectory=
+    RootDirectory=
       Takes a directory path relative to the host's root directory (i.e. the root of the
       system running the service manager). Sets the root directory for executed processes,
       with the chroot(2) system call. If this is used, it must be ensured that the process
@@ -64,7 +64,7 @@ export interface ExecSectionConfig {
       (requires unprivileged user namespaces support to be enabled in the kernel via the
       "kernel.unprivileged_userns_clone=" sysctl).
 
-  RootImage=
+     RootImage=
       Takes a path to a block device node or regular file as argument. This call is similar
       to RootDirectory= however mounts a file system hierarchy from a block device node or
       loopback file instead of a directory. The device node or file system image file needs

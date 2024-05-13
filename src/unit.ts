@@ -25,430 +25,433 @@ export interface UnitSection {
 
   /**
   Documentation=
-      A space-separated list of URIs referencing documentation for this unit or its
-      configuration. Accepted are only URIs of the types "http://", "https://", "file:",
-      "info:", "man:". For more information about the syntax of these URIs, see uri(7). The
-      URIs should be listed in order of relevance, starting with the most relevant. It is a
-      good idea to first reference documentation that explains what the unit's purpose is,
-      followed by how it is configured, followed by any other related documentation. This
-      option may be specified more than once, in which case the specified list of URIs is
-      merged. If the empty string is assigned to this option, the list is reset and all
-      prior assignments will have no effect.
+    A space-separated list of URIs referencing documentation for this unit or its
+    configuration. Accepted are only URIs of the types "http://", "https://", "file:",
+    "info:", "man:". For more information about the syntax of these URIs, see uri(7). The
+    URIs should be listed in order of relevance, starting with the most relevant. It is a
+    good idea to first reference documentation that explains what the unit's purpose is,
+    followed by how it is configured, followed by any other related documentation. This
+    option may be specified more than once, in which case the specified list of URIs is
+    merged. If the empty string is assigned to this option, the list is reset and all
+    prior assignments will have no effect.
 
-      Added in version 201.
+    Added in version 201.
+  */
+  Documentation?: string[] | string;
 
+  /**
   Wants=
-      Configures (weak) requirement dependencies on other units. This option may be
-      specified more than once or multiple space-separated units may be specified in one
-      option in which case dependencies for all listed names will be created. Dependencies
-      of this type may also be configured outside of the unit configuration file by adding a
-      symlink to a .wants/ directory accompanying the unit file. For details, see above.
+    Configures (weak) requirement dependencies on other units. This option may be
+    specified more than once or multiple space-separated units may be specified in one
+    option in which case dependencies for all listed names will be created. Dependencies
+    of this type may also be configured outside of the unit configuration file by adding a
+    symlink to a .wants/ directory accompanying the unit file. For details, see above.
 
-      Units listed in this option will be started if the configuring unit is. However, if
-      the listed units fail to start or cannot be added to the transaction, this has no
-      impact on the validity of the transaction as a whole, and this unit will still be
-      started. This is the recommended way to hook the start-up of one unit to the start-up
-      of another unit.
+    Units listed in this option will be started if the configuring unit is. However, if
+    the listed units fail to start or cannot be added to the transaction, this has no
+    impact on the validity of the transaction as a whole, and this unit will still be
+    started. This is the recommended way to hook the start-up of one unit to the start-up
+    of another unit.
 
-      Note that requirement dependencies do not influence the order in which services are
-      started or stopped. This has to be configured independently with the After= or Before=
-      options. If unit foo.service pulls in unit bar.service as configured with Wants= and
-      no ordering is configured with After= or Before=, then both units will be started
-      simultaneously and without any delay between them if foo.service is activated.
+    Note that requirement dependencies do not influence the order in which services are
+    started or stopped. This has to be configured independently with the After= or Before=
+    options. If unit foo.service pulls in unit bar.service as configured with Wants= and
+    no ordering is configured with After= or Before=, then both units will be started
+    simultaneously and without any delay between them if foo.service is activated.
 
-      Added in version 201.
+    Added in version 201.
 
   Requires=
-      Similar to Wants=, but declares a stronger requirement dependency. Dependencies of
-      this type may also be configured by adding a symlink to a .requires/ directory
-      accompanying the unit file.
+    Similar to Wants=, but declares a stronger requirement dependency. Dependencies of
+    this type may also be configured by adding a symlink to a .requires/ directory
+    accompanying the unit file.
 
-      If this unit gets activated, the units listed will be activated as well. If one of the
-      other units fails to activate, and an ordering dependency After= on the failing unit
-      is set, this unit will not be started. Besides, with or without specifying After=,
-      this unit will be stopped (or restarted) if one of the other units is explicitly
-      stopped (or restarted).
+    If this unit gets activated, the units listed will be activated as well. If one of the
+    other units fails to activate, and an ordering dependency After= on the failing unit
+    is set, this unit will not be started. Besides, with or without specifying After=,
+    this unit will be stopped (or restarted) if one of the other units is explicitly
+    stopped (or restarted).
 
-      Often, it is a better choice to use Wants= instead of Requires= in order to achieve a
-      system that is more robust when dealing with failing services.
+    Often, it is a better choice to use Wants= instead of Requires= in order to achieve a
+    system that is more robust when dealing with failing services.
 
-      Note that this dependency type does not imply that the other unit always has to be in
-      active state when this unit is running. Specifically: failing condition checks (such
-      as ConditionPathExists=, ConditionPathIsSymbolicLink=, ... — see below) do not cause
-      the start job of a unit with a Requires= dependency on it to fail. Also, some unit
-      types may deactivate on their own (for example, a service process may decide to exit
-      cleanly, or a device may be unplugged by the user), which is not propagated to units
-      having a Requires= dependency. Use the BindsTo= dependency type together with After=
-      to ensure that a unit may never be in active state without a specific other unit also
-      in active state (see below).
+    Note that this dependency type does not imply that the other unit always has to be in
+    active state when this unit is running. Specifically: failing condition checks (such
+    as ConditionPathExists=, ConditionPathIsSymbolicLink=, ... — see below) do not cause
+    the start job of a unit with a Requires= dependency on it to fail. Also, some unit
+    types may deactivate on their own (for example, a service process may decide to exit
+    cleanly, or a device may be unplugged by the user), which is not propagated to units
+    having a Requires= dependency. Use the BindsTo= dependency type together with After=
+    to ensure that a unit may never be in active state without a specific other unit also
+    in active state (see below).
 
-      Added in version 201.
+    Added in version 201.
 
   Requisite=
-      Similar to Requires=. However, if the units listed here are not started already, they
-      will not be started and the starting of this unit will fail immediately.  Requisite=
-      does not imply an ordering dependency, even if both units are started in the same
-      transaction. Hence this setting should usually be combined with After=, to ensure this
-      unit is not started before the other unit.
+    Similar to Requires=. However, if the units listed here are not started already, they
+    will not be started and the starting of this unit will fail immediately.  Requisite=
+    does not imply an ordering dependency, even if both units are started in the same
+    transaction. Hence this setting should usually be combined with After=, to ensure this
+    unit is not started before the other unit.
 
-      When Requisite=b.service is used on a.service, this dependency will show as
-      RequisiteOf=a.service in property listing of b.service.  RequisiteOf= dependency
-      cannot be specified directly.
+    When Requisite=b.service is used on a.service, this dependency will show as
+    RequisiteOf=a.service in property listing of b.service.  RequisiteOf= dependency
+    cannot be specified directly.
 
-      Added in version 201.
+    Added in version 201.
 
   BindsTo=
-      Configures requirement dependencies, very similar in style to Requires=. However, this
-      dependency type is stronger: in addition to the effect of Requires= it declares that
-      if the unit bound to is stopped, this unit will be stopped too. This means a unit
-      bound to another unit that suddenly enters inactive state will be stopped too. Units
-      can suddenly, unexpectedly enter inactive state for different reasons: the main
-      process of a service unit might terminate on its own choice, the backing device of a
-      device unit might be unplugged or the mount point of a mount unit might be unmounted
-      without involvement of the system and service manager.
+    Configures requirement dependencies, very similar in style to Requires=. However, this
+    dependency type is stronger: in addition to the effect of Requires= it declares that
+    if the unit bound to is stopped, this unit will be stopped too. This means a unit
+    bound to another unit that suddenly enters inactive state will be stopped too. Units
+    can suddenly, unexpectedly enter inactive state for different reasons: the main
+    process of a service unit might terminate on its own choice, the backing device of a
+    device unit might be unplugged or the mount point of a mount unit might be unmounted
+    without involvement of the system and service manager.
 
-      When used in conjunction with After= on the same unit the behaviour of BindsTo= is
-      even stronger. In this case, the unit bound to strictly has to be in active state for
-      this unit to also be in active state. This not only means a unit bound to another unit
-      that suddenly enters inactive state, but also one that is bound to another unit that
-      gets skipped due to an unmet condition check (such as ConditionPathExists=,
-      ConditionPathIsSymbolicLink=, ... — see below) will be stopped, should it be running.
-      Hence, in many cases it is best to combine BindsTo= with After=.
+    When used in conjunction with After= on the same unit the behaviour of BindsTo= is
+    even stronger. In this case, the unit bound to strictly has to be in active state for
+    this unit to also be in active state. This not only means a unit bound to another unit
+    that suddenly enters inactive state, but also one that is bound to another unit that
+    gets skipped due to an unmet condition check (such as ConditionPathExists=,
+    ConditionPathIsSymbolicLink=, ... — see below) will be stopped, should it be running.
+    Hence, in many cases it is best to combine BindsTo= with After=.
 
-      When BindsTo=b.service is used on a.service, this dependency will show as
-      BoundBy=a.service in property listing of b.service.  BoundBy= dependency cannot be
-      specified directly.
+    When BindsTo=b.service is used on a.service, this dependency will show as
+    BoundBy=a.service in property listing of b.service.  BoundBy= dependency cannot be
+    specified directly.
 
-      Added in version 201.
+    Added in version 201.
 
   PartOf=
-      Configures dependencies similar to Requires=, but limited to stopping and restarting
-      of units. When systemd stops or restarts the units listed here, the action is
-      propagated to this unit. Note that this is a one-way dependency — changes to this unit
-      do not affect the listed units.
+    Configures dependencies similar to Requires=, but limited to stopping and restarting
+    of units. When systemd stops or restarts the units listed here, the action is
+    propagated to this unit. Note that this is a one-way dependency — changes to this unit
+    do not affect the listed units.
 
-      When PartOf=b.service is used on a.service, this dependency will show as
-      ConsistsOf=a.service in property listing of b.service.  ConsistsOf= dependency cannot
-      be specified directly.
+    When PartOf=b.service is used on a.service, this dependency will show as
+    ConsistsOf=a.service in property listing of b.service.  ConsistsOf= dependency cannot
+    be specified directly.
 
-      Added in version 201.
+    Added in version 201.
 
   Upholds=
-      Configures dependencies similar to Wants=, but as long as this unit is up, all units
-      listed in Upholds= are started whenever found to be inactive or failed, and no job is
-      queued for them. While a Wants= dependency on another unit has a one-time effect when
-      this units started, a Upholds= dependency on it has a continuous effect, constantly
-      restarting the unit if necessary. This is an alternative to the Restart= setting of
-      service units, to ensure they are kept running whatever happens. The restart happens
-      without delay, and usual per-unit rate-limit applies.
+    Configures dependencies similar to Wants=, but as long as this unit is up, all units
+    listed in Upholds= are started whenever found to be inactive or failed, and no job is
+    queued for them. While a Wants= dependency on another unit has a one-time effect when
+    this units started, a Upholds= dependency on it has a continuous effect, constantly
+    restarting the unit if necessary. This is an alternative to the Restart= setting of
+    service units, to ensure they are kept running whatever happens. The restart happens
+    without delay, and usual per-unit rate-limit applies.
 
-      When Upholds=b.service is used on a.service, this dependency will show as
-      UpheldBy=a.service in the property listing of b.service.
+    When Upholds=b.service is used on a.service, this dependency will show as
+    UpheldBy=a.service in the property listing of b.service.
 
-      Added in version 249.
+    Added in version 249.
 
   Conflicts=
-      A space-separated list of unit names. Configures negative requirement dependencies. If
-      a unit has a Conflicts= setting on another unit, starting the former will stop the
-      latter and vice versa.
+    A space-separated list of unit names. Configures negative requirement dependencies. If
+    a unit has a Conflicts= setting on another unit, starting the former will stop the
+    latter and vice versa.
 
-      Note that this setting does not imply an ordering dependency, similarly to the Wants=
-      and Requires= dependencies described above. This means that to ensure that the
-      conflicting unit is stopped before the other unit is started, an After= or Before=
-      dependency must be declared. It doesn't matter which of the two ordering dependencies
-      is used, because stop jobs are always ordered before start jobs, see the discussion in
-      Before=/After= below.
+    Note that this setting does not imply an ordering dependency, similarly to the Wants=
+    and Requires= dependencies described above. This means that to ensure that the
+    conflicting unit is stopped before the other unit is started, an After= or Before=
+    dependency must be declared. It doesn't matter which of the two ordering dependencies
+    is used, because stop jobs are always ordered before start jobs, see the discussion in
+    Before=/After= below.
 
-      If unit A that conflicts with unit B is scheduled to be started at the same time as B,
-      the transaction will either fail (in case both are required parts of the transaction)
-      or be modified to be fixed (in case one or both jobs are not a required part of the
-      transaction). In the latter case, the job that is not required will be removed, or in
-      case both are not required, the unit that conflicts will be started and the unit that
-      is conflicted is stopped.
+    If unit A that conflicts with unit B is scheduled to be started at the same time as B,
+    the transaction will either fail (in case both are required parts of the transaction)
+    or be modified to be fixed (in case one or both jobs are not a required part of the
+    transaction). In the latter case, the job that is not required will be removed, or in
+    case both are not required, the unit that conflicts will be started and the unit that
+    is conflicted is stopped.
 
-      Added in version 201.
+    Added in version 201.
 
   Before=, After=
-      These two settings expect a space-separated list of unit names. They may be specified
-      more than once, in which case dependencies for all listed names are created.
+    These two settings expect a space-separated list of unit names. They may be specified
+    more than once, in which case dependencies for all listed names are created.
 
-      Those two settings configure ordering dependencies between units. If unit foo.service
-      contains the setting Before=bar.service and both units are being started,
-      bar.service's start-up is delayed until foo.service has finished starting up.  After=
-      is the inverse of Before=, i.e. while Before= ensures that the configured unit is
-      started before the listed unit begins starting up, After= ensures the opposite, that
-      the listed unit is fully started up before the configured unit is started.
+    Those two settings configure ordering dependencies between units. If unit foo.service
+    contains the setting Before=bar.service and both units are being started,
+    bar.service's start-up is delayed until foo.service has finished starting up.  After=
+    is the inverse of Before=, i.e. while Before= ensures that the configured unit is
+    started before the listed unit begins starting up, After= ensures the opposite, that
+    the listed unit is fully started up before the configured unit is started.
 
-      When two units with an ordering dependency between them are shut down, the inverse of
-      the start-up order is applied. I.e. if a unit is configured with After= on another
-      unit, the former is stopped before the latter if both are shut down. Given two units
-      with any ordering dependency between them, if one unit is shut down and the other is
-      started up, the shutdown is ordered before the start-up. It doesn't matter if the
-      ordering dependency is After= or Before=, in this case. It also doesn't matter which
-      of the two is shut down, as long as one is shut down and the other is started up; the
-      shutdown is ordered before the start-up in all cases. If two units have no ordering
-      dependencies between them, they are shut down or started up simultaneously, and no
-      ordering takes place. It depends on the unit type when precisely a unit has finished
-      starting up. Most importantly, for service units start-up is considered completed for
-      the purpose of Before=/After= when all its configured start-up commands have been
-      invoked and they either failed or reported start-up success. Note that this does
-      includes ExecStartPost= (or ExecStopPost= for the shutdown case).
+    When two units with an ordering dependency between them are shut down, the inverse of
+    the start-up order is applied. I.e. if a unit is configured with After= on another
+    unit, the former is stopped before the latter if both are shut down. Given two units
+    with any ordering dependency between them, if one unit is shut down and the other is
+    started up, the shutdown is ordered before the start-up. It doesn't matter if the
+    ordering dependency is After= or Before=, in this case. It also doesn't matter which
+    of the two is shut down, as long as one is shut down and the other is started up; the
+    shutdown is ordered before the start-up in all cases. If two units have no ordering
+    dependencies between them, they are shut down or started up simultaneously, and no
+    ordering takes place. It depends on the unit type when precisely a unit has finished
+    starting up. Most importantly, for service units start-up is considered completed for
+    the purpose of Before=/After= when all its configured start-up commands have been
+    invoked and they either failed or reported start-up success. Note that this does
+    includes ExecStartPost= (or ExecStopPost= for the shutdown case).
 
-      Note that those settings are independent of and orthogonal to the requirement
-      dependencies as configured by Requires=, Wants=, Requisite=, or BindsTo=. It is a
-      common pattern to include a unit name in both the After= and Wants= options, in which
-      case the unit listed will be started before the unit that is configured with these
-      options.
+    Note that those settings are independent of and orthogonal to the requirement
+    dependencies as configured by Requires=, Wants=, Requisite=, or BindsTo=. It is a
+    common pattern to include a unit name in both the After= and Wants= options, in which
+    case the unit listed will be started before the unit that is configured with these
+    options.
 
-      Note that Before= dependencies on device units have no effect and are not supported.
-      Devices generally become available as a result of an external hotplug event, and
-      systemd creates the corresponding device unit without delay.
+    Note that Before= dependencies on device units have no effect and are not supported.
+    Devices generally become available as a result of an external hotplug event, and
+    systemd creates the corresponding device unit without delay.
 
-      Added in version 201.
+    Added in version 201.
 
   OnFailure=
-      A space-separated list of one or more units that are activated when this unit enters
-      the "failed" state.
+    A space-separated list of one or more units that are activated when this unit enters
+    the "failed" state.
 
-      Added in version 201.
+    Added in version 201.
 
   OnSuccess=
-      A space-separated list of one or more units that are activated when this unit enters
-      the "inactive" state.
+    A space-separated list of one or more units that are activated when this unit enters
+    the "inactive" state.
 
-      Added in version 249.
+    Added in version 249.
 
   PropagatesReloadTo=, ReloadPropagatedFrom=
-      A space-separated list of one or more units to which reload requests from this unit
-      shall be propagated to, or units from which reload requests shall be propagated to
-      this unit, respectively. Issuing a reload request on a unit will automatically also
-      enqueue reload requests on all units that are linked to it using these two settings.
+    A space-separated list of one or more units to which reload requests from this unit
+    shall be propagated to, or units from which reload requests shall be propagated to
+    this unit, respectively. Issuing a reload request on a unit will automatically also
+    enqueue reload requests on all units that are linked to it using these two settings.
 
-      Added in version 201.
+    Added in version 201.
 
   PropagatesStopTo=, StopPropagatedFrom=
-      A space-separated list of one or more units to which stop requests from this unit
-      shall be propagated to, or units from which stop requests shall be propagated to this
-      unit, respectively. Issuing a stop request on a unit will automatically also enqueue
-      stop requests on all units that are linked to it using these two settings.
+    A space-separated list of one or more units to which stop requests from this unit
+    shall be propagated to, or units from which stop requests shall be propagated to this
+    unit, respectively. Issuing a stop request on a unit will automatically also enqueue
+    stop requests on all units that are linked to it using these two settings.
 
-      Added in version 249.
+    Added in version 249.
 
   JoinsNamespaceOf=
-      For units that start processes (such as service units), lists one or more other units
-      whose network and/or temporary file namespace to join. If this is specified on a unit
-      (say, a.service has JoinsNamespaceOf=b.service), then the inverse dependency
-      (JoinsNamespaceOf=a.service for b.service) is implied. This only applies to unit types
-      which support the PrivateNetwork=, NetworkNamespacePath=, PrivateIPC=,
-      IPCNamespacePath=, and PrivateTmp= directives (see systemd.exec(5) for details). If a
-      unit that has this setting set is started, its processes will see the same /tmp/,
-      /var/tmp/, IPC namespace and network namespace as one listed unit that is started. If
-      multiple listed units are already started and these do not share their namespace, then
-      it is not defined which namespace is joined. Note that this setting only has an effect
-      if PrivateNetwork=/NetworkNamespacePath=, PrivateIPC=/IPCNamespacePath= and/or
-      PrivateTmp= is enabled for both the unit that joins the namespace and the unit whose
-      namespace is joined.
+    For units that start processes (such as service units), lists one or more other units
+    whose network and/or temporary file namespace to join. If this is specified on a unit
+    (say, a.service has JoinsNamespaceOf=b.service), then the inverse dependency
+    (JoinsNamespaceOf=a.service for b.service) is implied. This only applies to unit types
+    which support the PrivateNetwork=, NetworkNamespacePath=, PrivateIPC=,
+    IPCNamespacePath=, and PrivateTmp= directives (see systemd.exec(5) for details). If a
+    unit that has this setting set is started, its processes will see the same /tmp/,
+    /var/tmp/, IPC namespace and network namespace as one listed unit that is started. If
+    multiple listed units are already started and these do not share their namespace, then
+    it is not defined which namespace is joined. Note that this setting only has an effect
+    if PrivateNetwork=/NetworkNamespacePath=, PrivateIPC=/IPCNamespacePath= and/or
+    PrivateTmp= is enabled for both the unit that joins the namespace and the unit whose
+    namespace is joined.
 
-      Added in version 209.
+    Added in version 209.
 
   RequiresMountsFor=
-      Takes a space-separated list of absolute paths. Automatically adds dependencies of
-      type Requires= and After= for all mount units required to access the specified path.
+    Takes a space-separated list of absolute paths. Automatically adds dependencies of
+    type Requires= and After= for all mount units required to access the specified path.
 
-      Mount points marked with noauto are not mounted automatically through local-fs.target,
-      but are still honored for the purposes of this option, i.e. they will be pulled in by
-      this unit.
+    Mount points marked with noauto are not mounted automatically through local-fs.target,
+    but are still honored for the purposes of this option, i.e. they will be pulled in by
+    this unit.
 
-      Added in version 201.
+    Added in version 201.
 
   OnSuccessJobMode=, OnFailureJobMode=
-      Takes a value of "fail", "replace", "replace-irreversibly", "isolate", "flush",
-      "ignore-dependencies" or "ignore-requirements". Defaults to "replace". Specifies how
-      the units listed in OnSuccess=/OnFailure= will be enqueued. See systemctl(1)'s
-      --job-mode= option for details on the possible values. If this is set to "isolate",
-      only a single unit may be listed in OnSuccess=/OnFailure=.
+    Takes a value of "fail", "replace", "replace-irreversibly", "isolate", "flush",
+    "ignore-dependencies" or "ignore-requirements". Defaults to "replace". Specifies how
+    the units listed in OnSuccess=/OnFailure= will be enqueued. See systemctl(1)'s
+    --job-mode= option for details on the possible values. If this is set to "isolate",
+    only a single unit may be listed in OnSuccess=/OnFailure=.
 
-      Added in version 209.
+    Added in version 209.
 
   IgnoreOnIsolate=
-      Takes a boolean argument. If true, this unit will not be stopped when isolating
-      another unit. Defaults to false for service, target, socket, timer, and path units,
-      and true for slice, scope, device, swap, mount, and automount units.
+    Takes a boolean argument. If true, this unit will not be stopped when isolating
+    another unit. Defaults to false for service, target, socket, timer, and path units,
+    and true for slice, scope, device, swap, mount, and automount units.
 
-      Added in version 201.
+    Added in version 201.
 
   StopWhenUnneeded=
-      Takes a boolean argument. If true, this unit will be stopped when it is no longer
-      used. Note that, in order to minimize the work to be executed, systemd will not stop
-      units by default unless they are conflicting with other units, or the user explicitly
-      requested their shut down. If this option is set, a unit will be automatically cleaned
-      up if no other active unit requires it. Defaults to false.
+    Takes a boolean argument. If true, this unit will be stopped when it is no longer
+    used. Note that, in order to minimize the work to be executed, systemd will not stop
+    units by default unless they are conflicting with other units, or the user explicitly
+    requested their shut down. If this option is set, a unit will be automatically cleaned
+    up if no other active unit requires it. Defaults to false.
 
-      Added in version 201.
+    Added in version 201.
 
   RefuseManualStart=, RefuseManualStop=
-      Takes a boolean argument. If true, this unit can only be activated or deactivated
-      indirectly. In this case, explicit start-up or termination requested by the user is
-      denied, however if it is started or stopped as a dependency of another unit, start-up
-      or termination will succeed. This is mostly a safety feature to ensure that the user
-      does not accidentally activate units that are not intended to be activated explicitly,
-      and not accidentally deactivate units that are not intended to be deactivated. These
-      options default to false.
+    Takes a boolean argument. If true, this unit can only be activated or deactivated
+    indirectly. In this case, explicit start-up or termination requested by the user is
+    denied, however if it is started or stopped as a dependency of another unit, start-up
+    or termination will succeed. This is mostly a safety feature to ensure that the user
+    does not accidentally activate units that are not intended to be activated explicitly,
+    and not accidentally deactivate units that are not intended to be deactivated. These
+    options default to false.
 
-      Added in version 201.
+    Added in version 201.
 
   AllowIsolate=
-      Takes a boolean argument. If true, this unit may be used with the systemctl isolate
-      command. Otherwise, this will be refused. It probably is a good idea to leave this
-      disabled except for target units that shall be used similar to runlevels in SysV init
-      systems, just as a precaution to avoid unusable system states. This option defaults to
-      false.
+    Takes a boolean argument. If true, this unit may be used with the systemctl isolate
+    command. Otherwise, this will be refused. It probably is a good idea to leave this
+    disabled except for target units that shall be used similar to runlevels in SysV init
+    systems, just as a precaution to avoid unusable system states. This option defaults to
+    false.
 
-      Added in version 201.
+    Added in version 201.
 
   DefaultDependencies=
-      Takes a boolean argument. If yes, (the default), a few default dependencies will
-      implicitly be created for the unit. The actual dependencies created depend on the unit
-      type. For example, for service units, these dependencies ensure that the service is
-      started only after basic system initialization is completed and is properly terminated
-      on system shutdown. See the respective man pages for details. Generally, only services
-      involved with early boot or late shutdown should set this option to no. It is highly
-      recommended to leave this option enabled for the majority of common units. If set to
-      no, this option does not disable all implicit dependencies, just non-essential ones.
+    Takes a boolean argument. If yes, (the default), a few default dependencies will
+    implicitly be created for the unit. The actual dependencies created depend on the unit
+    type. For example, for service units, these dependencies ensure that the service is
+    started only after basic system initialization is completed and is properly terminated
+    on system shutdown. See the respective man pages for details. Generally, only services
+    involved with early boot or late shutdown should set this option to no. It is highly
+    recommended to leave this option enabled for the majority of common units. If set to
+    no, this option does not disable all implicit dependencies, just non-essential ones.
 
-      Added in version 201.
+    Added in version 201.
 
   SurviveFinalKillSignal=
-      Takes a boolean argument. Defaults to no. If yes, processes belonging to this unit
-      will not be sent the final "SIGTERM" and "SIGKILL" signals during the final phase of
-      the system shutdown process. This functionality replaces the older mechanism that
-      allowed a program to set "argv[0][0] = '@'" as described at systemd and Storage
-      Daemons for the Root File System[2], which however continues to be supported.
+    Takes a boolean argument. Defaults to no. If yes, processes belonging to this unit
+    will not be sent the final "SIGTERM" and "SIGKILL" signals during the final phase of
+    the system shutdown process. This functionality replaces the older mechanism that
+    allowed a program to set "argv[0][0] = '@'" as described at systemd and Storage
+    Daemons for the Root File System[2], which however continues to be supported.
 
-      Added in version 255.
+    Added in version 255.
 
   CollectMode=
-      Tweaks the "garbage collection" algorithm for this unit. Takes one of inactive or
-      inactive-or-failed. If set to inactive the unit will be unloaded if it is in the
-      inactive state and is not referenced by clients, jobs or other units — however it is
-      not unloaded if it is in the failed state. In failed mode, failed units are not
-      unloaded until the user invoked systemctl reset-failed on them to reset the failed
-      state, or an equivalent command. This behaviour is altered if this option is set to
-      inactive-or-failed: in this case the unit is unloaded even if the unit is in a failed
-      state, and thus an explicitly resetting of the failed state is not necessary. Note
-      that if this mode is used unit results (such as exit codes, exit signals, consumed
-      resources, ...) are flushed out immediately after the unit completed, except for what
-      is stored in the logging subsystem. Defaults to inactive.
+    Tweaks the "garbage collection" algorithm for this unit. Takes one of inactive or
+    inactive-or-failed. If set to inactive the unit will be unloaded if it is in the
+    inactive state and is not referenced by clients, jobs or other units — however it is
+    not unloaded if it is in the failed state. In failed mode, failed units are not
+    unloaded until the user invoked systemctl reset-failed on them to reset the failed
+    state, or an equivalent command. This behaviour is altered if this option is set to
+    inactive-or-failed: in this case the unit is unloaded even if the unit is in a failed
+    state, and thus an explicitly resetting of the failed state is not necessary. Note
+    that if this mode is used unit results (such as exit codes, exit signals, consumed
+    resources, ...) are flushed out immediately after the unit completed, except for what
+    is stored in the logging subsystem. Defaults to inactive.
 
-      Added in version 236.
+    Added in version 236.
 
   FailureAction=, SuccessAction=
-      Configure the action to take when the unit stops and enters a failed state or inactive
-      state. Takes one of none, reboot, reboot-force, reboot-immediate, poweroff,
-      poweroff-force, poweroff-immediate, exit, exit-force, soft-reboot, soft-reboot-force,
-      kexec, kexec-force, halt, halt-force and halt-immediate. In system mode, all options
-      are allowed. In user mode, only none, exit, exit-force, soft-reboot and
-      soft-reboot-force are allowed. Both options default to none.
+    Configure the action to take when the unit stops and enters a failed state or inactive
+    state. Takes one of none, reboot, reboot-force, reboot-immediate, poweroff,
+    poweroff-force, poweroff-immediate, exit, exit-force, soft-reboot, soft-reboot-force,
+    kexec, kexec-force, halt, halt-force and halt-immediate. In system mode, all options
+    are allowed. In user mode, only none, exit, exit-force, soft-reboot and
+    soft-reboot-force are allowed. Both options default to none.
 
-      If none is set, no action will be triggered.  reboot causes a reboot following the
-      normal shutdown procedure (i.e. equivalent to systemctl reboot).  reboot-force causes
-      a forced reboot which will terminate all processes forcibly but should cause no dirty
-      file systems on reboot (i.e. equivalent to systemctl reboot -f) and reboot-immediate
-      causes immediate execution of the reboot(2) system call, which might result in data
-      loss (i.e. equivalent to systemctl reboot -ff). Similarly, poweroff, poweroff-force,
-      poweroff-immediate, kexec, kexec-force, halt, halt-force and halt-immediate have the
-      effect of powering down the system, executing kexec, and halting the system
-      respectively with similar semantics.  exit causes the manager to exit following the
-      normal shutdown procedure, and exit-force causes it terminate without shutting down
-      services. When exit or exit-force is used by default the exit status of the main
-      process of the unit (if this applies) is returned from the service manager. However,
-      this may be overridden with FailureActionExitStatus=/SuccessActionExitStatus=, see
-      below.  soft-reboot will trigger a userspace reboot operation.  soft-reboot-force does
-      that too, but does not go through the shutdown transaction beforehand.
+    If none is set, no action will be triggered.  reboot causes a reboot following the
+    normal shutdown procedure (i.e. equivalent to systemctl reboot).  reboot-force causes
+    a forced reboot which will terminate all processes forcibly but should cause no dirty
+    file systems on reboot (i.e. equivalent to systemctl reboot -f) and reboot-immediate
+    causes immediate execution of the reboot(2) system call, which might result in data
+    loss (i.e. equivalent to systemctl reboot -ff). Similarly, poweroff, poweroff-force,
+    poweroff-immediate, kexec, kexec-force, halt, halt-force and halt-immediate have the
+    effect of powering down the system, executing kexec, and halting the system
+    respectively with similar semantics.  exit causes the manager to exit following the
+    normal shutdown procedure, and exit-force causes it terminate without shutting down
+    services. When exit or exit-force is used by default the exit status of the main
+    process of the unit (if this applies) is returned from the service manager. However,
+    this may be overridden with FailureActionExitStatus=/SuccessActionExitStatus=, see
+    below.  soft-reboot will trigger a userspace reboot operation.  soft-reboot-force does
+    that too, but does not go through the shutdown transaction beforehand.
 
-      Added in version 236.
+    Added in version 236.
 
   FailureActionExitStatus=, SuccessActionExitStatus=
-      Controls the exit status to propagate back to an invoking container manager (in case
-      of a system service) or service manager (in case of a user manager) when the
-      FailureAction=/SuccessAction= are set to exit or exit-force and the action is
-      triggered. By default the exit status of the main process of the triggering unit (if
-      this applies) is propagated. Takes a value in the range 0...255 or the empty string to
-      request default behaviour.
+    Controls the exit status to propagate back to an invoking container manager (in case
+    of a system service) or service manager (in case of a user manager) when the
+    FailureAction=/SuccessAction= are set to exit or exit-force and the action is
+    triggered. By default the exit status of the main process of the triggering unit (if
+    this applies) is propagated. Takes a value in the range 0...255 or the empty string to
+    request default behaviour.
 
-      Added in version 240.
+    Added in version 240.
 
   JobTimeoutSec=, JobRunningTimeoutSec=
-      JobTimeoutSec= specifies a timeout for the whole job that starts running when the job
-      is queued.  JobRunningTimeoutSec= specifies a timeout that starts running when the
-      queued job is actually started. If either limit is reached, the job will be cancelled,
-      the unit however will not change state or even enter the "failed" mode.
+    JobTimeoutSec= specifies a timeout for the whole job that starts running when the job
+    is queued.  JobRunningTimeoutSec= specifies a timeout that starts running when the
+    queued job is actually started. If either limit is reached, the job will be cancelled,
+    the unit however will not change state or even enter the "failed" mode.
 
-      Both settings take a time span with the default unit of seconds, but other units may
-      be specified, see systemd.time(5). The default is "infinity" (job timeouts disabled),
-      except for device units where JobRunningTimeoutSec= defaults to
-      DefaultDeviceTimeoutSec=.
+    Both settings take a time span with the default unit of seconds, but other units may
+    be specified, see systemd.time(5). The default is "infinity" (job timeouts disabled),
+    except for device units where JobRunningTimeoutSec= defaults to
+    DefaultDeviceTimeoutSec=.
 
-      Note: these timeouts are independent from any unit-specific timeouts (for example, the
-      timeout set with TimeoutStartSec= in service units). The job timeout has no effect on
-      the unit itself. Or in other words: unit-specific timeouts are useful to abort unit
-      state changes, and revert them. The job timeout set with this option however is useful
-      to abort only the job waiting for the unit state to change.
+    Note: these timeouts are independent from any unit-specific timeouts (for example, the
+    timeout set with TimeoutStartSec= in service units). The job timeout has no effect on
+    the unit itself. Or in other words: unit-specific timeouts are useful to abort unit
+    state changes, and revert them. The job timeout set with this option however is useful
+    to abort only the job waiting for the unit state to change.
 
-      Added in version 201.
+    Added in version 201.
 
   JobTimeoutAction=, JobTimeoutRebootArgument=
-      JobTimeoutAction= optionally configures an additional action to take when the timeout
-      is hit, see description of JobTimeoutSec= and JobRunningTimeoutSec= above. It takes
-      the same values as StartLimitAction=. Defaults to none.
+    JobTimeoutAction= optionally configures an additional action to take when the timeout
+    is hit, see description of JobTimeoutSec= and JobRunningTimeoutSec= above. It takes
+    the same values as StartLimitAction=. Defaults to none.
 
-      JobTimeoutRebootArgument= configures an optional reboot string to pass to the
-      reboot(2) system call.
+    JobTimeoutRebootArgument= configures an optional reboot string to pass to the
+    reboot(2) system call.
 
-      Added in version 240.
+    Added in version 240.
 
   StartLimitIntervalSec=interval, StartLimitBurst=burst
-      Configure unit start rate limiting. Units which are started more than burst times
-      within an interval time span are not permitted to start any more. Use
-      StartLimitIntervalSec= to configure the checking interval and StartLimitBurst= to
-      configure how many starts per interval are allowed.
+    Configure unit start rate limiting. Units which are started more than burst times
+    within an interval time span are not permitted to start any more. Use
+    StartLimitIntervalSec= to configure the checking interval and StartLimitBurst= to
+    configure how many starts per interval are allowed.
 
-      interval is a time span with the default unit of seconds, but other units may be
-      specified, see systemd.time(5). The special value "infinity" can be used to limit the
-      total number of start attempts, even if they happen at large time intervals. Defaults
-      to DefaultStartLimitIntervalSec= in manager configuration file, and may be set to 0 to
-      disable any kind of rate limiting.  burst is a number and defaults to
-      DefaultStartLimitBurst= in manager configuration file.
+    interval is a time span with the default unit of seconds, but other units may be
+    specified, see systemd.time(5). The special value "infinity" can be used to limit the
+    total number of start attempts, even if they happen at large time intervals. Defaults
+    to DefaultStartLimitIntervalSec= in manager configuration file, and may be set to 0 to
+    disable any kind of rate limiting.  burst is a number and defaults to
+    DefaultStartLimitBurst= in manager configuration file.
 
-      These configuration options are particularly useful in conjunction with the service
-      setting Restart= (see systemd.service(5)); however, they apply to all kinds of starts
-      (including manual), not just those triggered by the Restart= logic.
+    These configuration options are particularly useful in conjunction with the service
+    setting Restart= (see systemd.service(5)); however, they apply to all kinds of starts
+    (including manual), not just those triggered by the Restart= logic.
 
-      Note that units which are configured for Restart=, and which reach the start limit are
-      not attempted to be restarted anymore; however, they may still be restarted manually
-      or from a timer or socket at a later point, after the interval has passed. From that
-      point on, the restart logic is activated again.  systemctl reset-failed will cause the
-      restart rate counter for a service to be flushed, which is useful if the administrator
-      wants to manually start a unit and the start limit interferes with that. Rate-limiting
-      is enforced after any unit condition checks are executed, and hence unit activations
-      with failing conditions do not count towards the rate limit.
+    Note that units which are configured for Restart=, and which reach the start limit are
+    not attempted to be restarted anymore; however, they may still be restarted manually
+    or from a timer or socket at a later point, after the interval has passed. From that
+    point on, the restart logic is activated again.  systemctl reset-failed will cause the
+    restart rate counter for a service to be flushed, which is useful if the administrator
+    wants to manually start a unit and the start limit interferes with that. Rate-limiting
+    is enforced after any unit condition checks are executed, and hence unit activations
+    with failing conditions do not count towards the rate limit.
 
-      When a unit is unloaded due to the garbage collection logic (see above) its rate limit
-      counters are flushed out too. This means that configuring start rate limiting for a
-      unit that is not referenced continuously has no effect.
+    When a unit is unloaded due to the garbage collection logic (see above) its rate limit
+    counters are flushed out too. This means that configuring start rate limiting for a
+    unit that is not referenced continuously has no effect.
 
-      This setting does not apply to slice, target, device, and scope units, since they are
-      unit types whose activation may either never fail, or may succeed only a single time.
+    This setting does not apply to slice, target, device, and scope units, since they are
+    unit types whose activation may either never fail, or may succeed only a single time.
 
-      Added in version 229.
+    Added in version 229.
 
   StartLimitAction=
-      Configure an additional action to take if the rate limit configured with
-      StartLimitIntervalSec= and StartLimitBurst= is hit. Takes the same values as the
-      FailureAction=/SuccessAction= settings. If none is set, hitting the rate limit will
-      trigger no action except that the start will not be permitted. Defaults to none.
+    Configure an additional action to take if the rate limit configured with
+    StartLimitIntervalSec= and StartLimitBurst= is hit. Takes the same values as the
+    FailureAction=/SuccessAction= settings. If none is set, hitting the rate limit will
+    trigger no action except that the start will not be permitted. Defaults to none.
 
-      Added in version 229.
+    Added in version 229.
 
   RebootArgument=
       Configure the optional argument for the reboot(2) system call if StartLimitAction= or
@@ -842,17 +845,17 @@ Conditions and Asserts
       Added in version 244.
 
   ConditionCPUs=
-      Verify that the specified number of CPUs is available to the current system. Takes a
-      number of CPUs as argument, optionally prefixed with a comparison operator "<", "<=",
-      "=" (or "=="), "!=" (or "<>"), ">=", ">". Compares the number of CPUs in the CPU
-      affinity mask configured of the service manager itself with the specified number,
-      adhering to the specified comparison operator. On physical systems the number of CPUs
-      in the affinity mask of the service manager usually matches the number of physical
-      CPUs, but in special and virtual environments might differ. In particular, in
-      containers the affinity mask usually matches the number of CPUs assigned to the
-      container and not the physically available ones.
+    Verify that the specified number of CPUs is available to the current system. Takes a
+    number of CPUs as argument, optionally prefixed with a comparison operator "<", "<=",
+    "=" (or "=="), "!=" (or "<>"), ">=", ">". Compares the number of CPUs in the CPU
+    affinity mask configured of the service manager itself with the specified number,
+    adhering to the specified comparison operator. On physical systems the number of CPUs
+    in the affinity mask of the service manager usually matches the number of physical
+    CPUs, but in special and virtual environments might differ. In particular, in
+    containers the affinity mask usually matches the number of CPUs assigned to the
+    container and not the physically available ones.
 
-      Added in version 244.
+    Added in version 244.
 
   ConditionCPUFeature=
       Verify that a given CPU feature is available via the "CPUID" instruction. This
@@ -983,6 +986,7 @@ MAPPING OF UNIT PROPERTIES TO THEIR INVERSES
 
 export const UnitSectionSchema: ZodType<UnitSection> = z.object({
   Description: z.string().optional(),
+  Documentation: z.union([z.string(), z.array(z.string())]).optional(),
 });
 
 export class UnitSectionBuilder {
@@ -1005,6 +1009,14 @@ export class UnitSectionBuilder {
    */
   public setDescription(description: string) {
     this.section.Description = description;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.Documentation}
+   */
+  public setDocumentation(documentation: string[] | string) {
+    this.section.Documentation = documentation;
     return this;
   }
 }
