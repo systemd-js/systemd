@@ -98,7 +98,10 @@ export class INI {
       throw new Error("Invalid data", { cause: "Data is empty" });
     }
     const iniData: INIData = {};
-    const rawData = data.trim();
+    const rawData = data
+      .trim()
+      .replaceAll(/\\\n/g, "")
+      .replaceAll(/\\\r\n/g, "");
 
     const lines = rawData
       .split("\n")
@@ -106,16 +109,23 @@ export class INI {
       .filter((line) => line.length > 0)
       .filter((line) => !line.startsWith("#"))
       .filter((line) => !line.startsWith(";"));
+      
 
     let currentSection: string | null = null;
-
+    console.log(lines);
     for (const line of lines) {
       if (line.startsWith("[") && line.endsWith("]")) {
         currentSection = line.slice(1, -1);
         iniData[currentSection] = {};
       }
       else {
-        const [key, value] = line.split("=");
+        const equalIndex = line.indexOf("=");
+        if (equalIndex === -1) {
+          throw new Error(`Invalid line: ${line}`);
+        }
+
+        const key = line.slice(0, equalIndex).trim();
+        const value = line.slice(equalIndex + 1).trim();
 
         if (!key || !value) {
           throw new Error(`Invalid line: ${line}`);
@@ -157,7 +167,7 @@ export class INI {
   public toString(): string {
     const result: string[] = [];
     for (const section in this.data) {
-      result.push(`[${section}]`);
+      result.push(`[${section}]\n`);
 
       const sectionData = this.data[section];
       for (const key in sectionData) {
@@ -165,26 +175,27 @@ export class INI {
 
         if (Array.isArray(sectionValue)) {
           for (const value of sectionValue) {
-            result.push(`${key}=${value}`);
+            result.push(`${key}=${value}\n`);
           }
         }
         else {
           if (sectionValue === true) {
-            result.push(`${key}=yes`);
+            result.push(`${key}=yes\n`);
           }
           if (sectionValue === false) {
-            result.push(`${key}=no`);
+            result.push(`${key}=no\n`);
           }
           if (typeof sectionValue === "string") {
-            result.push(`${key}=${sectionValue}`);
+            result.push(`${key}=${sectionValue}\n`);
           }
           if (typeof sectionValue === "number") {
-            result.push(`${key}=${sectionValue}`);
+            result.push(`${key}=${sectionValue}\n`);
           }
         }
       }
       result.push("\n");
     }
-    return result.join("\n").trim();
+    return result.join("").trim();
+
   }
 }
