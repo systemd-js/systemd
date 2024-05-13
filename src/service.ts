@@ -8,6 +8,8 @@ import { ExecSectionBuilder, ExecSectionSchema } from "./exec.js";
 import { applyMixins } from "./utils.js";
 import type { InstallSection} from "./install.js";
 import { InstallSectionBuilder, InstallSectionSchema } from "./install.js";
+import type { KillSectionConfig} from "./kill.js";
+import { KillSectionBuilder, KillSectionSchema } from "./kill.js";
 
 /**
  * @see https://manpages.ubuntu.com/manpages/noble/en/man5/systemd.service.5.html
@@ -975,7 +977,7 @@ export type ServiceSection = ExecSectionConfig & ServiceSectionConfig;
 export interface ServiceUnit {
   Unit: UnitSection
   Install?: InstallSection;
-  Service: ExecSectionConfig & ServiceSectionConfig;
+  Service: ExecSectionConfig & KillSectionConfig & ServiceSectionConfig;
 }
 
 export const ServiceSectionConfigSchema: ZodType<ServiceSectionConfig> = z.object({
@@ -1167,10 +1169,16 @@ export const ServiceSectionConfigSchema: ZodType<ServiceSectionConfig> = z.objec
 });
 
 /**
+ * Schema intersection of:
  * @see {@link ServiceSectionConfig}
  * @see {@link ExecSectionConfig}
+ * @see {@link KillSectionConfig}
  */
-export const ServiceSectionSchema: ZodType<ServiceSection> = ServiceSectionConfigSchema.and(ExecSectionSchema);
+export const ServiceSectionSchema: ZodType<ServiceSection> = z.intersection(
+  ServiceSectionConfigSchema,
+  ExecSectionSchema,
+  KillSectionSchema
+);
 
 /**
  * Systemd Service schema in Zod
@@ -1187,6 +1195,7 @@ export const ServiceUnitSchema: ZodType<ServiceUnit> = z.object({
   /**
    * @see {@link ServiceSectionConfig}
    * @see {@link ExecSectionConfig}
+   *  * @see {@link KillSectionConfig}
    */
   Service: ServiceSectionSchema,
 });
@@ -1194,7 +1203,7 @@ export const ServiceUnitSchema: ZodType<ServiceUnit> = z.object({
 
 
 export class ServiceSectionBuilder {
-  public section: ExecSectionConfig & ServiceSectionConfig;
+  public section: ExecSectionConfig & KillSectionConfig & ServiceSectionConfig;
   
   public constructor(section: ServiceSectionConfig = {}) {
     this.section = ServiceSectionSchema.parse(section);
@@ -1544,10 +1553,12 @@ export class ServiceSectionBuilder {
     return this;
   }
 }
+/* eslint-disable-next-line @typescript-eslint/no-empty-interface */
 export interface ServiceSectionBuilder extends ExecSectionBuilder {}
 
 applyMixins(ServiceSectionBuilder, [
   ExecSectionBuilder,
+  KillSectionBuilder,
 ]);
 
 
@@ -1560,8 +1571,8 @@ export class Service {
     Unit: {},
     Service: {},
   }) {
-    const {Unit, Install, Service} = ServiceUnitSchema.parse(service); 
-    this.serviceSection = new ServiceSectionBuilder(Service);
+    const {Unit, Install, Service: ServiceObj} = ServiceUnitSchema.parse(service); 
+    this.serviceSection = new ServiceSectionBuilder(ServiceObj);
     this.unitSection = new UnitSectionBuilder(Unit);
     this.installSection = new InstallSectionBuilder(Install); 
   }

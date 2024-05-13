@@ -20,7 +20,6 @@ export {
 export type {
   TimerSection,
 } from "./timer.js";
-
 export {
   Timer,
   TimerUnitSchema,

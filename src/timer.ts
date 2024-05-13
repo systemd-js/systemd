@@ -1,8 +1,12 @@
-import { ZodType, z } from "zod";
-import { ExecSectionBuilder, ExecSectionConfig, ExecSectionSchema } from "./exec.js";
+import type { ZodType} from "zod";
+import { z } from "zod";
+import type { ExecSectionConfig} from "./exec.js";
+import { ExecSectionBuilder, ExecSectionSchema } from "./exec.js";
 import { applyMixins } from "./utils.js";
-import { InstallSection, InstallSectionBuilder, InstallSectionSchema } from "./install.js";
-import { UnitSection, UnitSectionBuilder, UnitSectionSchema } from "./unit.js";
+import type { InstallSection} from "./install.js";
+import { InstallSectionBuilder, InstallSectionSchema } from "./install.js";
+import type { UnitSection} from "./unit.js";
+import { UnitSectionBuilder, UnitSectionSchema } from "./unit.js";
 import { INI } from "./ini.js";
 
 /**
@@ -250,7 +254,7 @@ export interface TimerSectionConfig {
   */
 }
 
-export type TimerSection = TimerSectionConfig & ExecSectionConfig;
+export type TimerSection = ExecSectionConfig & TimerSectionConfig;
 
 export interface TimerUnit {
   Unit: UnitSection
@@ -308,6 +312,7 @@ export class TimerSectionBuilder {
   }
 }
 
+/* eslint-disable-next-line @typescript-eslint/no-empty-interface */
 export interface TimerSectionBuilder extends ExecSectionBuilder {}
 
 applyMixins(TimerSectionBuilder, [
@@ -323,8 +328,8 @@ export class Timer {
     Unit: {},
     Timer: {},
   }) {
-    const {Unit, Install, Timer} = TimerUnitSchema.parse(service); 
-    this.timerSection = new TimerSectionBuilder(Timer);
+    const {Unit, Install, Timer: TimerObj} = TimerUnitSchema.parse(service); 
+    this.timerSection = new TimerSectionBuilder(TimerObj);
     this.unitSection = new UnitSectionBuilder(Unit);
     this.installSection = new InstallSectionBuilder(Install); 
   }

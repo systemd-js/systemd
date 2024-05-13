@@ -445,4 +445,9 @@ export class ExecSectionBuilder {
     this.section.ExecSearchPath = value;
     return this;
   }
+
+  public setWorkingDirectory(value: string): this {
+    this.section.WorkingDirectory = value;
+    return this;
+  }
 }
