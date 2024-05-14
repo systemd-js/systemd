@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
 import { Service } from "../service.js";
+import { INI } from "../ini.js";
 
 const serviceObj = {
   Unit: {
@@ -39,6 +40,41 @@ describe("Service", () => {
         }
       }
       expect(() => new Service(invalidServiceObj)).toThrow();
+    })
+  });
+
+  describe('fromObject', () => {
+    it('should create a new service from object', () => {
+      const service = Service.fromObject(serviceObj);
+      expect(service.toObject()).toMatchObject(serviceObj);
+    });
+
+    it('should throw if service is not valid', () => {
+      const invalidServiceObj = {
+        ...serviceObj,
+        Service: {
+          ...serviceObj.Service,
+          PrivateInvalid: "yes"
+        }
+      }
+      expect(() => Service.fromObject(invalidServiceObj)).toThrow();
+    })
+  });
+
+  describe('fromString', () => {
+    it('should create a new service from string', () => {
+      const service = Service.fromINI(INI.fromObject(serviceObj));
+      expect(service.toObject()).toMatchObject(serviceObj);
+    })
+    it('should throw if service is not valid', () => {
+      const invalidServiceObj = {
+        ...serviceObj,
+        Service: {
+          ...serviceObj.Service,
+          PrivateInvalid: "yes"
+        }
+      }
+      expect(() => Service.fromINI(INI.fromObject(invalidServiceObj))).toThrow();
     })
   });
 });

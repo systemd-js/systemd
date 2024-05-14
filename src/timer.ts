@@ -127,6 +127,7 @@ export interface TimerSectionConfig {
 
     Added in version 197.
   */
+  OnCalendar?: string;
 
   /**
   AccuracySec=
@@ -150,7 +151,10 @@ export interface TimerSectionConfig {
     below.
 
     Added in version 209.
+  */
+  AccuracySec?: number | string;
 
+  /**
   RandomizedDelaySec=
     Delay the timer by a randomly selected, evenly distributed amount of time between 0
     and the specified time value. Defaults to 0, indicating that no randomized delay shall
@@ -174,7 +178,10 @@ export interface TimerSectionConfig {
     RandomizedDelaySec= to some higher value.
 
     Added in version 229.
+  */
+  RandomizedDelaySec?: number | string;
 
+  /**
   FixedRandomDelay=
     Takes a boolean argument. When enabled, the randomized offset specified by
     RandomizedDelaySec= is reused for all firings of the same timer. For a given timer
@@ -186,7 +193,10 @@ export interface TimerSectionConfig {
     This setting has no effect if RandomizedDelaySec= is set to 0. Defaults to false.
 
     Added in version 247.
+  */
+  FixedRandomDelay?: boolean;
 
+  /**
   OnClockChange=, OnTimezoneChange=
     These options take boolean arguments. When true, the service unit will be triggered
     when the system clock (CLOCK_REALTIME) jumps relative to the monotonic clock
@@ -195,14 +205,20 @@ export interface TimerSectionConfig {
     timer unit. These options default to false.
 
     Added in version 242.
+  */
+  OnClockChange?: boolean;
 
+  /**
   Unit=
     The unit to activate when this timer elapses. The argument is a unit name, whose
     suffix is not ".timer". If not specified, this value defaults to a service that has
     the same name as the timer unit, except for the suffix. (See above.) It is recommended
     that the unit name that is activated and the unit name of the timer unit are named
     identically, except for the suffix.
+    */
+  Unit?: string;
 
+  /**
   Persistent=
     Takes a boolean argument. If true, the time when the service unit was last triggered
     is stored on disk. When the timer is activated, the service unit is triggered
@@ -217,7 +233,10 @@ export interface TimerSectionConfig {
     uninstalling a timer unit. See systemctl(1) for details.
 
     Added in version 212.
+  */
+  Persistent?: boolean;
 
+  /**
   WakeSystem=
     Takes a boolean argument. If true, an elapsing timer will cause the system to resume
     from suspend, should it be suspended and if the system supports this. Note that this
@@ -236,7 +255,10 @@ export interface TimerSectionConfig {
     details.
 
     Added in version 212.
+  */
+  WakeSystem?: boolean;
 
+  /**
   RemainAfterElapse=
     Takes a boolean argument. If true, a timer will stay loaded, and its state remains
     queryable even after it elapsed and the associated unit (as configured with Unit=, see
@@ -252,6 +274,7 @@ export interface TimerSectionConfig {
 
   Check systemd.unit(5), systemd.exec(5), and systemd.kill(5) for more settings.
   */
+  RemainAfterElapse?: boolean;
 }
 
 export type TimerSection = ExecSectionConfig & TimerSectionConfig;
@@ -268,18 +291,29 @@ export const TimerSectionConfigSchema = implement<TimerSectionConfig>().with({
   OnStartupSec: z.union([z.number(), z.string()]).optional(),
   OnUnitActiveSec: z.union([z.number(), z.string()]).optional(),
   OnUnitInactiveSec: z.union([z.number(), z.string()]).optional(),
+  OnCalendar: z.string().optional(),
+  AccuracySec: z.union([z.number(), z.string()]).optional(),
+  RandomizedDelaySec: z.union([z.number(), z.string()]).optional(),
+  FixedRandomDelay: z.boolean().optional(),
+  OnClockChange: z.boolean().optional(),
+  Unit: z.string().optional(),
+  Persistent: z.boolean().optional(),
+  WakeSystem: z.boolean().optional(),
+  RemainAfterElapse: z.boolean().optional(),
 })
 
 /**
  * @see {@link TimerSectionConfigSchema}
  * @see {@link ExecSectionConfig}
  */
-export const TimerSectionSchema: ZodType<TimerSection> = TimerSectionConfigSchema.merge(ExecSectionSchema);
+export const TimerSectionSchema: ZodType<TimerSection> = TimerSectionConfigSchema
+  .merge(ExecSectionSchema)
+  .strict();
 
 /**
  * Systemd Service schema in Zod
  */
-export const TimerUnitSchema: ZodType<TimerUnit> = z.object({
+export const TimerUnitSchema = implement<TimerUnit>().with({
   /**
    * @see {@link UnitSection}
    */
@@ -287,7 +321,7 @@ export const TimerUnitSchema: ZodType<TimerUnit> = z.object({
   /**
    * @see {@link InstallSectionConfig}
    */
-  Install: InstallSectionSchema,
+  Install: InstallSectionSchema.optional(),
   /**
    * Combined Timer and Exec section
    * @see {@link TimerSectionConfig}
@@ -310,6 +344,160 @@ export class TimerSectionBuilder {
   public toObject() {
     return TimerSectionSchema.parse(this.section);
   }
+
+  /**
+   * Set timer OnActiveSec
+   * @see {@link TimerSection.OnActiveSec}
+   */
+  public setOnActiveSec(
+    onActiveSec: TimerSection["OnActiveSec"]
+  ) {
+    this.section.OnActiveSec = onActiveSec;
+    return this;
+  }
+
+  /**
+   * Set timer OnBootSec
+   * @see {@link TimerSection.OnBootSec}
+   */
+  public setOnBootSec(
+    onBootSec: TimerSection["OnBootSec"]
+  ) {
+    this.section.OnBootSec = onBootSec;
+    return this;
+  }
+
+  /**
+   * Set timer OnStartupSec
+   * @see {@link TimerSection.OnStartupSec}
+   */
+  public setOnStartupSec(
+    onStartupSec: TimerSection["OnStartupSec"]
+  ) {
+    this.section.OnStartupSec = onStartupSec;
+    return this;
+  }
+
+  /**
+   * Set timer OnUnitActiveSec
+   * @see {@link TimerSection.OnUnitActiveSec}
+   */
+  public setOnUnitActiveSec(
+    onUnitActiveSec: TimerSection["OnUnitActiveSec"]
+  ) {
+    this.section.OnUnitActiveSec = onUnitActiveSec;
+    return this;
+  }
+
+  /**
+   * Set timer OnUnitInactiveSec
+   * @see {@link TimerSection.OnUnitInactiveSec}
+   */
+  public setOnUnitInactiveSec(
+    onUnitInactiveSec: TimerSection["OnUnitInactiveSec"]
+  ) {
+    this.section.OnUnitInactiveSec = onUnitInactiveSec;
+    return this;
+  }
+
+  /**
+   * Set timer OnCalendar
+   * @see {@link TimerSection.OnCalendar}
+   */
+  public setOnCalendar(
+    onCalendar: TimerSection["OnCalendar"]
+  ) {
+    this.section.OnCalendar = onCalendar;
+    return this;
+  }
+
+  /**
+   * Set timer AccuracySec
+   * @see {@link TimerSection.AccuracySec}
+   */
+  public setAccuracySec(
+    accuracySec: TimerSection["AccuracySec"]
+  ) {
+    this.section.AccuracySec = accuracySec;
+    return this;
+  }
+
+  /**
+   * Set timer RandomizedDelaySec
+   * @see {@link TimerSection.RandomizedDelaySec}
+   */
+  public setRandomizedDelaySec(
+    randomizedDelaySec: TimerSection["RandomizedDelaySec"]
+  ) {
+    this.section.RandomizedDelaySec = randomizedDelaySec;
+    return this;
+  }
+
+  /**
+   * Set timer FixedRandomDelay
+   * @see {@link TimerSection.FixedRandomDelay}
+   */
+  public setFixedRandomDelay(
+    fixedRandomDelay: TimerSection["FixedRandomDelay"]
+  ) {
+    this.section.FixedRandomDelay = fixedRandomDelay;
+    return this;
+  }
+
+  /**
+   * Set timer OnClockChange
+   * @see {@link TimerSection.OnClockChange}
+   */
+  public setOnClockChange(
+    onClockChange: TimerSection["OnClockChange"]
+  ) {
+    this.section.OnClockChange = onClockChange;
+    return this;
+  }
+
+  /**
+   * Set timer Unit
+   * @see {@link TimerSection.Unit}
+   */
+  public setUnit(
+    unit: TimerSection["Unit"]
+  ) {
+    this.section.Unit = unit;
+    return this;
+  }
+
+  /**
+   * Set timer Persistent
+   * @see {@link TimerSection.Persistent}
+   */
+  public setPersistent(
+    persistent: TimerSection["Persistent"]
+  ) {
+    this.section.Persistent = persistent;
+    return this;
+  }
+
+  /**
+   * Set timer WakeSystem
+   * @see {@link TimerSection.WakeSystem}
+   */
+  public setWakeSystem(
+    wakeSystem: TimerSection["WakeSystem"]
+  ) {
+    this.section.WakeSystem = wakeSystem;
+    return this;
+  }
+
+  /**
+   * Set timer RemainAfterElapse
+   * @see {@link TimerSection.RemainAfterElapse}
+   */
+  public setRemainAfterElapse(
+    remainAfterElapse: TimerSection["RemainAfterElapse"]
+  ) {
+    this.section.RemainAfterElapse = remainAfterElapse;
+    return this;
+  }
 }
 
 /* eslint-disable-next-line @typescript-eslint/no-empty-interface */
@@ -324,11 +512,11 @@ export class Timer {
   private readonly timerSection: TimerSectionBuilder;
   private readonly installSection: InstallSectionBuilder;
 
-  public constructor(service: TimerUnit = {
+  public constructor(timer: TimerUnit | unknown = {
     Unit: {},
     Timer: {},
   }) {
-    const {Unit, Install, Timer: TimerObj} = TimerUnitSchema.parse(service); 
+    const {Unit, Install, Timer: TimerObj} = TimerUnitSchema.parse(timer); 
     this.timerSection = new TimerSectionBuilder(TimerObj);
     this.unitSection = new UnitSectionBuilder(Unit);
     this.installSection = new InstallSectionBuilder(Install); 
