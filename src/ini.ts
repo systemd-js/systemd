@@ -50,18 +50,16 @@ export class INI {
    */
   public static fromObject(data: unknown) {
     if (typeof data !== "object" || data === null || Array.isArray(data)) {
-      throw new Error("Invalid data", { cause: "Data is not object" });
+      throw new Error("", { cause: "Data is not object" });
     }
     const record = data as Record<string, unknown>;
 
     for (const section in record) {
       const sectionData = record[section];
-      if (
-        typeof sectionData !== "object" || sectionData === null ||
-        Array.isArray(sectionData)
-      ) {
-        throw new Error("Invalid data", {
-          cause: "Section data is not object",
+
+      if (typeof sectionData !== "object" || sectionData === null || Array.isArray(sectionData)) {
+        throw new Error("Invalid section data", {
+          cause: `Section ${section} is not object`,
         });
       }
       for (const key in sectionData) {
@@ -75,15 +73,11 @@ export class INI {
         if (typeof sectionValue === "boolean") {
           continue;
         }
-        if (Array.isArray(sectionValue)) {
-          for (const value of sectionValue) {
-            if (typeof value === "string") {
-              continue;
-            }
-          }
+        if (Array.isArray(sectionValue) && sectionValue.every((value) => typeof value === "string")) {
+          continue;
         }
-        throw new Error("Invalid data", {
-          cause: "Section value is not string, boolean or string[]",
+        throw new Error(`Invalid data for key: ${key}, value: ${sectionValue}`, {
+          cause: "Section value is not string, number, boolean or string[]",
         });
       }
     }
@@ -112,7 +106,7 @@ export class INI {
       
 
     let currentSection: string | null = null;
-    console.log(lines);
+
     for (const line of lines) {
       if (line.startsWith("[") && line.endsWith("]")) {
         currentSection = line.slice(1, -1);
@@ -123,7 +117,6 @@ export class INI {
         if (equalIndex === -1) {
           throw new Error(`Invalid line: ${line}`);
         }
-
         const key = line.slice(0, equalIndex).trim();
         const value = line.slice(equalIndex + 1).trim();
 

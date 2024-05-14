@@ -1,6 +1,12 @@
 # Systemd
 
-Fluent builders for systemd unit configs
+## Installation
+
+```sh
+yarn add @chyzwar/systemd
+```
+
+## Examples
 
 ```ts
 import {Service} from "@chywar/systemd";
@@ -9,7 +15,7 @@ const service = new Service();
 
 service
   .getUnitSection()
-  .setDescription("This is a test unit")
+  .setDescription("This is a example unit")
 
 service
   .getInstallSection()

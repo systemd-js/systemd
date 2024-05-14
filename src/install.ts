@@ -1,5 +1,5 @@
-import type { ZodType} from "zod";
 import { z } from "zod";
+import { implement } from "./utils.js";
 
 /**
  * Unit files may include an [Install] section, which carries installation information for
@@ -11,7 +11,7 @@ import { z } from "zod";
  * section.
  * @see https://manpages.ubuntu.com/manpages/noble/en/man5/systemd.unit.5.html#[install]%20section%20options
  */
-export interface InstallSection {
+export interface InstallSectionConfig {
   /**
   Alias=
     A space-separated list of additional names this unit shall be installed under. The
@@ -82,8 +82,7 @@ export interface InstallSection {
   DefaultInstance?: string;
 }
 
-
-export const InstallSectionSchema: ZodType<InstallSection> = z.object({
+export const InstallSectionSchema = implement<InstallSectionConfig>().with({
   Alias: z.union([z.string(), z.array(z.string())]).optional(),
   WantedBy: z.union([z.string(), z.array(z.string())]).optional(),
   RequiredBy: z.union([z.string(), z.array(z.string())]).optional(),
@@ -93,15 +92,14 @@ export const InstallSectionSchema: ZodType<InstallSection> = z.object({
 });
 
 export class InstallSectionBuilder {
-  public section: InstallSection = {};
+  public section: InstallSectionConfig = {};
 
-  public constructor(section: InstallSection = {}) {
+  public constructor(section: InstallSectionConfig = {}) {
     this.section = InstallSectionSchema.parse(section);
   }
 
   /**
    * Validate and return the UnitSection
-   * @returns {InstallSection}
    */
   public toObject() {
     return InstallSectionSchema.parse(this.section);
@@ -109,7 +107,7 @@ export class InstallSectionBuilder {
 
   /**
    * Set alias for the unit
-   * @see {@link InstallSection.Alias}
+   * @see {@link InstallSectionConfig.Alias}
    */
   public setAlias(alias: string[] | string): this {
     this.section.Alias = alias;
@@ -118,7 +116,7 @@ export class InstallSectionBuilder {
 
   /**
    * Set WantedBy for the unit
-   * @see {@link InstallSection.WantedBy}
+   * @see {@link InstallSectionConfig.WantedBy}
    */
   public setWantedBy(wantedBy: string[] | string): this {
     this.section.WantedBy = wantedBy;
@@ -127,7 +125,7 @@ export class InstallSectionBuilder {
 
   /**
    * Set RequiredBy for the unit
-   * @see {@link InstallSection.RequiredBy}
+   * @see {@link InstallSectionConfig.RequiredBy}
    */
   public setRequiredBy(requiredBy: string[] | string): this {
     this.section.RequiredBy = requiredBy;
@@ -136,7 +134,7 @@ export class InstallSectionBuilder {
 
   /**
    * Set UpheldBy for the unit
-   * @see {@link InstallSection.UpheldBy}
+   * @see {@link InstallSectionConfig.UpheldBy}
    */
   public setUpheldBy(upheldBy: string[] | string): this {
     this.section.UpheldBy = upheldBy;
@@ -145,7 +143,7 @@ export class InstallSectionBuilder {
 
   /**
    * Set Also for the unit
-   * @see {@link InstallSection.Also}
+   * @see {@link InstallSectionConfig.Also}
    */
   public setAlso(also: string[] | string): this {
     this.section.Also = also;
@@ -154,7 +152,7 @@ export class InstallSectionBuilder {
 
   /**
    * Set DefaultInstance for the unit
-   * @see {@link InstallSection.DefaultInstance}
+   * @see {@link InstallSectionConfig.DefaultInstance}
    */
   public setDefaultInstance(defaultInstance: string): this {
     this.section.DefaultInstance = defaultInstance;

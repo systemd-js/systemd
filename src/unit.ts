@@ -60,7 +60,10 @@ export interface UnitSection {
     simultaneously and without any delay between them if foo.service is activated.
 
     Added in version 201.
+  */
+  Wants?: string[] | string;
 
+  /**
   Requires=
     Similar to Wants=, but declares a stronger requirement dependency. Dependencies of
     this type may also be configured by adding a symlink to a .requires/ directory
@@ -86,7 +89,10 @@ export interface UnitSection {
     in active state (see below).
 
     Added in version 201.
+  */
+  Requires?: string[] | string;
 
+  /**
   Requisite=
     Similar to Requires=. However, if the units listed here are not started already, they
     will not be started and the starting of this unit will fail immediately.  Requisite=
@@ -99,7 +105,10 @@ export interface UnitSection {
     cannot be specified directly.
 
     Added in version 201.
+  */
+  Requisite?: string[] | string;
 
+  /**
   BindsTo=
     Configures requirement dependencies, very similar in style to Requires=. However, this
     dependency type is stronger: in addition to the effect of Requires= it declares that
@@ -123,7 +132,10 @@ export interface UnitSection {
     specified directly.
 
     Added in version 201.
+  */
+  BindsTo?: string[] | string;
 
+  /**
   PartOf=
     Configures dependencies similar to Requires=, but limited to stopping and restarting
     of units. When systemd stops or restarts the units listed here, the action is
@@ -135,7 +147,10 @@ export interface UnitSection {
     be specified directly.
 
     Added in version 201.
+  */
+  PartOf?: string[] | string;
 
+  /**
   Upholds=
     Configures dependencies similar to Wants=, but as long as this unit is up, all units
     listed in Upholds= are started whenever found to be inactive or failed, and no job is
@@ -149,7 +164,10 @@ export interface UnitSection {
     UpheldBy=a.service in the property listing of b.service.
 
     Added in version 249.
+  */
+  Upholds?: string[] | string;
 
+  /**
   Conflicts=
     A space-separated list of unit names. Configures negative requirement dependencies. If
     a unit has a Conflicts= setting on another unit, starting the former will stop the
@@ -170,7 +188,10 @@ export interface UnitSection {
     is conflicted is stopped.
 
     Added in version 201.
+  */
+  Conflicts?: string[] | string;
 
+  /**
   Before=, After=
     These two settings expect a space-separated list of unit names. They may be specified
     more than once, in which case dependencies for all listed names are created.
@@ -208,7 +229,11 @@ export interface UnitSection {
     systemd creates the corresponding device unit without delay.
 
     Added in version 201.
+  */
+  After?: string[] | string;
+  Before?: string[] | string;
 
+  /**  
   OnFailure=
     A space-separated list of one or more units that are activated when this unit enters
     the "failed" state.
@@ -987,6 +1012,15 @@ MAPPING OF UNIT PROPERTIES TO THEIR INVERSES
 export const UnitSectionSchema: ZodType<UnitSection> = z.object({
   Description: z.string().optional(),
   Documentation: z.union([z.string(), z.array(z.string())]).optional(),
+  Wants: z.union([z.string(), z.array(z.string())]).optional(),
+  Requires: z.union([z.string(), z.array(z.string())]).optional(),
+  Requisite: z.union([z.string(), z.array(z.string())]).optional(),
+  BindsTo: z.union([z.string(), z.array(z.string())]).optional(),
+  PartOf: z.union([z.string(), z.array(z.string())]).optional(),
+  Upholds: z.union([z.string(), z.array(z.string())]).optional(),
+  Conflicts: z.union([z.string(), z.array(z.string())]).optional(),
+  After: z.union([z.string(), z.array(z.string())]).optional(),
+  Before: z.union([z.string(), z.array(z.string())]).optional(),
 });
 
 export class UnitSectionBuilder {
@@ -1019,4 +1053,78 @@ export class UnitSectionBuilder {
     this.section.Documentation = documentation;
     return this;
   }
+
+  /**
+   * @see {@link UnitSection.Wants}
+   */
+  public setWants(wants: string | string[]) {
+    this.section.Wants = wants;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.Requires}
+   */
+  public setRequires(requires: string | string[]) {
+    this.section.Requires = requires;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.Requisite}
+   */
+  public setRequisite(requisite: string | string[]) {
+    this.section.Requisite = requisite;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.BindsTo}
+   */
+  public setBindsTo(bindsTo: string | string[]) {
+    this.section.BindsTo = bindsTo;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.PartOf}
+   */
+  public setPartOf(partOf: string | string[]) {
+    this.section.PartOf = partOf;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.Upholds}
+   */
+  public setUpholds(upholds: string | string[]) {
+    this.section.Upholds = upholds;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.Conflicts}
+   */
+  public setConflicts(conflicts: string | string[]) {
+    this.section.Conflicts = conflicts;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.After}
+   */
+  public setAfter(after: string | string[]) {
+    this.section.After = after;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.Before}
+   */
+  public setBefore(before: string | string[]) {
+    this.section.Before = before;
+    return this;
+  }
+
+  
 }

@@ -1,5 +1,5 @@
-import type { ZodType} from "zod";
 import { z } from "zod";
+import { implement } from "./utils.js";
 
 
 /**
@@ -129,7 +129,7 @@ export interface KillSectionConfig {
   WatchdogSignal?: string;
 }
 
-export const KillSectionSchema: ZodType<KillSectionConfig> = z.object({
+export const KillSectionSchema = implement<KillSectionConfig>().with({
   KillMode: z.enum(["control-group", "mixed", "process", "none"]).optional(),
   KillSignal: z.string().optional(),
   RestartKillSignal: z.string().optional(),

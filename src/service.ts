@@ -5,8 +5,8 @@ import { UnitSectionBuilder, UnitSectionSchema } from "./unit.js";
 import { INI } from "./ini.js";
 import type { ExecSectionConfig} from "./exec.js";
 import { ExecSectionBuilder, ExecSectionSchema } from "./exec.js";
-import { applyMixins } from "./utils.js";
-import type { InstallSection} from "./install.js";
+import { applyMixins, implement } from "./utils.js";
+import type { InstallSectionConfig} from "./install.js";
 import { InstallSectionBuilder, InstallSectionSchema } from "./install.js";
 import type { KillSectionConfig} from "./kill.js";
 import { KillSectionBuilder, KillSectionSchema } from "./kill.js";
@@ -976,11 +976,11 @@ export type ServiceSection = ExecSectionConfig & ServiceSectionConfig;
 
 export interface ServiceUnit {
   Unit: UnitSection
-  Install?: InstallSection;
+  Install?: InstallSectionConfig;
   Service: ExecSectionConfig & KillSectionConfig & ServiceSectionConfig;
 }
 
-export const ServiceSectionConfigSchema: ZodType<ServiceSectionConfig> = z.object({
+export const ServiceSectionConfigSchema = implement<ServiceSectionConfig>().with({
   /**
    * @see {@link ServiceSectionConfig.Type}
    */
@@ -1021,7 +1021,7 @@ export const ServiceSectionConfigSchema: ZodType<ServiceSectionConfig> = z.objec
   /**
    * @see {@link ServiceSectionConfig.ExecStart}
    */
-  ExecStart: z.union([z.string(), z.array(z.string())]),
+  ExecStart: z.union([z.string(), z.array(z.string())]).optional(),
   /**
    * @see {@link ServiceSectionConfig.ExecStartPre}
    */
@@ -1174,28 +1174,27 @@ export const ServiceSectionConfigSchema: ZodType<ServiceSectionConfig> = z.objec
  * @see {@link ExecSectionConfig}
  * @see {@link KillSectionConfig}
  */
-export const ServiceSectionSchema: ZodType<ServiceSection> = z.intersection(
-  ServiceSectionConfigSchema,
-  ExecSectionSchema,
-  KillSectionSchema
-);
+export const ServiceSectionSchema: ZodType<ServiceSection> = ServiceSectionConfigSchema
+  .merge(ExecSectionSchema)
+  .merge(KillSectionSchema)
+  .strict();
 
 /**
  * Systemd Service schema in Zod
  */
-export const ServiceUnitSchema: ZodType<ServiceUnit> = z.object({
+export const ServiceUnitSchema = implement<ServiceUnit>().with({
   /**
    * @see {@link UnitSection}
    */
   Unit: UnitSectionSchema,
   /**
-   * @see {@link InstallSection}
+   * @see {@link InstallSectionConfig}
    */
-  Install: InstallSectionSchema,
+  Install: InstallSectionSchema.optional(),
   /**
    * @see {@link ServiceSectionConfig}
    * @see {@link ExecSectionConfig}
-   *  * @see {@link KillSectionConfig}
+   * @see {@link KillSectionConfig}
    */
   Service: ServiceSectionSchema,
 });
@@ -1567,7 +1566,7 @@ export class Service {
   private readonly serviceSection: ServiceSectionBuilder;
   private readonly installSection: InstallSectionBuilder;
 
-  public constructor(service: ServiceUnit = {
+  public constructor(service: ServiceUnit | unknown = {
     Unit: {},
     Service: {},
   }) {

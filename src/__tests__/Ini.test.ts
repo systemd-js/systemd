@@ -21,17 +21,17 @@ describe("INI - fromObject and toObject", () => {
 
 const dataUnit = `
 [Unit]
-Description=deployer
+Description=example
 After=network.target
 
 [Install]
 WantedBy=multi-user.target
 
 [Service]
-ExecPreStart=/opt/deployer/agent start-1
-ExecPreStart=/opt/deployer/agent start-2
-ExecStart=/opt/deployer/agent start
-EnvironmentFile=/opt/deployer/.env
+ExecPreStart=/opt/example/agent start-1
+ExecPreStart=/opt/example/agent start-2
+ExecStart=/opt/example/agent start
+EnvironmentFile=/opt/example/.env
 Restart=always
 PrivateTmp=yes
 User=root
@@ -39,12 +39,12 @@ User=root
 
 const dataUnitWithBackslash = `
 [Unit]
-Description=deployer
+Description=example
 After=network.target
 
 [Service]
-ExecPreStart=/opt/deployer/agent start-1
-ExecPreStart=/opt/deployer/agent start-2 \
+ExecPreStart=/opt/example/agent start-1
+ExecPreStart=/opt/example/agent start-2 \
   --option1=value1 \
   --option2=value2 \
   --option3=value3
@@ -55,7 +55,7 @@ describe("INI - fromString", () => {
   test("should parse INI data", () => {
     const expected = {
       Unit: {
-        Description: "deployer",
+        Description: "example",
         After: "network.target",
       },
       Install: {
@@ -63,11 +63,11 @@ describe("INI - fromString", () => {
       },
       Service: {
         ExecPreStart: [
-          "/opt/deployer/agent start-1",
-          "/opt/deployer/agent start-2",
+          "/opt/example/agent start-1",
+          "/opt/example/agent start-2",
         ],
-        ExecStart: "/opt/deployer/agent start",
-        EnvironmentFile: "/opt/deployer/.env",
+        ExecStart: "/opt/example/agent start",
+        EnvironmentFile: "/opt/example/.env",
         Restart: "always",
         PrivateTmp: true,
         User: "root",
@@ -80,13 +80,13 @@ describe("INI - fromString", () => {
   test.only("should parse INI data with line dataUnitWithBackslash", () => {
     const expected = {
       Unit: {
-        Description: "deployer",
+        Description: "example",
         After: "network.target",
       },
       Service: {
         ExecPreStart: [
-          "/opt/deployer/agent start-1",
-          "/opt/deployer/agent start-2   --option1=value1   --option2=value2   --option3=value3",
+          "/opt/example/agent start-1",
+          "/opt/example/agent start-2   --option1=value1   --option2=value2   --option3=value3",
         ],
         User: "root",
       },

@@ -2,8 +2,8 @@ import type { ZodType} from "zod";
 import { z } from "zod";
 import type { ExecSectionConfig} from "./exec.js";
 import { ExecSectionBuilder, ExecSectionSchema } from "./exec.js";
-import { applyMixins } from "./utils.js";
-import type { InstallSection} from "./install.js";
+import { applyMixins, implement } from "./utils.js";
+import type { InstallSectionConfig} from "./install.js";
 import { InstallSectionBuilder, InstallSectionSchema } from "./install.js";
 import type { UnitSection} from "./unit.js";
 import { UnitSectionBuilder, UnitSectionSchema } from "./unit.js";
@@ -258,23 +258,23 @@ export type TimerSection = ExecSectionConfig & TimerSectionConfig;
 
 export interface TimerUnit {
   Unit: UnitSection
-  Install?: InstallSection;
+  Install?: InstallSectionConfig;
   Timer: TimerSection
 }
 
-export const TimerSectionConfigSchema: ZodType<TimerSection> = z.object({
+export const TimerSectionConfigSchema = implement<TimerSectionConfig>().with({
   OnActiveSec: z.union([z.number(), z.string()]).optional(),
   OnBootSec: z.union([z.number(), z.string()]).optional(),
   OnStartupSec: z.union([z.number(), z.string()]).optional(),
   OnUnitActiveSec: z.union([z.number(), z.string()]).optional(),
   OnUnitInactiveSec: z.union([z.number(), z.string()]).optional(),
-});
+})
 
 /**
  * @see {@link TimerSectionConfigSchema}
  * @see {@link ExecSectionConfig}
  */
-export const TimerSectionSchema: ZodType<TimerSection> = TimerSectionConfigSchema.and(ExecSectionSchema);
+export const TimerSectionSchema: ZodType<TimerSection> = TimerSectionConfigSchema.merge(ExecSectionSchema);
 
 /**
  * Systemd Service schema in Zod
@@ -285,7 +285,7 @@ export const TimerUnitSchema: ZodType<TimerUnit> = z.object({
    */
   Unit: UnitSectionSchema,
   /**
-   * @see {@link InstallSection}
+   * @see {@link InstallSectionConfig}
    */
   Install: InstallSectionSchema,
   /**
