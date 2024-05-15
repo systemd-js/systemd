@@ -1,4 +1,4 @@
-import { z, type ZodType } from "zod";
+import { z } from "zod";
 import { implement } from "./utils.js";
 
 /**
@@ -289,7 +289,7 @@ export interface ExecSectionConfig {
 
     Added in version 247.
   */
-  ProtectProc?: "noaccess" | "invisible" | "ptraceable" | "default";
+  ProtectProc?: "default" | "invisible" | "noaccess" | "ptraceable";
 
   /**
   ProcSubset=
@@ -478,7 +478,7 @@ export interface ExecSectionConfig {
    */
   ExtensionDirectories?: string;
 
- /**
+  /**
   * 
   * USER/GROUP IDENTITY
   */
@@ -734,6 +734,349 @@ export interface ExecSectionConfig {
 
 
   /**
+   * 
+   * MANDATORY ACCESS CONTROL
+   * These options are only available for system services and are not supported for services
+   * running in per-user instances of the service manager.
+   */
+
+  /**
+  SELinuxContext=
+    Set the SELinux security context of the executed process. If set, this will override
+    the automated domain transition. However, the policy still needs to authorize the
+    transition. This directive is ignored if SELinux is disabled. If prefixed by "-",
+    failing to set the SELinux security context will be ignored, but it's still possible
+    that the subsequent execve() may fail if the policy doesn't allow the transition for
+    the non-overridden context. This does not affect commands prefixed with "+". See
+    setexeccon(3) for details.
+
+    Added in version 209.
+  */
+  SELinuxContext?: string;
+
+  /**
+  AppArmorProfile=
+    Takes a profile name as argument. The process executed by the unit will switch to this
+    profile when started. Profiles must already be loaded in the kernel, or the unit will
+    fail. If prefixed by "-", all errors will be ignored. This setting has no effect if
+    AppArmor is not enabled. This setting does not affect commands prefixed with "+".
+
+    Added in version 210.
+  */
+  AppArmorProfile?: string;
+
+  /**
+  SmackProcessLabel=
+    Takes a SMACK64 security label as argument. The process executed by the unit will be
+    started under this label and SMACK will decide whether the process is allowed to run
+    or not, based on it. The process will continue to run under the label specified here
+    unless the executable has its own SMACK64EXEC label, in which case the process will
+    transition to run under that label. When not specified, the label that systemd is
+    running under is used. This directive is ignored if SMACK is disabled.
+
+    The value may be prefixed by "-", in which case all errors will be ignored. An empty
+    value may be specified to unset previous assignments. This does not affect commands
+    prefixed with "+".
+
+    Added in version 218.
+  */
+  SmackProcessLabel?: string;
+
+  /**
+   *   PROCESS PROPERTIES
+   */
+
+  /**
+  LimitCPU=, LimitFSIZE=, LimitDATA=, LimitSTACK=, LimitCORE=, LimitRSS=, LimitNOFILE=,
+  LimitAS=, LimitNPROC=, LimitMEMLOCK=, LimitLOCKS=, LimitSIGPENDING=, LimitMSGQUEUE=,
+  LimitNICE=, LimitRTPRIO=, LimitRTTIME=
+    Set soft and hard limits on various resources for executed processes. See setrlimit(2)
+    for details on the process resource limit concept. Process resource limits may be
+    specified in two formats: either as single value to set a specific soft and hard limit
+    to the same value, or as colon-separated pair soft:hard to set both limits
+    individually (e.g.  "LimitAS=4G:16G"). Use the string infinity to configure no limit
+    on a specific resource. The multiplicative suffixes K, M, G, T, P and E (to the base
+    1024) may be used for resource limits measured in bytes (e.g.  "LimitAS=16G"). For the
+    limits referring to time values, the usual time units ms, s, min, h and so on may be
+    used (see systemd.time(7) for details). Note that if no time unit is specified for
+    LimitCPU= the default unit of seconds is implied, while for LimitRTTIME= the default
+    unit of microseconds is implied. Also, note that the effective granularity of the
+    limits might influence their enforcement. For example, time limits specified for
+    LimitCPU= will be rounded up implicitly to multiples of 1s. For LimitNICE= the value
+    may be specified in two syntaxes: if prefixed with "+" or "-", the value is understood
+    as regular Linux nice value in the range -20...19. If not prefixed like this the value
+    is understood as raw resource limit parameter in the range 0...40 (with 0 being
+    equivalent to 1).
+
+    Note that most process resource limits configured with these options are per-process,
+    and processes may fork in order to acquire a new set of resources that are accounted
+    independently of the original process, and may thus escape limits set. Also note that
+    LimitRSS= is not implemented on Linux, and setting it has no effect. Often it is
+    advisable to prefer the resource controls listed in systemd.resource-control(5) over
+    these per-process limits, as they apply to services as a whole, may be altered
+    dynamically at runtime, and are generally more expressive. For example, MemoryMax= is
+    a more powerful (and working) replacement for LimitRSS=.
+
+    Note that LimitNPROC= will limit the number of processes from one (real) UID and not
+    the number of processes started (forked) by the service. Therefore the limit is
+    cumulative for all processes running under the same UID. Please also note that the
+    LimitNPROC= will not be enforced if the service is running as root (and not dropping
+    privileges). Due to these limitations, TasksMax= (see systemd.resource-control(5)) is
+    typically a better choice than LimitNPROC=.
+
+    Resource limits not configured explicitly for a unit default to the value configured
+    in the various DefaultLimitCPU=, DefaultLimitFSIZE=, ... options available in systemd-
+    system.conf(5), and – if not configured there – the kernel or per-user defaults, as
+    defined by the OS (the latter only for user services, see below).
+
+    For system units these resource limits may be chosen freely. When these settings are
+    configured in a user service (i.e. a service run by the per-user instance of the
+    service manager) they cannot be used to raise the limits above those set for the user
+    manager itself when it was first invoked, as the user's service manager generally
+    lacks the privileges to do so. In user context these configuration options are hence
+    only useful to lower the limits passed in or to raise the soft limit to the maximum of
+    the hard limit as configured for the user. To raise the user's limits further, the
+    available configuration mechanisms differ between operating systems, but typically
+    require privileges. In most cases it is possible to configure higher per-user resource
+    limits via PAM or by setting limits on the system service encapsulating the user's
+    service manager, i.e. the user's instance of user@.service. After making such changes,
+    make sure to restart the user's service manager.
+
+    Table 1. Resource limit directives, their equivalent ulimit shell commands and the
+    unit used
+    ┌─────────────────┬───────────────────┬─────────────────────┬─────────────────────┐
+    │Directive        │ ulimit equivalent │ Unit                │ Notes               │
+    ├─────────────────┼───────────────────┼─────────────────────┼─────────────────────┤
+    │LimitCPU=        │ ulimit -t         │ Seconds             │ -                   │
+    ├─────────────────┼───────────────────┼─────────────────────┼─────────────────────┤
+    │LimitFSIZE=      │ ulimit -f         │ Bytes               │ -                   │
+    ├─────────────────┼───────────────────┼─────────────────────┼─────────────────────┤
+    │LimitDATA=       │ ulimit -d         │ Bytes               │ Don't use. This     │
+    │                 │                   │                     │ limits the allowed  │
+    │                 │                   │                     │ address range, not  │
+    │                 │                   │                     │ memory use!         │
+    │                 │                   │                     │ Defaults to         │
+    │                 │                   │                     │ unlimited and       │
+    │                 │                   │                     │ should not be       │
+    │                 │                   │                     │ lowered. To limit   │
+    │                 │                   │                     │ memory use, see     │
+    │                 │                   │                     │ MemoryMax= in       │
+    │                 │                   │                     │ systemd.resource-   │
+    │                 │                   │                     │ control(5).         │
+    ├─────────────────┼───────────────────┼─────────────────────┼─────────────────────┤
+    │LimitSTACK=      │ ulimit -s         │ Bytes               │ -                   │
+    ├─────────────────┼───────────────────┼─────────────────────┼─────────────────────┤
+    │LimitCORE=       │ ulimit -c         │ Bytes               │ -                   │
+    ├─────────────────┼───────────────────┼─────────────────────┼─────────────────────┤
+    │LimitRSS=        │ ulimit -m         │ Bytes               │ Don't use. No       │
+    │                 │                   │                     │ effect on Linux.    │
+    ├─────────────────┼───────────────────┼─────────────────────┼─────────────────────┤
+    │LimitNOFILE=     │ ulimit -n         │ Number of File      │ Don't use. Be       │
+    │                 │                   │ Descriptors         │ careful when        │
+    │                 │                   │                     │ raising the soft    │
+    │                 │                   │                     │ limit above 1024,   │
+    │                 │                   │                     │ since select(2)     │
+    │                 │                   │                     │ cannot function     │
+    │                 │                   │                     │ with file           │
+    │                 │                   │                     │ descriptors above   │
+    │                 │                   │                     │ 1023 on Linux.      │
+    │                 │                   │                     │ Nowadays, the hard  │
+    │                 │                   │                     │ limit defaults to   │
+    │                 │                   │                     │ 524288, a very high │
+    │                 │                   │                     │ value compared to   │
+    │                 │                   │                     │ historical          │
+    │                 │                   │                     │ defaults. Typically │
+    │                 │                   │                     │ applications should │
+    │                 │                   │                     │ increase their soft │
+    │                 │                   │                     │ limit to the hard   │
+    │                 │                   │                     │ limit on their own, │
+    │                 │                   │                     │ if they are OK with │
+    │                 │                   │                     │ working with file   │
+    │                 │                   │                     │ descriptors above   │
+    │                 │                   │                     │ 1023, i.e. do not   │
+    │                 │                   │                     │ use select(2). Note │
+    │                 │                   │                     │ that file           │
+    │                 │                   │                     │ descriptors are     │
+    │                 │                   │                     │ nowadays accounted  │
+    │                 │                   │                     │ like any other form │
+    │                 │                   │                     │ of memory, thus     │
+    │                 │                   │                     │ there should not be │
+    │                 │                   │                     │ any need to lower   │
+    │                 │                   │                     │ the hard limit. Use │
+    │                 │                   │                     │ MemoryMax= to       │
+    │                 │                   │                     │ control overall     │
+    │                 │                   │                     │ service memory use, │
+    │                 │                   │                     │ including file      │
+    │                 │                   │                     │ descriptor memory.  │
+    ├─────────────────┼───────────────────┼─────────────────────┼─────────────────────┤
+    │LimitAS=         │ ulimit -v         │ Bytes               │ Don't use. This     │
+    │                 │                   │                     │ limits the allowed  │
+    │                 │                   │                     │ address range, not  │
+    │                 │                   │                     │ memory use!         │
+    │                 │                   │                     │ Defaults to         │
+    │                 │                   │                     │ unlimited and       │
+    │                 │                   │                     │ should not be       │
+    │                 │                   │                     │ lowered. To limit   │
+    │                 │                   │                     │ memory use, see     │
+    │                 │                   │                     │ MemoryMax= in       │
+    │                 │                   │                     │ systemd.resource-   │
+    │                 │                   │                     │ control(5).         │
+    ├─────────────────┼───────────────────┼─────────────────────┼─────────────────────┤
+    │LimitNPROC=      │ ulimit -u         │ Number of Processes │ This limit is       │
+    │                 │                   │                     │ enforced based on   │
+    │                 │                   │                     │ the number of       │
+    │                 │                   │                     │ processes belonging │
+    │                 │                   │                     │ to the user.        │
+    │                 │                   │                     │ Typically it's      │
+    │                 │                   │                     │ better to track     │
+    │                 │                   │                     │ processes per       │
+    │                 │                   │                     │ service, i.e. use   │
+    │                 │                   │                     │ TasksMax=, see      │
+    │                 │                   │                     │ systemd.resource-   │
+    │                 │                   │                     │ control(5).         │
+    ├─────────────────┼───────────────────┼─────────────────────┼─────────────────────┤
+    │LimitMEMLOCK=    │ ulimit -l         │ Bytes               │ -                   │
+    ├─────────────────┼───────────────────┼─────────────────────┼─────────────────────┤
+    │LimitLOCKS=      │ ulimit -x         │ Number of Locks     │ -                   │
+    ├─────────────────┼───────────────────┼─────────────────────┼─────────────────────┤
+    │LimitSIGPENDING= │ ulimit -i         │ Number of Queued    │ -                   │
+    │                 │                   │ Signals             │                     │
+    ├─────────────────┼───────────────────┼─────────────────────┼─────────────────────┤
+    │LimitMSGQUEUE=   │ ulimit -q         │ Bytes               │ -                   │
+    ├─────────────────┼───────────────────┼─────────────────────┼─────────────────────┤
+    │LimitNICE=       │ ulimit -e         │ Nice Level          │ -                   │
+    ├─────────────────┼───────────────────┼─────────────────────┼─────────────────────┤
+    │LimitRTPRIO=     │ ulimit -r         │ Realtime Priority   │ -                   │
+    ├─────────────────┼───────────────────┼─────────────────────┼─────────────────────┤
+    │LimitRTTIME=     │ ulimit -R         │ Microseconds        │ -                   │
+    └─────────────────┴───────────────────┴─────────────────────┴─────────────────────┘
+  */
+  LimitCPU?: number | string;
+  LimitFSIZE?: number | string ;
+  LimitDATA?: number | string;
+  LimitSTACK?: number | string;
+  LimitCORE?: number | string;
+  LimitRSS?: number | string;
+  LimitNOFILE?: number | string;
+  LimitAS?: number | string;
+  LimitNPROC?: number | string;
+  LimitMEMLOCK?: number | string;
+  LimitLOCKS?: number | string;
+  LimitSIGPENDING?: number | string;
+  LimitMSGQUEUE?: number | string;
+  LimitNICE?: number | string;
+  LimitRTPRIO?: number | string;
+  LimitRTTIME?: number | string;
+  
+  
+  /**
+  UMask=
+    Controls the file mode creation mask. Takes an access mode in octal notation. See
+    umask(2) for details. Defaults to 0022 for system units. For user units the default
+    value is inherited from the per-user service manager (whose default is in turn
+    inherited from the system service manager, and thus typically also is 0022 — unless
+    overridden by a PAM module). In order to change the per-user mask for all user
+    services, consider setting the UMask= setting of the user's user@.service system
+    service instance. The per-user umask may also be set via the umask field of a user's
+    JSON User Record[5] (for users managed by systemd-homed.service(8) this field may be
+    controlled via homectl --umask=). It may also be set via a PAM module, such as
+    pam_umask(8).
+  */
+  UMask?: string;
+  
+  /**
+  CoredumpFilter=
+      Controls which types of memory mappings will be saved if the process dumps core (using
+      the /proc/pid/coredump_filter file). Takes a whitespace-separated combination of
+      mapping type names or numbers (with the default base 16). Mapping type names are
+      private-anonymous, shared-anonymous, private-file-backed, shared-file-backed,
+      elf-headers, private-huge, shared-huge, private-dax, shared-dax, and the special
+      values all (all types) and default (the kernel default of "private-anonymous
+      shared-anonymous elf-headers private-huge"). See core(5) for the meaning of the
+      mapping types. When specified multiple times, all specified masks are ORed. When not
+      set, or if the empty value is assigned, the inherited value is not changed.
+
+      Example 2. Add DAX pages to the dump filter
+
+          CoredumpFilter=default private-dax shared-dax
+
+      Added in version 246.
+  */
+  CoredumpFilter?: string;
+
+  /**
+  KeyringMode=
+    Controls how the kernel session keyring is set up for the service (see session-
+    keyring(7) for details on the session keyring). Takes one of inherit, private, shared.
+    If set to inherit no special keyring setup is done, and the kernel's default behaviour
+    is applied. If private is used a new session keyring is allocated when a service
+    process is invoked, and it is not linked up with any user keyring. This is the
+    recommended setting for system services, as this ensures that multiple services
+    running under the same system user ID (in particular the root user) do not share their
+    key material among each other. If shared is used a new session keyring is allocated as
+    for private, but the user keyring of the user configured with User= is linked into it,
+    so that keys assigned to the user may be requested by the unit's processes. In this
+    mode multiple units running processes under the same user ID may share key material.
+    Unless inherit is selected the unique invocation ID for the unit (see below) is added
+    as a protected key by the name "invocation_id" to the newly created session keyring.
+    Defaults to private for services of the system service manager and to inherit for
+    non-service units and for services of the user service manager.
+
+    Added in version 235.
+  */
+  KeyringMode?: string;
+
+  /**
+  OOMScoreAdjust=
+    Sets the adjustment value for the Linux kernel's Out-Of-Memory (OOM) killer score for
+    executed processes. Takes an integer between -1000 (to disable OOM killing of
+    processes of this unit) and 1000 (to make killing of processes of this unit under
+    memory pressure very likely). See The /proc Filesystem[6] for details. If not
+    specified defaults to the OOM score adjustment level of the service manager itself,
+    which is normally at 0.
+
+    Use the OOMPolicy= setting of service units to configure how the service manager shall
+    react to the kernel OOM killer or systemd-oomd terminating a process of the service.
+    See systemd.service(5) for details.
+  */
+  OOMScoreAdjust?: number;
+
+  /**
+  TimerSlackNSec=
+    Sets the timer slack in nanoseconds for the executed processes. The timer slack
+    controls the accuracy of wake-ups triggered by timers. See prctl(2) for more
+    information. Note that in contrast to most other time span definitions this parameter
+    takes an integer value in nano-seconds if no unit is specified. The usual time units
+    are understood too.
+  */
+  TimerSlackNSec?: number;
+
+  /**
+  Personality=
+    Controls which kernel architecture uname(2) shall report, when invoked by unit
+    processes. Takes one of the architecture identifiers arm64, arm64-be, arm, arm-be,
+    x86, x86-64, ppc, ppc-le, ppc64, ppc64-le, s390 or s390x. Which personality
+    architectures are supported depends on the kernel's native architecture. Usually the
+    64-bit versions of the various system architectures support their immediate 32-bit
+    personality architecture counterpart, but no others. For example, x86-64 systems
+    support the x86-64 and x86 personalities but no others. The personality feature is
+    useful when running 32-bit services on a 64-bit host system. If not specified, the
+    personality is left unmodified and thus reflects the personality of the host system's
+    kernel. This option is not useful on architectures for which only one native word
+    width was ever available, such as m68k (32-bit only) or alpha (64-bit only).
+
+    Added in version 209.
+  */
+  Personality?: string;
+
+  /**
+  IgnoreSIGPIPE=
+      Takes a boolean argument. If true, SIGPIPE is ignored in the executed process.
+      Defaults to true since SIGPIPE is generally only useful in shell pipelines.
+  */
+  IgnoreSIGPIPE?: boolean;
+
+  /**
    * ENVIRONMENT
    */
 
@@ -773,7 +1116,7 @@ export interface ExecSectionConfig {
     secret data. Use LoadCredential=, LoadCredentialEncrypted= or SetCredentialEncrypted=
     (see below) to pass data to unit processes securely.
   */
-  Environment?: string | string[];
+  Environment?: string[] | string;
 
   /**
   EnvironmentFile=
@@ -822,7 +1165,7 @@ export interface ExecSectionConfig {
     variable is set twice from these files, the files will be read in the order they are
     specified and the later setting will override the earlier setting.
   */
-  EnvironmentFile?: string | string[];
+  EnvironmentFile?: string[] | string;
 
   /**
   PassEnvironment=
@@ -852,7 +1195,7 @@ export interface ExecSectionConfig {
 
     Added in version 228.
   */
-  PassEnvironment?: string | string[];
+  PassEnvironment?: string[] | string;
 
   /**
   UnsetEnvironment=
@@ -879,7 +1222,7 @@ export interface ExecSectionConfig {
 
     Added in version 235.
   */
-  UnsetEnvironment?: string | string[];
+  UnsetEnvironment?: string[] | string;
 }
 
 
@@ -901,11 +1244,11 @@ export const ExecSectionSchema = implement<ExecSectionConfig>().with({
     "noaccess", 
     "invisible", 
     "ptraceable", 
-    "default"
+    "default",
   ]).optional(),
   ProcSubset: z.enum([
     "all", 
-    "pid"
+    "pid",
   ]).optional(),
   BindPaths: z.string().optional(),
   BindReadOnlyPaths: z.string().optional(),
@@ -922,7 +1265,36 @@ export const ExecSectionSchema = implement<ExecSectionConfig>().with({
   AmbientCapabilities: z.string().optional(),
   NoNewPrivileges: z.boolean().optional(),
   SecureBits: z.string().optional(),
+  SELinuxContext: z.string().optional(),
+  AppArmorProfile: z.string().optional(),
+  SmackProcessLabel: z.string().optional(),
 
+  // PROCESS PROPERTIES
+  LimitCPU: z.union([z.string(), z.number()]).optional(),
+  LimitFSIZE: z.union([z.string(), z.number()]).optional(),
+  LimitDATA: z.union([z.string(), z.number()]).optional(),
+  LimitSTACK: z.union([z.string(), z.number()]).optional(),
+  LimitCORE: z.union([z.string(), z.number()]).optional(),
+  LimitRSS: z.union([z.string(), z.number()]).optional(),
+  LimitNOFILE: z.union([z.string(), z.number()]).optional(),
+  LimitAS: z.union([z.string(), z.number()]).optional(),
+  LimitNPROC: z.union([z.string(), z.number()]).optional(),
+  LimitMEMLOCK: z.union([z.string(), z.number()]).optional(),
+  LimitLOCKS: z.union([z.string(), z.number()]).optional(),
+  LimitSIGPENDING: z.union([z.string(), z.number()]).optional(),
+  LimitMSGQUEUE: z.union([z.string(), z.number()]).optional(),
+  LimitNICE: z.union([z.string(), z.number()]).optional(),
+  LimitRTPRIO: z.union([z.string(), z.number()]).optional(),
+  LimitRTTIME: z.union([z.string(), z.number()]).optional(),
+  UMask: z.string().optional(),
+  CoredumpFilter: z.string().optional(),
+  KeyringMode: z.string().optional(),
+  OOMScoreAdjust: z.number().optional(),
+  TimerSlackNSec: z.number().optional(),
+  Personality: z.string().optional(),
+  IgnoreSIGPIPE: z.boolean().optional(),
+
+  // ENVIRONMENT
   Environment: z.union([z.string(), z.array(z.string())]).optional(),
   EnvironmentFile: z.union([z.string(), z.array(z.string())]).optional(),
   PassEnvironment: z.union([z.string(), z.array(z.string())]).optional(),
@@ -1054,7 +1426,7 @@ export class ExecSectionBuilder {
    * @see {@link ExecSectionConfig.ProtectProc}
    */
 
-  public setProtectProc(value: "noaccess" | "invisible" | "ptraceable" | "default"): this {
+  public setProtectProc(value: "default" | "invisible" | "noaccess" | "ptraceable"): this {
     this.section.ProtectProc = value;
     return this;
   }
@@ -1207,7 +1579,7 @@ export class ExecSectionBuilder {
    * Set Environment
    * @see {@link ExecSectionConfig.Environment}
    */
-  public setEnvironment(value: string | string[]): this {
+  public setEnvironment(value: string[] | string): this {
     this.section.Environment = value;
     return this;
   }
@@ -1216,7 +1588,7 @@ export class ExecSectionBuilder {
    * Set EnvironmentFile
    * @see {@link ExecSectionConfig.EnvironmentFile}
    */
-  public setEnvironmentFile(value: string | string[]): this {
+  public setEnvironmentFile(value: string[] | string): this {
     this.section.EnvironmentFile = value;
     return this;
   }
@@ -1225,7 +1597,7 @@ export class ExecSectionBuilder {
    * Set PassEnvironment
    * @see {@link ExecSectionConfig.PassEnvironment}
    */
-  public setPassEnvironment(value: string | string[]): this {
+  public setPassEnvironment(value: string[] | string): this {
     this.section.PassEnvironment = value;
     return this;
   }
@@ -1234,8 +1606,35 @@ export class ExecSectionBuilder {
    * Set UnsetEnvironment
    * @see {@link ExecSectionConfig.UnsetEnvironment}
    */
-  public setUnsetEnvironment(value: string | string[]): this {
+  public setUnsetEnvironment(value: string[] | string): this {
     this.section.UnsetEnvironment = value;
+    return this;
+  }
+
+  /**
+   * Set SELinuxContext
+   * @see {@link ExecSectionConfig.SELinuxContext}
+   */
+  public setSELinuxContext(value: string): this {
+    this.section.SELinuxContext = value;
+    return this;
+  }
+
+  /**
+   * Set AppArmorProfile
+   * @see {@link ExecSectionConfig.AppArmorProfile}
+   */
+  public setAppArmorProfile(value: string): this {
+    this.section.AppArmorProfile = value;
+    return this;
+  }
+
+  /**
+   * Set SmackProcessLabel
+   * @see {@link ExecSectionConfig.SmackProcessLabel}
+   */
+  public setSmackProcessLabel(value: string): this {
+    this.section.SmackProcessLabel = value;
     return this;
   }
 }

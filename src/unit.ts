@@ -1,5 +1,5 @@
-import type { ZodType } from "zod";
 import { z } from "zod";
+import { implement } from "./utils.js";
 
 /**
  * UnitSection
@@ -1009,7 +1009,7 @@ MAPPING OF UNIT PROPERTIES TO THEIR INVERSES
   */
 }
 
-export const UnitSectionSchema: ZodType<UnitSection> = z.object({
+export const UnitSectionSchema = implement<UnitSection>().with({
   Description: z.string().optional(),
   Documentation: z.union([z.string(), z.array(z.string())]).optional(),
   Wants: z.union([z.string(), z.array(z.string())]).optional(),
@@ -1057,7 +1057,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.Wants}
    */
-  public setWants(wants: string | string[]) {
+  public setWants(wants: string[] | string) {
     this.section.Wants = wants;
     return this;
   }
@@ -1065,7 +1065,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.Requires}
    */
-  public setRequires(requires: string | string[]) {
+  public setRequires(requires: string[] | string) {
     this.section.Requires = requires;
     return this;
   }
@@ -1073,7 +1073,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.Requisite}
    */
-  public setRequisite(requisite: string | string[]) {
+  public setRequisite(requisite: string[] | string) {
     this.section.Requisite = requisite;
     return this;
   }
@@ -1081,7 +1081,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.BindsTo}
    */
-  public setBindsTo(bindsTo: string | string[]) {
+  public setBindsTo(bindsTo: string[] | string) {
     this.section.BindsTo = bindsTo;
     return this;
   }
@@ -1089,7 +1089,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.PartOf}
    */
-  public setPartOf(partOf: string | string[]) {
+  public setPartOf(partOf: string[] | string) {
     this.section.PartOf = partOf;
     return this;
   }
@@ -1097,7 +1097,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.Upholds}
    */
-  public setUpholds(upholds: string | string[]) {
+  public setUpholds(upholds: string[] | string) {
     this.section.Upholds = upholds;
     return this;
   }
@@ -1105,7 +1105,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.Conflicts}
    */
-  public setConflicts(conflicts: string | string[]) {
+  public setConflicts(conflicts: string[] | string) {
     this.section.Conflicts = conflicts;
     return this;
   }
@@ -1113,7 +1113,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.After}
    */
-  public setAfter(after: string | string[]) {
+  public setAfter(after: string[] | string) {
     this.section.After = after;
     return this;
   }
@@ -1121,7 +1121,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.Before}
    */
-  public setBefore(before: string | string[]) {
+  public setBefore(before: string[] | string) {
     this.section.Before = before;
     return this;
   }

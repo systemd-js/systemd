@@ -25,56 +25,85 @@ const serviceObj = {
   },
 };
 describe("Service", () => {
-  describe('constructor', () => {
-    it('should create a new service', () => {
+  describe("constructor", () => {
+    it("should create a new service", () => {
       const service = new Service(serviceObj);
       expect(service.toObject()).toMatchObject(serviceObj);
     });
 
-    it('should throw if service is not valid', () => {
+    it("should throw if service is not valid", () => {
       const invalidServiceObj = {
         ...serviceObj,
         Service: {
           ...serviceObj.Service,
-          PrivateInvalid: "yes"
-        }
-      }
+          PrivateInvalid: "yes",
+        },
+      };
       expect(() => new Service(invalidServiceObj)).toThrow();
-    })
+    });
   });
 
-  describe('fromObject', () => {
-    it('should create a new service from object', () => {
+  describe("fromObject", () => {
+    it("should create a new service from object", () => {
       const service = Service.fromObject(serviceObj);
       expect(service.toObject()).toMatchObject(serviceObj);
     });
 
-    it('should throw if service is not valid', () => {
+    it("should throw if service is not valid", () => {
       const invalidServiceObj = {
         ...serviceObj,
         Service: {
           ...serviceObj.Service,
-          PrivateInvalid: "yes"
-        }
-      }
+          PrivateInvalid: "yes",
+        },
+      };
       expect(() => Service.fromObject(invalidServiceObj)).toThrow();
-    })
+    });
   });
 
-  describe('fromString', () => {
-    it('should create a new service from string', () => {
+  describe("fromString", () => {
+    it("should create a new service from string", () => {
       const service = Service.fromINI(INI.fromObject(serviceObj));
       expect(service.toObject()).toMatchObject(serviceObj);
-    })
-    it('should throw if service is not valid', () => {
+    });
+    it("should throw if service is not valid", () => {
       const invalidServiceObj = {
         ...serviceObj,
         Service: {
           ...serviceObj.Service,
-          PrivateInvalid: "yes"
-        }
-      }
+          PrivateInvalid: "yes",
+        },
+      };
       expect(() => Service.fromINI(INI.fromObject(invalidServiceObj))).toThrow();
-    })
+    });
+  });
+
+  describe("builder", () => {
+    it("should create a new service", () => {
+      const service = new Service();
+      service
+        .getServiceSection()
+        .setExecStartPre([
+          "/opt/example/agent start-1", 
+          "/opt/example/agent start-2",
+        ])
+        .setExecStart("/opt/example/agent start")
+        .setEnvironmentFile("/opt/example/.env")
+        .setRestart("always")
+        .setWorkingDirectory("/opt/example")
+        .setKillMode("mixed")
+        .setUser("root");
+
+      service
+        .getUnitSection()
+        .setDescription("example")
+        .setAfter("network.target");
+
+      service
+        .getInstallSection()
+        .setWantedBy("multi-user.target");
+
+      expect(service.toObject()).toMatchObject(serviceObj);
+    });
   });
 });

@@ -77,7 +77,7 @@ describe("INI - fromString", () => {
     expect(object).toEqual(expected);
   });
 
-  test.only("should parse INI data with line dataUnitWithBackslash", () => {
+  test("should parse INI data with line dataUnitWithBackslash", () => {
     const expected = {
       Unit: {
         Description: "example",
@@ -93,7 +93,7 @@ describe("INI - fromString", () => {
     };
     const object = INI.fromString(dataUnitWithBackslash).toObject();
     expect(object).toEqual(expected);
-  })
+  });
 });
 
 

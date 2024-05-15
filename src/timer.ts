@@ -300,7 +300,7 @@ export const TimerSectionConfigSchema = implement<TimerSectionConfig>().with({
   Persistent: z.boolean().optional(),
   WakeSystem: z.boolean().optional(),
   RemainAfterElapse: z.boolean().optional(),
-})
+});
 
 /**
  * @see {@link TimerSectionConfigSchema}
@@ -402,10 +402,10 @@ export class TimerSectionBuilder {
 
   /**
    * Set timer OnCalendar
-   * @see {@link TimerSection.OnCalendar}
+   * @see {@link TimerSectionConfig.OnCalendar}
    */
   public setOnCalendar(
-    onCalendar: TimerSection["OnCalendar"]
+    onCalendar: TimerSectionConfig["OnCalendar"]
   ) {
     this.section.OnCalendar = onCalendar;
     return this;
@@ -413,10 +413,10 @@ export class TimerSectionBuilder {
 
   /**
    * Set timer AccuracySec
-   * @see {@link TimerSection.AccuracySec}
+   * @see {@link TimerSectionConfig.AccuracySec}
    */
   public setAccuracySec(
-    accuracySec: TimerSection["AccuracySec"]
+    accuracySec: TimerSectionConfig["AccuracySec"]
   ) {
     this.section.AccuracySec = accuracySec;
     return this;
@@ -424,10 +424,10 @@ export class TimerSectionBuilder {
 
   /**
    * Set timer RandomizedDelaySec
-   * @see {@link TimerSection.RandomizedDelaySec}
+   * @see {@link TimerSectionConfig.RandomizedDelaySec}
    */
   public setRandomizedDelaySec(
-    randomizedDelaySec: TimerSection["RandomizedDelaySec"]
+    randomizedDelaySec: TimerSectionConfig["RandomizedDelaySec"]
   ) {
     this.section.RandomizedDelaySec = randomizedDelaySec;
     return this;
@@ -435,10 +435,10 @@ export class TimerSectionBuilder {
 
   /**
    * Set timer FixedRandomDelay
-   * @see {@link TimerSection.FixedRandomDelay}
+   * @see {@link TimerSectionConfig.FixedRandomDelay}
    */
   public setFixedRandomDelay(
-    fixedRandomDelay: TimerSection["FixedRandomDelay"]
+    fixedRandomDelay: TimerSectionConfig["FixedRandomDelay"]
   ) {
     this.section.FixedRandomDelay = fixedRandomDelay;
     return this;
@@ -446,10 +446,10 @@ export class TimerSectionBuilder {
 
   /**
    * Set timer OnClockChange
-   * @see {@link TimerSection.OnClockChange}
+   * @see {@link TimerSectionConfig.OnClockChange}
    */
   public setOnClockChange(
-    onClockChange: TimerSection["OnClockChange"]
+    onClockChange: TimerSectionConfig["OnClockChange"]
   ) {
     this.section.OnClockChange = onClockChange;
     return this;
@@ -457,10 +457,10 @@ export class TimerSectionBuilder {
 
   /**
    * Set timer Unit
-   * @see {@link TimerSection.Unit}
+   * @see {@link TimerSectionConfig.Unit}
    */
   public setUnit(
-    unit: TimerSection["Unit"]
+    unit: TimerSectionConfig["Unit"]
   ) {
     this.section.Unit = unit;
     return this;
@@ -468,10 +468,10 @@ export class TimerSectionBuilder {
 
   /**
    * Set timer Persistent
-   * @see {@link TimerSection.Persistent}
+   * @see {@link TimerSectionConfig.Persistent}
    */
   public setPersistent(
-    persistent: TimerSection["Persistent"]
+    persistent: TimerSectionConfig["Persistent"]
   ) {
     this.section.Persistent = persistent;
     return this;
@@ -479,10 +479,10 @@ export class TimerSectionBuilder {
 
   /**
    * Set timer WakeSystem
-   * @see {@link TimerSection.WakeSystem}
+   * @see {@link TimerSectionConfig.WakeSystem}
    */
   public setWakeSystem(
-    wakeSystem: TimerSection["WakeSystem"]
+    wakeSystem: TimerSectionConfig["WakeSystem"]
   ) {
     this.section.WakeSystem = wakeSystem;
     return this;
@@ -490,10 +490,10 @@ export class TimerSectionBuilder {
 
   /**
    * Set timer RemainAfterElapse
-   * @see {@link TimerSection.RemainAfterElapse}
+   * @see {@link TimerSectionConfig.RemainAfterElapse}
    */
   public setRemainAfterElapse(
-    remainAfterElapse: TimerSection["RemainAfterElapse"]
+    remainAfterElapse: TimerSectionConfig["RemainAfterElapse"]
   ) {
     this.section.RemainAfterElapse = remainAfterElapse;
     return this;
@@ -512,7 +512,7 @@ export class Timer {
   private readonly timerSection: TimerSectionBuilder;
   private readonly installSection: InstallSectionBuilder;
 
-  public constructor(timer: TimerUnit | unknown = {
+  public constructor(timer: object = {
     Unit: {},
     Timer: {},
   }) {

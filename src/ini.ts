@@ -76,7 +76,7 @@ export class INI {
         if (Array.isArray(sectionValue) && sectionValue.every((value) => typeof value === "string")) {
           continue;
         }
-        throw new Error(`Invalid data for key: ${key}, value: ${sectionValue}`, {
+        throw new Error(`Invalid data for key: ${key}, value: ${sectionValue as string}`, {
           cause: "Section value is not string, number, boolean or string[]",
         });
       }

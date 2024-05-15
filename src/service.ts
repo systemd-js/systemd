@@ -10,6 +10,8 @@ import type { InstallSectionConfig} from "./install.js";
 import { InstallSectionBuilder, InstallSectionSchema } from "./install.js";
 import type { KillSectionConfig} from "./kill.js";
 import { KillSectionBuilder, KillSectionSchema } from "./kill.js";
+import type { ResourceSectionConfig} from "./resource.js";
+import { ResourceSectionBuilder, ResourceSectionConfigSchema } from "./resource.js";
 
 /**
  * @see https://manpages.ubuntu.com/manpages/noble/en/man5/systemd.service.5.html
@@ -977,7 +979,7 @@ export type ServiceSection = ExecSectionConfig & ServiceSectionConfig;
 export interface ServiceUnit {
   Unit: UnitSection
   Install?: InstallSectionConfig;
-  Service: ExecSectionConfig & KillSectionConfig & ServiceSectionConfig;
+  Service: ExecSectionConfig & KillSectionConfig & ResourceSectionConfig & ServiceSectionConfig;
 }
 
 export const ServiceSectionConfigSchema = implement<ServiceSectionConfig>().with({
@@ -1177,6 +1179,7 @@ export const ServiceSectionConfigSchema = implement<ServiceSectionConfig>().with
 export const ServiceSectionSchema: ZodType<ServiceSection> = ServiceSectionConfigSchema
   .merge(ExecSectionSchema)
   .merge(KillSectionSchema)
+  .merge(ResourceSectionConfigSchema)
   .strict();
 
 /**
@@ -1202,7 +1205,7 @@ export const ServiceUnitSchema = implement<ServiceUnit>().with({
 
 
 export class ServiceSectionBuilder {
-  public section: ExecSectionConfig & KillSectionConfig & ServiceSectionConfig;
+  public section: ExecSectionConfig & KillSectionConfig & ResourceSectionConfig & ServiceSectionConfig;
   
   public constructor(section: ServiceSectionConfig = {}) {
     this.section = ServiceSectionSchema.parse(section);
@@ -1511,6 +1514,7 @@ export class ServiceSectionBuilder {
     this.section.FileDescriptorStorePreserve = fileDescriptorStorePreserve;
     return this;
   }
+
   /**
    * Set service USBFunctionDescriptors
    * @see {@link ServiceSectionConfig.USBFunctionDescriptors}
@@ -1519,6 +1523,7 @@ export class ServiceSectionBuilder {
     this.section.USBFunctionDescriptors = usbFunctionDescriptors;
     return this;
   }
+  
   /**
    * Set service USBFunctionStrings
    * @see {@link ServiceSectionConfig.USBFunctionStrings}
@@ -1527,6 +1532,7 @@ export class ServiceSectionBuilder {
     this.section.USBFunctionStrings = usbFunctionStrings;
     return this;
   }
+
   /**
    * Set service OOMPolicy
    * @see {@link ServiceSectionConfig.OOMPolicy}
@@ -1552,12 +1558,13 @@ export class ServiceSectionBuilder {
     return this;
   }
 }
-/* eslint-disable-next-line @typescript-eslint/no-empty-interface */
-export interface ServiceSectionBuilder extends ExecSectionBuilder {}
+ 
+export interface ServiceSectionBuilder extends ExecSectionBuilder, KillSectionBuilder, ResourceSectionBuilder  {}
 
 applyMixins(ServiceSectionBuilder, [
   ExecSectionBuilder,
   KillSectionBuilder,
+  ResourceSectionBuilder,
 ]);
 
 
@@ -1566,7 +1573,7 @@ export class Service {
   private readonly serviceSection: ServiceSectionBuilder;
   private readonly installSection: InstallSectionBuilder;
 
-  public constructor(service: ServiceUnit | unknown = {
+  public constructor(service: object = {
     Unit: {},
     Service: {},
   }) {

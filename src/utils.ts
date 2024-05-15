@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-type-alias */
 /* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 
 import { z } from "zod";
 
@@ -33,8 +34,8 @@ export type Implements<Model> = {
       ? z.ZodNullableType<z.ZodOptionalType<z.ZodType<Model[key]>>>
       : z.ZodOptionalType<z.ZodType<Model[key]>>
     : null extends Model[key]
-    ? z.ZodNullableType<z.ZodType<Model[key]>>
-    : z.ZodType<Model[key]>;
+      ? z.ZodNullableType<z.ZodType<Model[key]>>
+      : z.ZodType<Model[key]>;
 };
 
 /**
@@ -46,7 +47,7 @@ export function implement<Model = never>() {
     with: <
       Schema extends Implements<Model> & {
         [unknownKey in Exclude<keyof Schema, keyof Model>]: never;
-      }
+      },
     >(
       schema: Schema
     ) => z.object(schema),
