@@ -7,7 +7,7 @@
   },
   "main": "lib/index.js",
   "type": "module",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "description": "Reading and creating systemd configs",
   "keywords": [
     "systemd",
