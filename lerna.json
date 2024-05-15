@@ -5,7 +5,7 @@
     "packages/*/examples/packages/*"
   ],
   "npmClient": "yarn",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "changelogPreset": "conventional-changelog-conventionalcommits",
   "command": {
     "version": {
@@ -17,7 +17,9 @@
       "message": "chore(release): new versions",
       "changelogIncludeCommitsClientLogin": " - by @%l",
       "allowBranch": "master",
-      "ignoreChanges": ["yarn.lock"]
+      "ignoreChanges": [
+        "yarn.lock"
+      ]
     }
   },
   "$schema": "node_modules/@lerna-lite/cli/schemas/lerna-schema.json",
