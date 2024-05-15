@@ -5,7 +5,7 @@ Collection of packages useful when interfacing with systemd.
 ## @systemd-js/conf
 
 - INI parser for systemd config files.
-- Set of fluent builders to create and modify unit files.
+- Fluent builders to create and modify unit files.
 
 Based on systemd v255.4
 
