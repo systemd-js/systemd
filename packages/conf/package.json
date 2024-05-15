@@ -9,8 +9,13 @@
     "type": "git",
     "url": "https://github.com/chyzwar/systemd"
   },
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
   "main": "lib/index.js",
   "type": "module",
+  "author": "chyzwar",
   "license": "Apache-2.0",
   "description": "Reading and creating systemd configs",
   "keywords": [
