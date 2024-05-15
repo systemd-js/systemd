@@ -5,6 +5,10 @@
     "node": "20.x",
     "yarn": "4.x"
   },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chyzwar/systemd"
+  },
   "main": "lib/index.js",
   "type": "module",
   "license": "Apache-2.0",
@@ -28,9 +32,9 @@
     "zod": "^3.23.8"
   },
   "devDependencies": {
-    "@chyzwar/eslint-config": "^0.2.25",
-    "@chyzwar/tsconfig": "^0.2.25",
-    "@types/node": "^20.12.10",
+    "@chyzwar/eslint-config": "^0.2.26",
+    "@chyzwar/tsconfig": "^0.2.26",
+    "@types/node": "^20.12.12",
     "eslint": "^9.2.0",
     "typescript": "^5.4.5",
     "vitest": "^1.6.0"

@@ -34,7 +34,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chyzwar/eslint-config@npm:^0.2.25, @chyzwar/eslint-config@npm:^0.2.26":
+"@chyzwar/eslint-config@npm:^0.2.26":
   version: 0.2.26
   resolution: "@chyzwar/eslint-config@npm:0.2.26"
   dependencies:
@@ -50,7 +50,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chyzwar/tsconfig@npm:^0.2.25, @chyzwar/tsconfig@npm:^0.2.26":
+"@chyzwar/tsconfig@npm:^0.2.26":
   version: 0.2.26
   resolution: "@chyzwar/tsconfig@npm:0.2.26"
   checksum: 10c2/c68c038378ea88f1a6a9e72a8b5c11e16298b0cf799479b6e3340b72c16b7058d4b84b57c625e51f7ae8eedfe335c4a2d43ca94fcdaa6cfc9b89a25cbe13937b
@@ -554,7 +554,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lerna-lite/cli@npm:3.4.0, @lerna-lite/cli@npm:^3.3.3":
+"@lerna-lite/cli@npm:3.4.0, @lerna-lite/cli@npm:^3.4.0":
   version: 3.4.0
   resolution: "@lerna-lite/cli@npm:3.4.0"
   dependencies:
@@ -631,7 +631,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lerna-lite/publish@npm:^3.3.3":
+"@lerna-lite/publish@npm:^3.4.0":
   version: 3.4.0
   resolution: "@lerna-lite/publish@npm:3.4.0"
   dependencies:
@@ -664,7 +664,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lerna-lite/version@npm:3.4.0, @lerna-lite/version@npm:^3.3.3":
+"@lerna-lite/version@npm:3.4.0, @lerna-lite/version@npm:^3.4.0":
   version: 3.4.0
   resolution: "@lerna-lite/version@npm:3.4.0"
   dependencies:
@@ -1176,9 +1176,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@systemd-js/conf@workspace:packages/conf"
   dependencies:
-    "@chyzwar/eslint-config": "npm:^0.2.25"
-    "@chyzwar/tsconfig": "npm:^0.2.25"
-    "@types/node": "npm:^20.12.10"
+    "@chyzwar/eslint-config": "npm:^0.2.26"
+    "@chyzwar/tsconfig": "npm:^0.2.26"
+    "@types/node": "npm:^20.12.12"
     eslint: "npm:^9.2.0"
     typescript: "npm:^5.4.5"
     vitest: "npm:^1.6.0"
@@ -1193,10 +1193,10 @@ __metadata:
     "@chyzwar/eslint-config": "npm:^0.2.26"
     "@commitlint/cli": "npm:^19.3.0"
     "@commitlint/config-conventional": "npm:^19.2.2"
-    "@lerna-lite/cli": "npm:^3.3.3"
-    "@lerna-lite/publish": "npm:^3.3.3"
-    "@lerna-lite/version": "npm:^3.3.3"
-    "@types/node": "npm:^20.12.11"
+    "@lerna-lite/cli": "npm:^3.4.0"
+    "@lerna-lite/publish": "npm:^3.4.0"
+    "@lerna-lite/version": "npm:^3.4.0"
+    "@types/node": "npm:^20.12.12"
     conventional-changelog-conventionalcommits: "npm:^7.0.2"
     eslint: "npm:^9.2.0"
     husky: "npm:^9.0.11"
@@ -1275,16 +1275,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/node@npm:*, @types/node@npm:^20.12.11":
-  version: 20.12.11
-  resolution: "@types/node@npm:20.12.11"
-  dependencies:
-    undici-types: "npm:~5.26.4"
-  checksum: 10c2/2f895638ed2330e81ad74fc97adda925ca04f30a5888b7996c6fb2d5015ce4916a9ecd9d172d90cde890fee3b9566e714804d22e4f641e4debc680894a6ab961
-  languageName: node
-  linkType: hard
-
-"@types/node@npm:^20.12.10":
+"@types/node@npm:*, @types/node@npm:^20.12.12":
   version: 20.12.12
   resolution: "@types/node@npm:20.12.12"
   dependencies:
@@ -3067,22 +3058,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^10.2.2, glob@npm:^10.3.10":
-  version: 10.3.12
-  resolution: "glob@npm:10.3.12"
-  dependencies:
-    foreground-child: "npm:^3.1.0"
-    jackspeak: "npm:^2.3.6"
-    minimatch: "npm:^9.0.1"
-    minipass: "npm:^7.0.4"
-    path-scurry: "npm:^1.10.2"
-  bin:
-    glob: dist/esm/bin.mjs
-  checksum: 10c2/e9bf0082e2d933605929baa16e43553c1dd57bb07bf4faec4585e6f08fb8acd44fdcdd5f4f01d6715b11e64320077405463c3192493e5e2eaf026b75454300e6
-  languageName: node
-  linkType: hard
-
-"glob@npm:^10.3.15":
+"glob@npm:^10.2.2, glob@npm:^10.3.10, glob@npm:^10.3.15":
   version: 10.3.15
   resolution: "glob@npm:10.3.15"
   dependencies:
@@ -4047,15 +4023,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"lru-cache@npm:^6.0.0":
-  version: 6.0.0
-  resolution: "lru-cache@npm:6.0.0"
-  dependencies:
-    yallist: "npm:^4.0.0"
-  checksum: 10c2/e797490ef6346d49781cd14aee1f51760bbde1f994c5375f22dc3916f80cb79b250be435870f6f49f56c5c9b481b692fe3ae8746fdbe8feaa23697bc5b7eb1ef
-  languageName: node
-  linkType: hard
-
 "magic-string@npm:^0.30.5":
   version: 0.30.10
   resolution: "magic-string@npm:0.30.10"
@@ -4839,16 +4806,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"path-scurry@npm:^1.10.2":
-  version: 1.10.2
-  resolution: "path-scurry@npm:1.10.2"
-  dependencies:
-    lru-cache: "npm:^10.2.0"
-    minipass: "npm:^5.0.0 || ^6.0.2 || ^7.0.0"
-  checksum: 10c2/74860b3a1f4ebb22fafa643b8502b3a3a7e02279a506317e63d6e31999081012f177df42a5de871460cb09886f0f1fb53cc1a63638a33af660c4e38b76e58b07
-  languageName: node
-  linkType: hard
-
 "path-scurry@npm:^1.11.0":
   version: 1.11.1
   resolution: "path-scurry@npm:1.11.1"
@@ -5271,23 +5228,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^7.1.1, semver@npm:^7.3.7, semver@npm:^7.5.2, semver@npm:^7.5.3, semver@npm:^7.6.2":
+"semver@npm:^7.1.1, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.5.2, semver@npm:^7.5.3, semver@npm:^7.6.0, semver@npm:^7.6.2":
   version: 7.6.2
   resolution: "semver@npm:7.6.2"
   bin:
     semver: bin/semver.js
   checksum: 10c2/a7be3a144e9f98d21330f663dc9a31b78b70722d900e409e2dd7071ff8e7e0d6445377ddc4476bb1862edc5fd08f7387842259dab9743a7bf0eeb5ab5c7c9297
-  languageName: node
-  linkType: hard
-
-"semver@npm:^7.3.5, semver@npm:^7.6.0":
-  version: 7.6.0
-  resolution: "semver@npm:7.6.0"
-  dependencies:
-    lru-cache: "npm:^6.0.0"
-  bin:
-    semver: bin/semver.js
-  checksum: 10c2/f476bfc0be36b8cfa6b53ace1d10ff5fecd6880600952a9bd0314fcb6c9eea777c7ba515fd1b736ff05fc7bf1013dddb1a1ebb988d8d005e407eeeccd68caf6c
   languageName: node
   linkType: hard
 
