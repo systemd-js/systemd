@@ -5,7 +5,7 @@
     "packages/*/examples/packages/*"
   ],
   "npmClient": "yarn",
-  "version": "version",
+  "version": "fixed",
   "changelogPreset": "conventional-changelog-conventionalcommits",
   "command": {
     "version": {
