@@ -5822,11 +5822,11 @@ __metadata:
 
 "typescript@patch:typescript@npm%3A^5.4.5#optional!builtin<compat/typescript>":
   version: 5.4.5
-  resolution: "typescript@patch:typescript@npm%3A5.4.5#optional!builtin<compat/typescript>::version=5.4.5&hash=d69c25"
+  resolution: "typescript@patch:typescript@npm%3A5.4.5#optional!builtin<compat/typescript>::version=5.4.5&hash=5adc0c"
   bin:
     tsc: bin/tsc
     tsserver: bin/tsserver
-  checksum: 10c2/0724bd9fd0b0fa69b13759284cd1871b09ecbcb2af6e840d587fdd110295767ff4caa0f964d3b0a4604b64eaf25d0a9c683e293712860d70e04de5cebb7bb5b3
+  checksum: 10c2/60f5cb89f35c54035454c5b97dc9f5a65b9f5a6c9420823711935cc0539282b3ba8eafcc17605ec77882af9b862c33e93d98cba2e656129dc6b7e01bb8157d04
   languageName: node
   linkType: hard
 
