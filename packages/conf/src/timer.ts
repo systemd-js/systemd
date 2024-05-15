@@ -579,4 +579,11 @@ export class Timer {
     }
     throw new Error("Expected INI object");
   }
+
+  /**
+   * Compare current timer with another timer
+   */
+  public equals(timer: Timer) {
+    return JSON.stringify(this.toObject()) === JSON.stringify(timer.toObject());
+  }
 }

@@ -34,7 +34,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chyzwar/eslint-config@npm:^0.2.26":
+"@chyzwar/eslint-config@npm:^0.2.25, @chyzwar/eslint-config@npm:^0.2.26":
   version: 0.2.26
   resolution: "@chyzwar/eslint-config@npm:0.2.26"
   dependencies:
@@ -50,29 +50,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@chyzwar/systemd@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "@chyzwar/systemd@workspace:."
-  dependencies:
-    "@chyzwar/eslint-config": "npm:^0.2.26"
-    "@commitlint/cli": "npm:^19.3.0"
-    "@commitlint/config-conventional": "npm:^19.2.2"
-    "@lerna-lite/cli": "npm:^3.3.3"
-    "@lerna-lite/publish": "npm:^3.3.3"
-    "@lerna-lite/version": "npm:^3.3.3"
-    "@types/node": "npm:^20.12.11"
-    conventional-changelog-conventionalcommits: "npm:^7.0.2"
-    eslint: "npm:^9.2.0"
-    husky: "npm:^9.0.11"
-    lint-staged: "npm:^15.2.2"
-    ts-node: "npm:^10.9.2"
-    typescript: "npm:^5.4.5"
-    vitest: "npm:^1.6.0"
-    zod: "npm:^3.23.8"
-  languageName: unknown
-  linkType: soft
-
-"@chyzwar/tsconfig@npm:^0.2.26":
+"@chyzwar/tsconfig@npm:^0.2.25, @chyzwar/tsconfig@npm:^0.2.26":
   version: 0.2.26
   resolution: "@chyzwar/tsconfig@npm:0.2.26"
   checksum: 10c2/c68c038378ea88f1a6a9e72a8b5c11e16298b0cf799479b6e3340b72c16b7058d4b84b57c625e51f7ae8eedfe335c4a2d43ca94fcdaa6cfc9b89a25cbe13937b
@@ -576,12 +554,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lerna-lite/cli@npm:3.3.3, @lerna-lite/cli@npm:^3.3.3":
-  version: 3.3.3
-  resolution: "@lerna-lite/cli@npm:3.3.3"
+"@lerna-lite/cli@npm:3.4.0, @lerna-lite/cli@npm:^3.3.3":
+  version: 3.4.0
+  resolution: "@lerna-lite/cli@npm:3.4.0"
   dependencies:
-    "@lerna-lite/core": "npm:3.3.3"
-    "@lerna-lite/init": "npm:3.3.3"
+    "@lerna-lite/core": "npm:3.4.0"
+    "@lerna-lite/init": "npm:3.4.0"
     dedent: "npm:^1.5.3"
     dotenv: "npm:^16.4.5"
     import-local: "npm:^3.1.0"
@@ -603,15 +581,15 @@ __metadata:
       optional: true
   bin:
     lerna: dist/cli.js
-  checksum: 10c2/f7642e727ab6be80ecb2af5430340a9c3735d4d88d094149348c1763abfebb7eb7845151a53c9eb5e66998e597bca50c35f5c24d9b527976d2e32481c2938bbd
+  checksum: 10c2/2dac1a8b9a0ab9dda83cd10262a00013b2ddd26b1ab120277ca7b7cee7801329d87223a58efec14f072640551f921cb72e8680a66f4ce3f712b1e8f8cd8fd557
   languageName: node
   linkType: hard
 
-"@lerna-lite/core@npm:3.3.3":
-  version: 3.3.3
-  resolution: "@lerna-lite/core@npm:3.3.3"
+"@lerna-lite/core@npm:3.4.0":
+  version: 3.4.0
+  resolution: "@lerna-lite/core@npm:3.4.0"
   dependencies:
-    "@npmcli/run-script": "npm:^7.0.4"
+    "@npmcli/run-script": "npm:^8.1.0"
     chalk: "npm:^5.3.0"
     clone-deep: "npm:^4.0.1"
     config-chain: "npm:^1.1.13"
@@ -621,7 +599,7 @@ __metadata:
     fs-extra: "npm:^11.2.0"
     glob-parent: "npm:^6.0.2"
     globby: "npm:^14.0.1"
-    inquirer: "npm:^9.2.18"
+    inquirer: "npm:^9.2.21"
     is-ci: "npm:^3.0.1"
     json5: "npm:^2.2.3"
     load-json-file: "npm:^7.0.1"
@@ -631,69 +609,69 @@ __metadata:
     p-map: "npm:^7.0.2"
     p-queue: "npm:^8.0.1"
     resolve-from: "npm:^5.0.0"
-    semver: "npm:^7.6.0"
+    semver: "npm:^7.6.2"
     slash: "npm:^5.1.0"
     strong-log-transformer: "npm:^2.1.0"
     write-file-atomic: "npm:^5.0.1"
     write-json-file: "npm:^5.0.0"
     write-package: "npm:^7.0.1"
-  checksum: 10c2/5fbfdb1d0f0ae1ba874faf199132fe6e3a94e2118c9aa48e89e2913d2d9991d7f4544455edf62c4dba78039103adef5b611773e34a4a739a42514719bdbefc57
+  checksum: 10c2/7a77c0c14788278f2a6b56c1d9c9822788c0fc2f01fc8d5ddacd8be3235ac4710e43175bbb6cb3a1e1013295d1c4ea55f7618e22f697355b65429794dd936126
   languageName: node
   linkType: hard
 
-"@lerna-lite/init@npm:3.3.3":
-  version: 3.3.3
-  resolution: "@lerna-lite/init@npm:3.3.3"
+"@lerna-lite/init@npm:3.4.0":
+  version: 3.4.0
+  resolution: "@lerna-lite/init@npm:3.4.0"
   dependencies:
-    "@lerna-lite/core": "npm:3.3.3"
+    "@lerna-lite/core": "npm:3.4.0"
     fs-extra: "npm:^11.2.0"
     p-map: "npm:^7.0.2"
     write-json-file: "npm:^5.0.0"
-  checksum: 10c2/16a7404e2074e5cd86e187997d2748b4992f0037aa3792e16ff965f0f0f4f377f93a2eb63ef1c6e00e83de766e23ba37932ebb7b1e56e63288d22cdc9b6ee1a5
+  checksum: 10c2/4a2b6acb68994da3e43495c7d1a187b140a327663ebf8a7286cc60db7c5e8883d167379608a0313743ab4ef94d6d2da8117e048963c573d629e55c31d88d8cfb
   languageName: node
   linkType: hard
 
 "@lerna-lite/publish@npm:^3.3.3":
-  version: 3.3.3
-  resolution: "@lerna-lite/publish@npm:3.3.3"
+  version: 3.4.0
+  resolution: "@lerna-lite/publish@npm:3.4.0"
   dependencies:
-    "@lerna-lite/cli": "npm:3.3.3"
-    "@lerna-lite/core": "npm:3.3.3"
-    "@lerna-lite/version": "npm:3.3.3"
+    "@lerna-lite/cli": "npm:3.4.0"
+    "@lerna-lite/core": "npm:3.4.0"
+    "@lerna-lite/version": "npm:3.4.0"
     byte-size: "npm:^8.1.1"
     chalk: "npm:^5.3.0"
     columnify: "npm:^1.6.0"
     fs-extra: "npm:^11.2.0"
-    glob: "npm:^10.3.12"
+    glob: "npm:^10.3.15"
     has-unicode: "npm:^2.0.1"
-    libnpmaccess: "npm:^8.0.3"
-    libnpmpublish: "npm:^9.0.5"
+    libnpmaccess: "npm:^8.0.5"
+    libnpmpublish: "npm:^9.0.7"
     normalize-path: "npm:^3.0.0"
     npm-package-arg: "npm:^11.0.2"
     npm-packlist: "npm:^5.1.3"
-    npm-registry-fetch: "npm:^16.2.1"
+    npm-registry-fetch: "npm:^17.0.1"
     npmlog: "npm:^7.0.1"
     p-map: "npm:^7.0.2"
     p-pipe: "npm:^4.0.0"
-    pacote: "npm:^17.0.7"
+    pacote: "npm:^18.0.6"
     pify: "npm:^6.1.0"
-    read-package-json: "npm:^7.0.0"
-    semver: "npm:^7.6.0"
-    ssri: "npm:^10.0.5"
+    read-package-json: "npm:^7.0.1"
+    semver: "npm:^7.6.2"
+    ssri: "npm:^10.0.6"
     tar: "npm:^6.2.1"
     temp-dir: "npm:^3.0.0"
-  checksum: 10c2/fe03126ed0f3281549b7478d0dc38bd760f2322448f881c0edd22349783c0d1fd171b02d8866730f47628c35447baa34384b2580a12c11c3c81fd8202159fefe
+  checksum: 10c2/de327baac380e345493ef819ad43ba1ae544cacd69b42b4abb9406e8cd70ab988540c59d88caddaf914a8194ad9ab9a01299b5624d9595fd172ca7aced3b590f
   languageName: node
   linkType: hard
 
-"@lerna-lite/version@npm:3.3.3, @lerna-lite/version@npm:^3.3.3":
-  version: 3.3.3
-  resolution: "@lerna-lite/version@npm:3.3.3"
+"@lerna-lite/version@npm:3.4.0, @lerna-lite/version@npm:^3.3.3":
+  version: 3.4.0
+  resolution: "@lerna-lite/version@npm:3.4.0"
   dependencies:
-    "@lerna-lite/cli": "npm:3.3.3"
-    "@lerna-lite/core": "npm:3.3.3"
+    "@lerna-lite/cli": "npm:3.4.0"
+    "@lerna-lite/core": "npm:3.4.0"
     "@octokit/plugin-enterprise-rest": "npm:^6.0.1"
-    "@octokit/rest": "npm:^20.1.0"
+    "@octokit/rest": "npm:^20.1.1"
     chalk: "npm:^5.3.0"
     conventional-changelog-angular: "npm:^7.0.0"
     conventional-changelog-core: "npm:^7.0.0"
@@ -707,7 +685,7 @@ __metadata:
     graceful-fs: "npm:^4.2.11"
     is-stream: "npm:^4.0.1"
     load-json-file: "npm:^7.0.1"
-    make-dir: "npm:^4.0.0"
+    make-dir: "npm:^5.0.0"
     minimatch: "npm:^9.0.4"
     new-github-release-url: "npm:^2.0.0"
     node-fetch: "npm:^3.3.2"
@@ -717,12 +695,12 @@ __metadata:
     p-pipe: "npm:^4.0.0"
     p-reduce: "npm:^3.0.0"
     pify: "npm:^6.1.0"
-    semver: "npm:^7.6.0"
+    semver: "npm:^7.6.2"
     slash: "npm:^5.1.0"
     temp-dir: "npm:^3.0.0"
     uuid: "npm:^9.0.1"
     write-json-file: "npm:^5.0.0"
-  checksum: 10c2/8ba242186c7797f40649a8e1a7ff92b54ece1f91eab11099bbbe7f96d92de1375128366cdd8771b9bfd6238234ac3001c62c1250408a97691ffb187449fc9d7d
+  checksum: 10c2/b33d9c2a7314c99d83ce6c2a2d19ead343c3ce9c67eba1cda5fa73839fb8b76902dec33e82d3503753c9ff57406616f5010644a2ffc2b957b139f29fa45c6d2e
   languageName: node
   linkType: hard
 
@@ -819,7 +797,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@npmcli/package-json@npm:^5.0.0":
+"@npmcli/package-json@npm:^5.0.0, @npmcli/package-json@npm:^5.1.0":
   version: 5.1.0
   resolution: "@npmcli/package-json@npm:5.1.0"
   dependencies:
@@ -843,13 +821,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@npmcli/redact@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "@npmcli/redact@npm:1.1.0"
-  checksum: 10c2/6fd136823ea6e5198f8c1da01f5112a205704ea1f84d196cea080b5e2eb78fa4f2720b5455d9aadeb760d6297f982233702d801b2ce81a5e5ed23f11c83ccc0f
-  languageName: node
-  linkType: hard
-
 "@npmcli/redact@npm:^2.0.0":
   version: 2.0.0
   resolution: "@npmcli/redact@npm:2.0.0"
@@ -857,16 +828,17 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@npmcli/run-script@npm:^7.0.0, @npmcli/run-script@npm:^7.0.4":
-  version: 7.0.4
-  resolution: "@npmcli/run-script@npm:7.0.4"
+"@npmcli/run-script@npm:^8.0.0, @npmcli/run-script@npm:^8.1.0":
+  version: 8.1.0
+  resolution: "@npmcli/run-script@npm:8.1.0"
   dependencies:
     "@npmcli/node-gyp": "npm:^3.0.0"
     "@npmcli/package-json": "npm:^5.0.0"
     "@npmcli/promise-spawn": "npm:^7.0.0"
     node-gyp: "npm:^10.0.0"
+    proc-log: "npm:^4.0.0"
     which: "npm:^4.0.0"
-  checksum: 10c2/6d940900ac340d614c35bbcd0053d1835518df5dea11a49c65af101745d9cd131e4d70f20eee036eafea5163dae2d193aac092fa71441ffec785923be3d2e14e
+  checksum: 10c2/1fab5039eb4cff836cbef04f3da38ff365906ff2a1b07dfb1dc36d419f334c85a49d0031137903e92f6de5f07521cd7ac55f578bc40b92ea1b99cdcb640ea1ec
   languageName: node
   linkType: hard
 
@@ -981,7 +953,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@octokit/rest@npm:^20.1.0":
+"@octokit/rest@npm:^20.1.1":
   version: 20.1.1
   resolution: "@octokit/rest@npm:20.1.1"
   dependencies:
@@ -1145,31 +1117,33 @@ __metadata:
   linkType: hard
 
 "@sigstore/protobuf-specs@npm:^0.3.0, @sigstore/protobuf-specs@npm:^0.3.1":
-  version: 0.3.1
-  resolution: "@sigstore/protobuf-specs@npm:0.3.1"
-  checksum: 10c2/1a893b17441835c89d6c3012966650dde7cf49f829025701ab3b995109a11741442e86bdd9eccb1faa3c50447db6d19b72e1915925f4c5fabb6babc536631c5f
+  version: 0.3.2
+  resolution: "@sigstore/protobuf-specs@npm:0.3.2"
+  checksum: 10c2/8bb16436bf3208eaf21bd00549f74a7851e2b9e003122ec140a0452f0361cebf66eb8ef79803ea9fd8f810c1238369e65925203394ac6acb23f0d5541bdfbdcf
   languageName: node
   linkType: hard
 
 "@sigstore/sign@npm:^2.3.0":
-  version: 2.3.0
-  resolution: "@sigstore/sign@npm:2.3.0"
+  version: 2.3.1
+  resolution: "@sigstore/sign@npm:2.3.1"
   dependencies:
     "@sigstore/bundle": "npm:^2.3.0"
     "@sigstore/core": "npm:^1.0.0"
     "@sigstore/protobuf-specs": "npm:^0.3.1"
-    make-fetch-happen: "npm:^13.0.0"
-  checksum: 10c2/062b893a9523545fbfd937d24ddb66bc21b7881af58765ca62d53237db9ebf99e02130ba94ca2232c4dab49861f8fde1b26bcc14de445570b9bc2bdac9b1f6e8
+    make-fetch-happen: "npm:^13.0.1"
+    proc-log: "npm:^4.2.0"
+    promise-retry: "npm:^2.0.1"
+  checksum: 10c2/c9da7c928bac0781a597cfcc6c7f039444e2ac0c306127a47688ba1394d06f4139f3f2b69da1f3c688750e5f4c410d1fd38c4a0443e047ba7a47271de9007b88
   languageName: node
   linkType: hard
 
 "@sigstore/tuf@npm:^2.3.1":
-  version: 2.3.2
-  resolution: "@sigstore/tuf@npm:2.3.2"
+  version: 2.3.3
+  resolution: "@sigstore/tuf@npm:2.3.3"
   dependencies:
     "@sigstore/protobuf-specs": "npm:^0.3.0"
-    tuf-js: "npm:^2.2.0"
-  checksum: 10c2/8ea4eea1bfffd53d6ae0a404e8c3cea725d215d41a0499be7cb9fb23fb70fa0d828227b618dd1b64fd8bd9e0f25e97412c23ec89800938eff4aed890e8a0014d
+    tuf-js: "npm:^2.2.1"
+  checksum: 10c2/141821b9e165430783fc06e14e48725616a242184c2d1eb8a1d04f50bb0e13f32519c25a18de151050a435755166bfa30ea9af3ea8ee2fa138db1d745f003b1b
   languageName: node
   linkType: hard
 
@@ -1197,6 +1171,41 @@ __metadata:
   checksum: 10c2/f8aeb2fe4061ebc1e35c9932df4421533569aff421a887a5b99e5bd13d7c7fd8ff2ca5f6dcc5f44127bdf4b4d7bef954276787647250b5dc149c6cb7b219c7c1
   languageName: node
   linkType: hard
+
+"@systemd-js/conf@workspace:packages/conf":
+  version: 0.0.0-use.local
+  resolution: "@systemd-js/conf@workspace:packages/conf"
+  dependencies:
+    "@chyzwar/eslint-config": "npm:^0.2.25"
+    "@chyzwar/tsconfig": "npm:^0.2.25"
+    "@types/node": "npm:^20.12.10"
+    eslint: "npm:^9.2.0"
+    typescript: "npm:^5.4.5"
+    vitest: "npm:^1.6.0"
+    zod: "npm:^3.23.8"
+  languageName: unknown
+  linkType: soft
+
+"@systemd/root@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "@systemd/root@workspace:."
+  dependencies:
+    "@chyzwar/eslint-config": "npm:^0.2.26"
+    "@commitlint/cli": "npm:^19.3.0"
+    "@commitlint/config-conventional": "npm:^19.2.2"
+    "@lerna-lite/cli": "npm:^3.3.3"
+    "@lerna-lite/publish": "npm:^3.3.3"
+    "@lerna-lite/version": "npm:^3.3.3"
+    "@types/node": "npm:^20.12.11"
+    conventional-changelog-conventionalcommits: "npm:^7.0.2"
+    eslint: "npm:^9.2.0"
+    husky: "npm:^9.0.11"
+    lint-staged: "npm:^15.2.2"
+    ts-node: "npm:^10.9.2"
+    typescript: "npm:^5.4.5"
+    vitest: "npm:^1.6.0"
+  languageName: unknown
+  linkType: soft
 
 "@tsconfig/node10@npm:^1.0.7":
   version: 1.0.11
@@ -1272,6 +1281,15 @@ __metadata:
   dependencies:
     undici-types: "npm:~5.26.4"
   checksum: 10c2/2f895638ed2330e81ad74fc97adda925ca04f30a5888b7996c6fb2d5015ce4916a9ecd9d172d90cde890fee3b9566e714804d22e4f641e4debc680894a6ab961
+  languageName: node
+  linkType: hard
+
+"@types/node@npm:^20.12.10":
+  version: 20.12.12
+  resolution: "@types/node@npm:20.12.12"
+  dependencies:
+    undici-types: "npm:~5.26.4"
+  checksum: 10c2/1b0cfabc7dbc41a7175be56121b8ded0facafc556b2ab66af36bf0b4dc96ad4353b8be3842034ce3526a85dfe1aa8548290f15070f75e2cd614d45b73cd94568
   languageName: node
   linkType: hard
 
@@ -3049,7 +3067,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:^10.2.2, glob@npm:^10.3.10, glob@npm:^10.3.12":
+"glob@npm:^10.2.2, glob@npm:^10.3.10":
   version: 10.3.12
   resolution: "glob@npm:10.3.12"
   dependencies:
@@ -3061,6 +3079,21 @@ __metadata:
   bin:
     glob: dist/esm/bin.mjs
   checksum: 10c2/e9bf0082e2d933605929baa16e43553c1dd57bb07bf4faec4585e6f08fb8acd44fdcdd5f4f01d6715b11e64320077405463c3192493e5e2eaf026b75454300e6
+  languageName: node
+  linkType: hard
+
+"glob@npm:^10.3.15":
+  version: 10.3.15
+  resolution: "glob@npm:10.3.15"
+  dependencies:
+    foreground-child: "npm:^3.1.0"
+    jackspeak: "npm:^2.3.6"
+    minimatch: "npm:^9.0.1"
+    minipass: "npm:^7.0.4"
+    path-scurry: "npm:^1.11.0"
+  bin:
+    glob: dist/esm/bin.mjs
+  checksum: 10c2/aa2d251d0c790faa53dfb41a2b9fa05beb130a330a22179f050c3d211ee1c146ac5abbc90087a93eed10d7cfa0640e0c7abe6fe1dbd6909d2e68288be52ef6a7
   languageName: node
   linkType: hard
 
@@ -3405,9 +3438,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"inquirer@npm:^9.2.18":
-  version: 9.2.20
-  resolution: "inquirer@npm:9.2.20"
+"inquirer@npm:^9.2.21":
+  version: 9.2.21
+  resolution: "inquirer@npm:9.2.21"
   dependencies:
     "@inquirer/figures": "npm:^1.0.1"
     "@ljharb/through": "npm:^2.3.13"
@@ -3424,7 +3457,7 @@ __metadata:
     string-width: "npm:^4.2.3"
     strip-ansi: "npm:^6.0.1"
     wrap-ansi: "npm:^6.2.0"
-  checksum: 10c2/106b4beb2c299902aff0546b9241f1c94f6186126d445c59c4a9c9444ee028fa85e95b6ed3e7c4a66bfb62e2ce41ef427f10defb0a03a4a5ce79b04b184c1921
+  checksum: 10c2/d383d26a8b8253c5243bd79fe51b193db6d2d05daceebc6004cc73f7c1bafd784ac9d58a448b4a5a3de1bf6ba2df7a21fdc78da35e224aba85fb62c0a0dfc66b
   languageName: node
   linkType: hard
 
@@ -3780,7 +3813,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"libnpmaccess@npm:^8.0.3":
+"libnpmaccess@npm:^8.0.5":
   version: 8.0.5
   resolution: "libnpmaccess@npm:8.0.5"
   dependencies:
@@ -3790,7 +3823,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"libnpmpublish@npm:^9.0.5":
+"libnpmpublish@npm:^9.0.7":
   version: 9.0.7
   resolution: "libnpmpublish@npm:9.0.7"
   dependencies:
@@ -4032,12 +4065,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"make-dir@npm:^4.0.0":
-  version: 4.0.0
-  resolution: "make-dir@npm:4.0.0"
-  dependencies:
-    semver: "npm:^7.5.3"
-  checksum: 10c2/784a9e7b5d4752650d444cd75fea923aa266e7f9d491a607a9ee31aa9ee6e7dd8e804a679c72c7ad889e78d7cc13d8b3edc3f96766a7de6abcefb35150b55255
+"make-dir@npm:^5.0.0":
+  version: 5.0.0
+  resolution: "make-dir@npm:5.0.0"
+  checksum: 10c2/9a71de73705158c45f6f2bf4804bfff53f3a49ce49989aca3b5d5acfc01100c61009816f266a41dd837ec04798dc82387f57a662202238e9ac6777cf77433bae
   languageName: node
   linkType: hard
 
@@ -4471,23 +4502,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"npm-registry-fetch@npm:^16.0.0, npm-registry-fetch@npm:^16.2.1":
-  version: 16.2.1
-  resolution: "npm-registry-fetch@npm:16.2.1"
-  dependencies:
-    "@npmcli/redact": "npm:^1.1.0"
-    make-fetch-happen: "npm:^13.0.0"
-    minipass: "npm:^7.0.2"
-    minipass-fetch: "npm:^3.0.0"
-    minipass-json-stream: "npm:^1.0.1"
-    minizlib: "npm:^2.1.2"
-    npm-package-arg: "npm:^11.0.0"
-    proc-log: "npm:^4.0.0"
-  checksum: 10c2/bc8338ffc74327c61d7f77357a99899c1b1b9ba725876b27b994d1c8dd019f98fdec6247de359479f12ec8cb0b7d1a14f86894a55b4c6ff7805ee87857ae6ec6
-  languageName: node
-  linkType: hard
-
-"npm-registry-fetch@npm:^17.0.0":
+"npm-registry-fetch@npm:^17.0.0, npm-registry-fetch@npm:^17.0.1":
   version: 17.0.1
   resolution: "npm-registry-fetch@npm:17.0.1"
   dependencies:
@@ -4706,31 +4721,30 @@ __metadata:
   languageName: node
   linkType: hard
 
-"pacote@npm:^17.0.7":
-  version: 17.0.7
-  resolution: "pacote@npm:17.0.7"
+"pacote@npm:^18.0.6":
+  version: 18.0.6
+  resolution: "pacote@npm:18.0.6"
   dependencies:
     "@npmcli/git": "npm:^5.0.0"
     "@npmcli/installed-package-contents": "npm:^2.0.1"
+    "@npmcli/package-json": "npm:^5.1.0"
     "@npmcli/promise-spawn": "npm:^7.0.0"
-    "@npmcli/run-script": "npm:^7.0.0"
+    "@npmcli/run-script": "npm:^8.0.0"
     cacache: "npm:^18.0.0"
     fs-minipass: "npm:^3.0.0"
     minipass: "npm:^7.0.2"
     npm-package-arg: "npm:^11.0.0"
     npm-packlist: "npm:^8.0.0"
     npm-pick-manifest: "npm:^9.0.0"
-    npm-registry-fetch: "npm:^16.0.0"
+    npm-registry-fetch: "npm:^17.0.0"
     proc-log: "npm:^4.0.0"
     promise-retry: "npm:^2.0.1"
-    read-package-json: "npm:^7.0.0"
-    read-package-json-fast: "npm:^3.0.0"
     sigstore: "npm:^2.2.0"
     ssri: "npm:^10.0.0"
     tar: "npm:^6.1.11"
   bin:
-    pacote: lib/bin.js
-  checksum: 10c2/3c84336f1cc90dc8f9d74746db2a875a680f5a8ccd8fe98cbd1b0211352e2b00b4aa413e2b3f3dfce9ea801534f814f4dc1286ab3b658ca3dcc9f3da17192fc5
+    pacote: bin/index.js
+  checksum: 10c2/1835f9973d5bbb58b76f1485599d2e6269afce7d6add649ee51ad845ebd0f82434d956fc6614c871523d95b0fe55b8273aa8df0a55bf6bdcd07a0d0e2305d2c1
   languageName: node
   linkType: hard
 
@@ -4832,6 +4846,16 @@ __metadata:
     lru-cache: "npm:^10.2.0"
     minipass: "npm:^5.0.0 || ^6.0.2 || ^7.0.0"
   checksum: 10c2/74860b3a1f4ebb22fafa643b8502b3a3a7e02279a506317e63d6e31999081012f177df42a5de871460cb09886f0f1fb53cc1a63638a33af660c4e38b76e58b07
+  languageName: node
+  linkType: hard
+
+"path-scurry@npm:^1.11.0":
+  version: 1.11.1
+  resolution: "path-scurry@npm:1.11.1"
+  dependencies:
+    lru-cache: "npm:^10.2.0"
+    minipass: "npm:^5.0.0 || ^6.0.2 || ^7.0.0"
+  checksum: 10c2/f54f50768b1df7e3c020593772346d48c05b103e87bae3cedc40fd195635ecef356e41b7ff64957e7c42b651dd765655563a9aa1b769d7d34afd4ae3d9733c11
   languageName: node
   linkType: hard
 
@@ -5008,17 +5032,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"read-package-json-fast@npm:^3.0.0":
-  version: 3.0.2
-  resolution: "read-package-json-fast@npm:3.0.2"
-  dependencies:
-    json-parse-even-better-errors: "npm:^3.0.0"
-    npm-normalize-package-bin: "npm:^3.0.0"
-  checksum: 10c2/f8dd05be0225e885a5015b3623bf9603453c5182c2c451e277039d219545a318ab204ee3599d8b0c221d3b53ebc31279f8391dc72088575243a8de0a02ac63fe
-  languageName: node
-  linkType: hard
-
-"read-package-json@npm:^7.0.0":
+"read-package-json@npm:^7.0.1":
   version: 7.0.1
   resolution: "read-package-json@npm:7.0.1"
   dependencies:
@@ -5257,7 +5271,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:^7.1.1, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.5.2, semver@npm:^7.5.3, semver@npm:^7.6.0":
+"semver@npm:^7.1.1, semver@npm:^7.3.7, semver@npm:^7.5.2, semver@npm:^7.5.3, semver@npm:^7.6.2":
+  version: 7.6.2
+  resolution: "semver@npm:7.6.2"
+  bin:
+    semver: bin/semver.js
+  checksum: 10c2/a7be3a144e9f98d21330f663dc9a31b78b70722d900e409e2dd7071ff8e7e0d6445377ddc4476bb1862edc5fd08f7387842259dab9743a7bf0eeb5ab5c7c9297
+  languageName: node
+  linkType: hard
+
+"semver@npm:^7.3.5, semver@npm:^7.6.0":
   version: 7.6.0
   resolution: "semver@npm:7.6.0"
   dependencies:
@@ -5482,7 +5505,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"ssri@npm:^10.0.0, ssri@npm:^10.0.5":
+"ssri@npm:^10.0.0, ssri@npm:^10.0.5, ssri@npm:^10.0.6":
   version: 10.0.6
   resolution: "ssri@npm:10.0.6"
   dependencies:
@@ -5761,7 +5784,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"tuf-js@npm:^2.2.0":
+"tuf-js@npm:^2.2.1":
   version: 2.2.1
   resolution: "tuf-js@npm:2.2.1"
   dependencies:

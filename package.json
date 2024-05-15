@@ -1,12 +1,15 @@
 {
-  "name": "@chyzwar/systemd",
+  "name": "@systemd/root",
   "version": "1.0.0",
   "engines": {
     "node": "20.x",
     "yarn": "4.x"
   },
-  "main": "lib/index.js",
   "type": "module",
+  "workspaces": [
+    "packages/*"
+  ],
+  "private": true,
   "license": "MIT",
   "scripts": {
     "lint": "eslint . --cache",
@@ -19,9 +22,6 @@
     "test:watch": "vitest",
     "postinstall": "husky install",
     "prepare": "husky"
-  },
-  "dependencies": {
-    "zod": "^3.23.8"
   },
   "devDependencies": {
     "@chyzwar/eslint-config": "^0.2.26",

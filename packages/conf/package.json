@@ -1,0 +1,31 @@
+{
+  "name": "@systemd-js/conf",
+  "version": "1.0.0",
+  "engines": {
+    "node": "20.x",
+    "yarn": "4.x"
+  },
+  "main": "lib/index.js",
+  "type": "module",
+  "license": "MIT",
+  "scripts": {
+    "lint": "eslint . --cache",
+    "lint:fix": "eslint . --fix --cache",
+    "build": "tsc --build",
+    "build:watch": "tsc --build --watch",
+    "test": "vitest --run",
+    "test:coverage": "vitest --coverage",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@chyzwar/eslint-config": "^0.2.25",
+    "@chyzwar/tsconfig": "^0.2.25",
+    "@types/node": "^20.12.10",
+    "eslint": "^9.2.0",
+    "typescript": "^5.4.5",
+    "vitest": "^1.6.0"
+  }
+}

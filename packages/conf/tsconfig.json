@@ -1,0 +1,13 @@
+{
+  "extends": "@chyzwar/tsconfig/lib.json", 
+  "compilerOptions": {
+    "target": "ES2022",
+    "outDir": "lib",
+    "rootDir": "src",
+    "composite": false,
+    "tsBuildInfoFile": "./lib/buildInfo.json"
+  },
+  "include": [
+    "src/**/*"
+  ]
+}

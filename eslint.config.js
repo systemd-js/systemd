@@ -6,12 +6,12 @@ export default [
     ignores: ["**/lib/"],
   },
   {
-    files: ["src/**/*.{ts,tsx}"],
+    files: ["packages/*/src/**/*.{ts,tsx}"],
     languageOptions: {
       parserOptions: {
         tsconfigRootDir: import.meta.dirname,
         project: [
-          "./tsconfig.json",
+          "./packages/*/tsconfig.json",
         ],
       },
     },

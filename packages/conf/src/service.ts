@@ -1640,4 +1640,11 @@ export class Service {
     }
     throw new Error("Expected INI object");
   }
+
+  /**
+   * Compare current service with another service
+   */
+  public equals(service: Service) {
+    return JSON.stringify(this.toObject()) === JSON.stringify(service.toObject());
+  }
 }
