@@ -8,6 +8,13 @@
   "main": "lib/index.js",
   "type": "module",
   "license": "MIT",
+  "description": "Reading and creating systemd configs",
+  "keywords": [
+    "systemd",
+    "ini",
+    "systemd-timer",
+    "systemd-service"
+  ],
   "scripts": {
     "lint": "eslint . --cache",
     "lint:fix": "eslint . --fix --cache",
