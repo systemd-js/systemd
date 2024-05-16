@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "engines": {
     "node": "20.x",
-    "yarn": "4.x"
+    "yarn": "4.2.2"
   },
   "type": "module",
   "workspaces": [
@@ -41,5 +41,5 @@
   "lint-staged": {
     "*.{js,ts,tsx}": "yarn lint:fix"
   },
-  "packageManager": "yarn@4.1.0"
+  "packageManager": "yarn@4.2.2"
 }
