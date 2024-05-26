@@ -350,7 +350,7 @@ export class TimerSectionBuilder {
    * @see {@link TimerSection.OnActiveSec}
    */
   public setOnActiveSec(
-    onActiveSec: TimerSection["OnActiveSec"]
+    onActiveSec?: TimerSection["OnActiveSec"]
   ) {
     this.section.OnActiveSec = onActiveSec;
     return this;
@@ -361,7 +361,7 @@ export class TimerSectionBuilder {
    * @see {@link TimerSection.OnBootSec}
    */
   public setOnBootSec(
-    onBootSec: TimerSection["OnBootSec"]
+    onBootSec?: TimerSection["OnBootSec"]
   ) {
     this.section.OnBootSec = onBootSec;
     return this;
@@ -371,8 +371,9 @@ export class TimerSectionBuilder {
    * Set timer OnStartupSec
    * @see {@link TimerSection.OnStartupSec}
    */
+
   public setOnStartupSec(
-    onStartupSec: TimerSection["OnStartupSec"]
+    onStartupSec?: TimerSection["OnStartupSec"]
   ) {
     this.section.OnStartupSec = onStartupSec;
     return this;
@@ -383,7 +384,7 @@ export class TimerSectionBuilder {
    * @see {@link TimerSection.OnUnitActiveSec}
    */
   public setOnUnitActiveSec(
-    onUnitActiveSec: TimerSection["OnUnitActiveSec"]
+    onUnitActiveSec?: TimerSection["OnUnitActiveSec"]
   ) {
     this.section.OnUnitActiveSec = onUnitActiveSec;
     return this;
@@ -394,7 +395,7 @@ export class TimerSectionBuilder {
    * @see {@link TimerSection.OnUnitInactiveSec}
    */
   public setOnUnitInactiveSec(
-    onUnitInactiveSec: TimerSection["OnUnitInactiveSec"]
+    onUnitInactiveSec?: TimerSection["OnUnitInactiveSec"]
   ) {
     this.section.OnUnitInactiveSec = onUnitInactiveSec;
     return this;
@@ -405,7 +406,7 @@ export class TimerSectionBuilder {
    * @see {@link TimerSectionConfig.OnCalendar}
    */
   public setOnCalendar(
-    onCalendar: TimerSectionConfig["OnCalendar"]
+    onCalendar?: TimerSectionConfig["OnCalendar"]
   ) {
     this.section.OnCalendar = onCalendar;
     return this;
@@ -416,7 +417,7 @@ export class TimerSectionBuilder {
    * @see {@link TimerSectionConfig.AccuracySec}
    */
   public setAccuracySec(
-    accuracySec: TimerSectionConfig["AccuracySec"]
+    accuracySec?: TimerSectionConfig["AccuracySec"]
   ) {
     this.section.AccuracySec = accuracySec;
     return this;
@@ -427,7 +428,7 @@ export class TimerSectionBuilder {
    * @see {@link TimerSectionConfig.RandomizedDelaySec}
    */
   public setRandomizedDelaySec(
-    randomizedDelaySec: TimerSectionConfig["RandomizedDelaySec"]
+    randomizedDelaySec?: TimerSectionConfig["RandomizedDelaySec"]
   ) {
     this.section.RandomizedDelaySec = randomizedDelaySec;
     return this;
@@ -438,7 +439,7 @@ export class TimerSectionBuilder {
    * @see {@link TimerSectionConfig.FixedRandomDelay}
    */
   public setFixedRandomDelay(
-    fixedRandomDelay: TimerSectionConfig["FixedRandomDelay"]
+    fixedRandomDelay?: TimerSectionConfig["FixedRandomDelay"]
   ) {
     this.section.FixedRandomDelay = fixedRandomDelay;
     return this;
@@ -449,7 +450,7 @@ export class TimerSectionBuilder {
    * @see {@link TimerSectionConfig.OnClockChange}
    */
   public setOnClockChange(
-    onClockChange: TimerSectionConfig["OnClockChange"]
+    onClockChange?: TimerSectionConfig["OnClockChange"]
   ) {
     this.section.OnClockChange = onClockChange;
     return this;
@@ -460,7 +461,7 @@ export class TimerSectionBuilder {
    * @see {@link TimerSectionConfig.Unit}
    */
   public setUnit(
-    unit: TimerSectionConfig["Unit"]
+    unit?: TimerSectionConfig["Unit"]
   ) {
     this.section.Unit = unit;
     return this;
@@ -471,7 +472,7 @@ export class TimerSectionBuilder {
    * @see {@link TimerSectionConfig.Persistent}
    */
   public setPersistent(
-    persistent: TimerSectionConfig["Persistent"]
+    persistent?: TimerSectionConfig["Persistent"]
   ) {
     this.section.Persistent = persistent;
     return this;
@@ -482,7 +483,7 @@ export class TimerSectionBuilder {
    * @see {@link TimerSectionConfig.WakeSystem}
    */
   public setWakeSystem(
-    wakeSystem: TimerSectionConfig["WakeSystem"]
+    wakeSystem?: TimerSectionConfig["WakeSystem"]
   ) {
     this.section.WakeSystem = wakeSystem;
     return this;
@@ -493,7 +494,7 @@ export class TimerSectionBuilder {
    * @see {@link TimerSectionConfig.RemainAfterElapse}
    */
   public setRemainAfterElapse(
-    remainAfterElapse: TimerSectionConfig["RemainAfterElapse"]
+    remainAfterElapse?: TimerSectionConfig["RemainAfterElapse"]
   ) {
     this.section.RemainAfterElapse = remainAfterElapse;
     return this;
@@ -521,6 +522,9 @@ export class Timer {
     this.unitSection = new UnitSectionBuilder(Unit);
     this.installSection = new InstallSectionBuilder(Install); 
   }
+  public getType() {
+    return 'timer'
+  }
 
   public getTimerSection() {
     return this.timerSection;
@@ -534,6 +538,9 @@ export class Timer {
     return this.installSection;
   }
   
+  /**
+   * Convert the timer to an object
+   */
   public toObject() {
     const object = {
       Unit: this.unitSection.toObject(),
@@ -546,6 +553,9 @@ export class Timer {
       .toObject();
   }
 
+  /**
+   * Convert the timer to an INI string
+   */
   public toINIString() {
     const object = {
       Unit: this.unitSection.toObject(),
@@ -559,7 +569,7 @@ export class Timer {
   }
 
   /**
-   * Create an service from an object
+   * Create an timer from an object
    */
   public static fromObject(obj: unknown) {
     if (obj instanceof Object) {

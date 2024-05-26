@@ -51,6 +51,11 @@ ExecPreStart=/opt/example/agent start-2 \
 User=root
 `;
 
+const unitOnlyDesc = `
+[Unit]
+Description=example
+`
+
 describe("INI - fromString", () => {
   test("should parse INI data", () => {
     const expected = {
@@ -76,6 +81,18 @@ describe("INI - fromString", () => {
     const object = INI.fromString(dataUnit).toObject();
     expect(object).toEqual(expected);
   });
+
+  test("should omit undefined values", () => {
+    const obj = {
+      Unit: {
+        Description: "example",
+        After: undefined,
+      },
+    };
+    const ini = INI.fromObject(obj);
+    const result = ini.toString();
+    expect(result.trim()).toEqual(unitOnlyDesc.trim());
+  })
 
   test("should parse INI data with line dataUnitWithBackslash", () => {
     const expected = {

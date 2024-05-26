@@ -1444,7 +1444,7 @@ export class ServiceSectionBuilder {
    * Set service SuccessExitStatus
    * @see {@link ServiceSectionConfig.SuccessExitStatus}
    */
-  public setSuccessExitStatus(successExitStatus: string) {
+  public setSuccessExitStatus(successExitStatus: ServiceSectionConfig["SuccessExitStatus"]) {
     this.section.SuccessExitStatus = successExitStatus;
     return this;
   }
@@ -1452,7 +1452,7 @@ export class ServiceSectionBuilder {
    * Set service RestartPreventExitStatus
    * @see {@link ServiceSectionConfig.RestartPreventExitStatus}
    */
-  public setRestartPreventExitStatus(restartPreventExitStatus: string) {
+  public setRestartPreventExitStatus(restartPreventExitStatus: ServiceSectionConfig["RestartPreventExitStatus"]) {
     this.section.RestartPreventExitStatus = restartPreventExitStatus;
     return this;
   }
@@ -1460,7 +1460,7 @@ export class ServiceSectionBuilder {
    * Set service RestartForceExitStatus
    * @see {@link ServiceSectionConfig.RestartForceExitStatus}
    */
-  public setRestartForceExitStatus(restartForceExitStatus: string) {
+  public setRestartForceExitStatus(restartForceExitStatus: ServiceSectionConfig["RestartForceExitStatus"]) {
     this.section.RestartForceExitStatus = restartForceExitStatus;
     return this;
   }
@@ -1468,7 +1468,7 @@ export class ServiceSectionBuilder {
    * Set service RootDirectoryStartOnly
    * @see {@link ServiceSectionConfig.RootDirectoryStartOnly}
    */
-  public setRootDirectoryStartOnly(rootDirectoryStartOnly: boolean) {
+  public setRootDirectoryStartOnly(rootDirectoryStartOnly: ServiceSectionConfig["RootDirectoryStartOnly"]) {
     this.section.RootDirectoryStartOnly = rootDirectoryStartOnly;
     return this;
   }
@@ -1476,7 +1476,7 @@ export class ServiceSectionBuilder {
    * Set service NonBlocking
    * @see {@link ServiceSectionConfig.NonBlocking}
    */
-  public setNonBlocking(nonBlocking: boolean) {
+  public setNonBlocking(nonBlocking: ServiceSectionConfig["NonBlocking"]) {
     this.section.NonBlocking = nonBlocking;
     return this;
   }
@@ -1492,7 +1492,7 @@ export class ServiceSectionBuilder {
    * Set service Sockets
    * @see {@link ServiceSectionConfig.Sockets}
    */
-  public setSockets(sockets: string[] | string) {
+  public setSockets(sockets: ServiceSectionConfig["Sockets"]) {
     this.section.Sockets = sockets;
     return this;
   }
@@ -1500,7 +1500,7 @@ export class ServiceSectionBuilder {
    * Set service FileDescriptorStoreMax
    * @see {@link ServiceSectionConfig.FileDescriptorStoreMax}
    */
-  public setFileDescriptorStoreMax(fileDescriptorStoreMax: number) {
+  public setFileDescriptorStoreMax(fileDescriptorStoreMax: ServiceSectionConfig["FileDescriptorStoreMax"]) {
     this.section.FileDescriptorStoreMax = fileDescriptorStoreMax;
     return this;
   }
@@ -1519,7 +1519,7 @@ export class ServiceSectionBuilder {
    * Set service USBFunctionDescriptors
    * @see {@link ServiceSectionConfig.USBFunctionDescriptors}
    */
-  public setUSBFunctionDescriptors(usbFunctionDescriptors: string) {
+  public setUSBFunctionDescriptors(usbFunctionDescriptors: ServiceSectionConfig["USBFunctionDescriptors"]) {
     this.section.USBFunctionDescriptors = usbFunctionDescriptors;
     return this;
   }
@@ -1528,7 +1528,7 @@ export class ServiceSectionBuilder {
    * Set service USBFunctionStrings
    * @see {@link ServiceSectionConfig.USBFunctionStrings}
    */
-  public setUSBFunctionStrings(usbFunctionStrings: string) {
+  public setUSBFunctionStrings(usbFunctionStrings: ServiceSectionConfig["USBFunctionStrings"]) {
     this.section.USBFunctionStrings = usbFunctionStrings;
     return this;
   }
@@ -1581,6 +1581,10 @@ export class Service {
     this.serviceSection = new ServiceSectionBuilder(ServiceObj);
     this.unitSection = new UnitSectionBuilder(Unit);
     this.installSection = new InstallSectionBuilder(Install); 
+  }
+
+  public getType() {
+    return 'service'
   }
 
   public getServiceSection() {

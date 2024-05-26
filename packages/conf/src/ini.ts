@@ -67,6 +67,9 @@ export class INI {
         if (typeof sectionValue === "string") {
           continue;
         }
+        if (typeof sectionValue === "undefined") {
+          continue;
+        }
         if (typeof sectionValue === "number") {
           continue;
         }

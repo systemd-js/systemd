@@ -1174,7 +1174,7 @@ export class ResourceSectionBuilder {
    * Set resource CPUAccounting
    * @see {@link ResourceSectionConfig.CPUAccounting}
    */
-  public setCPUAccounting(value: ResourceSectionConfig["CPUAccounting"]): this {
+  public setCPUAccounting(value?: ResourceSectionConfig["CPUAccounting"]): this {
     this.section.CPUAccounting = value;
     return this;
   }
@@ -1183,7 +1183,7 @@ export class ResourceSectionBuilder {
    * Set resource CPUWeight
    * @see {@link ResourceSectionConfig.CPUWeight}
    */
-  public setCPUWeight(value: ResourceSectionConfig["CPUWeight"]): this {
+  public setCPUWeight(value?: ResourceSectionConfig["CPUWeight"]): this {
     this.section.CPUWeight = value;
     return this;
   }
@@ -1192,7 +1192,7 @@ export class ResourceSectionBuilder {
    * Set resource StartupCPUWeight
    * @see {@link ResourceSectionConfig.StartupCPUWeight}
    */
-  public setStartupCPUWeight(value: ResourceSectionConfig["StartupCPUWeight"]): this {
+  public setStartupCPUWeight(value?: ResourceSectionConfig["StartupCPUWeight"]): this {
     this.section.StartupCPUWeight = value;
     return this;
   }
@@ -1201,7 +1201,7 @@ export class ResourceSectionBuilder {
    * Set resource CPUQuota
    * @see {@link ResourceSectionConfig.CPUQuota}
    */
-  public setCPUQuota(value: ResourceSectionConfig["CPUQuota"]): this {
+  public setCPUQuota(value?: ResourceSectionConfig["CPUQuota"]): this {
     this.section.CPUQuota = value;
     return this;
   }
@@ -1210,7 +1210,7 @@ export class ResourceSectionBuilder {
    * Set resource CPUQuotaPeriodSec
    * @see {@link ResourceSectionConfig.CPUQuotaPeriodSec}
    */
-  public setCPUQuotaPeriodSec(value: ResourceSectionConfig["CPUQuotaPeriodSec"]): this {
+  public setCPUQuotaPeriodSec(value?: ResourceSectionConfig["CPUQuotaPeriodSec"]): this {
     this.section.CPUQuotaPeriodSec = value;
     return this;
   }
@@ -1219,7 +1219,7 @@ export class ResourceSectionBuilder {
    * Set resource AllowedCPUs
    * @see {@link ResourceSectionConfig.AllowedCPUs}
    */
-  public setAllowedCPUs(value: ResourceSectionConfig["AllowedCPUs"]): this {
+  public setAllowedCPUs(value?: ResourceSectionConfig["AllowedCPUs"]): this {
     this.section.AllowedCPUs = value;
     return this;
   }
@@ -1228,7 +1228,7 @@ export class ResourceSectionBuilder {
    * Set resource StartupAllowedCPUs
    * @see {@link ResourceSectionConfig.StartupAllowedCPUs}
    */
-  public setStartupAllowedCPUs(value: ResourceSectionConfig["StartupAllowedCPUs"]): this {
+  public setStartupAllowedCPUs(value?: ResourceSectionConfig["StartupAllowedCPUs"]): this {
     this.section.StartupAllowedCPUs = value;
     return this;
   }
@@ -1237,7 +1237,7 @@ export class ResourceSectionBuilder {
    * Set resource MemoryAccounting
    * @see {@link ResourceSectionConfig.MemoryAccounting}
    */
-  public setMemoryAccounting(value: ResourceSectionConfig["MemoryAccounting"]): this {
+  public setMemoryAccounting(value?: ResourceSectionConfig["MemoryAccounting"]): this {
     this.section.MemoryAccounting = value;
     return this;
   }
@@ -1246,7 +1246,7 @@ export class ResourceSectionBuilder {
    * Set resource MemoryMin
    * @see {@link ResourceSectionConfig.MemoryMin}
    */
-  public setMemoryMin(value: ResourceSectionConfig["MemoryMin"]): this {
+  public setMemoryMin(value?: ResourceSectionConfig["MemoryMin"]): this {
     this.section.MemoryMin = value;
     return this;
   }
@@ -1255,7 +1255,7 @@ export class ResourceSectionBuilder {
    * Set resource MemoryLow
    * @see {@link ResourceSectionConfig.MemoryLow}
    */
-  public setMemoryLow(value: ResourceSectionConfig["MemoryLow"]): this {
+  public setMemoryLow(value?: ResourceSectionConfig["MemoryLow"]): this {
     this.section.MemoryLow = value;
     return this;
   }
@@ -1264,7 +1264,7 @@ export class ResourceSectionBuilder {
    * Set resource StartupMemoryLow
    * @see {@link ResourceSectionConfig.StartupMemoryLow}
    */
-  public setStartupMemoryLow(value: ResourceSectionConfig["StartupMemoryLow"]): this {
+  public setStartupMemoryLow(value?: ResourceSectionConfig["StartupMemoryLow"]): this {
     this.section.StartupMemoryLow = value;
     return this;
   }
@@ -1273,7 +1273,7 @@ export class ResourceSectionBuilder {
    * Set resource DefaultStartupMemoryLow
    * @see {@link ResourceSectionConfig.DefaultStartupMemoryLow}
    */
-  public setDefaultStartupMemoryLow(value: ResourceSectionConfig["DefaultStartupMemoryLow"]): this {
+  public setDefaultStartupMemoryLow(value?: ResourceSectionConfig["DefaultStartupMemoryLow"]): this {
     this.section.DefaultStartupMemoryLow = value;
     return this;
   }
@@ -1282,7 +1282,7 @@ export class ResourceSectionBuilder {
    * Set resource MemoryHigh
    * @see {@link ResourceSectionConfig.MemoryHigh}
    */
-  public setMemoryHigh(value: ResourceSectionConfig["MemoryHigh"]): this {
+  public setMemoryHigh(value?: ResourceSectionConfig["MemoryHigh"]): this {
     this.section.MemoryHigh = value;
     return this;
   }
@@ -1291,7 +1291,7 @@ export class ResourceSectionBuilder {
    * Set resource StartupMemoryHigh
    * @see {@link ResourceSectionConfig.StartupMemoryHigh}
    */
-  public setStartupMemoryHigh(value: ResourceSectionConfig["StartupMemoryHigh"]): this {
+  public setStartupMemoryHigh(value?: ResourceSectionConfig["StartupMemoryHigh"]): this {
     this.section.StartupMemoryHigh = value;
     return this;
   }
@@ -1300,7 +1300,7 @@ export class ResourceSectionBuilder {
    * Set resource MemoryMax
    * @see {@link ResourceSectionConfig.MemoryMax}
    */
-  public setMemoryMax(value: ResourceSectionConfig["MemoryMax"]): this {
+  public setMemoryMax(value?: ResourceSectionConfig["MemoryMax"]): this {
     this.section.MemoryMax = value;
     return this;
   }
@@ -1309,7 +1309,7 @@ export class ResourceSectionBuilder {
    * Set resource StartupMemoryMax
    * @see {@link ResourceSectionConfig.StartupMemoryMax}
    */
-  public setStartupMemoryMax(value: ResourceSectionConfig["StartupMemoryMax"]): this {
+  public setStartupMemoryMax(value?: ResourceSectionConfig["StartupMemoryMax"]): this {
     this.section.StartupMemoryMax = value;
     return this;
   }
@@ -1318,7 +1318,7 @@ export class ResourceSectionBuilder {
    * Set resource MemorySwapMax
    * @see {@link ResourceSectionConfig.MemorySwapMax}
    */
-  public setMemorySwapMax(value: ResourceSectionConfig["MemorySwapMax"]): this {
+  public setMemorySwapMax(value?: ResourceSectionConfig["MemorySwapMax"]): this {
     this.section.MemorySwapMax = value;
     return this;
   }
@@ -1327,7 +1327,7 @@ export class ResourceSectionBuilder {
    * Set resource StartupMemorySwapMax
    * @see {@link ResourceSectionConfig.StartupMemorySwapMax}
    */
-  public setStartupMemorySwapMax(value: ResourceSectionConfig["StartupMemorySwapMax"]): this {
+  public setStartupMemorySwapMax(value?: ResourceSectionConfig["StartupMemorySwapMax"]): this {
     this.section.StartupMemorySwapMax = value;
     return this;
   }
@@ -1336,7 +1336,7 @@ export class ResourceSectionBuilder {
    * Set resource MemoryZSwapMax
    * @see {@link ResourceSectionConfig.MemoryZSwapMax}
    */
-  public setMemoryZSwapMax(value: ResourceSectionConfig["MemoryZSwapMax"]): this {
+  public setMemoryZSwapMax(value?: ResourceSectionConfig["MemoryZSwapMax"]): this {
     this.section.MemoryZSwapMax = value;
     return this;
   }
@@ -1345,7 +1345,7 @@ export class ResourceSectionBuilder {
    * Set resource StartupMemoryZSwapMax
    * @see {@link ResourceSectionConfig.StartupMemoryZSwapMax}
    */
-  public setStartupMemoryZSwapMax(value: ResourceSectionConfig["StartupMemoryZSwapMax"]): this {
+  public setStartupMemoryZSwapMax(value?: ResourceSectionConfig["StartupMemoryZSwapMax"]): this {
     this.section.StartupMemoryZSwapMax = value;
     return this;
   }
@@ -1354,7 +1354,7 @@ export class ResourceSectionBuilder {
    * Set resource AllowedMemoryNodes
    * @see {@link ResourceSectionConfig.AllowedMemoryNodes}
    */
-  public setAllowedMemoryNodes(value: ResourceSectionConfig["AllowedMemoryNodes"]): this {
+  public setAllowedMemoryNodes(value?: ResourceSectionConfig["AllowedMemoryNodes"]): this {
     this.section.AllowedMemoryNodes = value;
     return this;
   }
@@ -1363,7 +1363,7 @@ export class ResourceSectionBuilder {
    * Set resource StartupAllowedMemoryNodes
    * @see {@link ResourceSectionConfig.StartupAllowedMemoryNodes}
    */
-  public setStartupAllowedMemoryNodes(value: ResourceSectionConfig["StartupAllowedMemoryNodes"]): this {
+  public setStartupAllowedMemoryNodes(value?: ResourceSectionConfig["StartupAllowedMemoryNodes"]): this {
     this.section.StartupAllowedMemoryNodes = value;
     return this;
   }
@@ -1372,7 +1372,7 @@ export class ResourceSectionBuilder {
    * Set resource TasksAccounting
    * @see {@link ResourceSectionConfig.TasksAccounting}
    */
-  public setTasksAccounting(value: ResourceSectionConfig["TasksAccounting"]): this {
+  public setTasksAccounting(value?: ResourceSectionConfig["TasksAccounting"]): this {
     this.section.TasksAccounting = value;
     return this;
   }
@@ -1381,7 +1381,7 @@ export class ResourceSectionBuilder {
    * Set resource TasksMax
    * @see {@link ResourceSectionConfig.TasksMax}
    */
-  public setTasksMax(value: ResourceSectionConfig["TasksMax"]): this {
+  public setTasksMax(value?: ResourceSectionConfig["TasksMax"]): this {
     this.section.TasksMax = value;
     return this;
   }

@@ -146,7 +146,7 @@ export class KillSectionBuilder {
    * Set KillMode
    * @see {@link KillSectionConfig.KillMode}
    */
-  public setKillMode(value: KillSectionConfig["KillMode"]): this {
+  public setKillMode(value?: KillSectionConfig["KillMode"]): this {
     this.section.KillMode = value;
     return this;
   }
@@ -155,7 +155,7 @@ export class KillSectionBuilder {
    * Set KillSignal
    * @see {@link KillSectionConfig.KillSignal}
    */
-  public setKillSignal(value: KillSectionConfig["KillSignal"]): this {
+  public setKillSignal(value?: KillSectionConfig["KillSignal"]): this {
     this.section.KillSignal = value;
     return this;
   }
@@ -164,7 +164,7 @@ export class KillSectionBuilder {
    * Set RestartKillSignal
    * @see {@link KillSectionConfig.RestartKillSignal}
    */
-  public setRestartKillSignal(value: KillSectionConfig["RestartKillSignal"]): this {
+  public setRestartKillSignal(value?: KillSectionConfig["RestartKillSignal"]): this {
     this.section.RestartKillSignal = value;
     return this;
   }
@@ -173,7 +173,7 @@ export class KillSectionBuilder {
    * Set SendSIGHUP
    * @see {@link KillSectionConfig.SendSIGHUP}
    */
-  public setSendSIGHUP(value: KillSectionConfig["SendSIGHUP"]): this {
+  public setSendSIGHUP(value?: KillSectionConfig["SendSIGHUP"]): this {
     this.section.SendSIGHUP = value;
     return this;
   }
@@ -182,7 +182,7 @@ export class KillSectionBuilder {
    * Set SendSIGKILL
    * @see {@link KillSectionConfig.SendSIGKILL}
    */
-  public setSendSIGKILL(value: KillSectionConfig["SendSIGKILL"]): this {
+  public setSendSIGKILL(value?: KillSectionConfig["SendSIGKILL"]): this {
     this.section.SendSIGKILL = value;
     return this;
   }
@@ -191,7 +191,7 @@ export class KillSectionBuilder {
    * Set FinalKillSignal
    * @see {@link KillSectionConfig.FinalKillSignal}
    */
-  public setFinalKillSignal(value: KillSectionConfig["FinalKillSignal"]): this {
+  public setFinalKillSignal(value?: KillSectionConfig["FinalKillSignal"]): this {
     this.section.FinalKillSignal = value;
     return this;
   }
@@ -200,7 +200,7 @@ export class KillSectionBuilder {
    * Set WatchdogSignal
    * @see {@link KillSectionConfig.WatchdogSignal}
    */
-  public setWatchdogSignal(value: KillSectionConfig["WatchdogSignal"]): this {
+  public setWatchdogSignal(value?: KillSectionConfig["WatchdogSignal"]): this {
     this.section.WatchdogSignal = value;
     return this;
   }
