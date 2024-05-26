@@ -2,7 +2,7 @@ import { defineWorkspace } from "vitest/config";
 
 const projects = [
   "conf",
-  "ctl" 
+  "ctl", 
 ];
 
 export default defineWorkspace(
