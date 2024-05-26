@@ -1,0 +1,47 @@
+{
+  "name": "@systemd-js/ctl",
+  "version": "0.1.2",
+  "engines": {
+    "node": "20.x",
+    "yarn": "4.x"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/chyzwar/systemd"
+  },
+  "sideEffects": false,
+  "publishConfig": {
+    "access": "public"
+  },
+  "main": "lib/index.js",
+  "type": "module",
+  "author": "chyzwar",
+  "license": "Apache-2.0",
+  "description": "Controlling runtime of systemd units",
+  "keywords": [
+    "systemd",
+    "systemctl",
+    "systemd-timer",
+    "systemd-service"
+  ],
+  "scripts": {
+    "lint": "eslint . --cache",
+    "lint:fix": "eslint . --fix --cache",
+    "build": "tsc --build",
+    "build:watch": "tsc --build --watch",
+    "test": "vitest --run",
+    "test:coverage": "vitest --coverage",
+    "test:watch": "vitest"
+  },
+  "dependencies": {
+    "@systemd-js/ctl": "^0.1.2"
+  },
+  "devDependencies": {
+    "@chyzwar/eslint-config": "^0.2.26",
+    "@chyzwar/tsconfig": "^0.2.26",
+    "@types/node": "^20.12.12",
+    "eslint": "^9.2.0",
+    "typescript": "^5.4.5",
+    "vitest": "^1.6.0"
+  }
+}
