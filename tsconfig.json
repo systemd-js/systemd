@@ -9,5 +9,6 @@
   "include": [],
   "references": [
     {"path": "./packages/conf"},
+    {"path": "./packages/ctl"},
   ]
 }

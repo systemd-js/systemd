@@ -1186,6 +1186,20 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@systemd-js/ctl@npm:^0.1.2, @systemd-js/ctl@workspace:packages/ctl":
+  version: 0.0.0-use.local
+  resolution: "@systemd-js/ctl@workspace:packages/ctl"
+  dependencies:
+    "@chyzwar/eslint-config": "npm:^0.2.26"
+    "@chyzwar/tsconfig": "npm:^0.2.26"
+    "@systemd-js/ctl": "npm:^0.1.2"
+    "@types/node": "npm:^20.12.12"
+    eslint: "npm:^9.2.0"
+    typescript: "npm:^5.4.5"
+    vitest: "npm:^1.6.0"
+  languageName: unknown
+  linkType: soft
+
 "@systemd/root@workspace:.":
   version: 0.0.0-use.local
   resolution: "@systemd/root@workspace:."
