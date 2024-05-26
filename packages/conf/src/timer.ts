@@ -522,18 +522,30 @@ export class Timer {
     this.unitSection = new UnitSectionBuilder(Unit);
     this.installSection = new InstallSectionBuilder(Install); 
   }
-  public getType() {
-    return 'timer'
+  public static getType() {
+    return "timer";
   }
 
+  /**
+   * Get the [Timer] section of the timer
+   * @returns {TimerSectionBuilder}
+   */
   public getTimerSection() {
     return this.timerSection;
   }
 
+  /**
+   * Get the [Unit] section of the timer
+   * @returns {UnitSectionBuilder}
+   */
   public getUnitSection() {
     return this.unitSection;
   }
 
+  /**
+   * Get the [Install] section of the timer
+   * @returns {InstallSectionBuilder}
+   */
   public getInstallSection() {
     return this.installSection;
   }

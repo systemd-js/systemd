@@ -1,4 +1,4 @@
-import { Service } from "./service.js";
-import { Timer } from "./timer.js";
+import type { Service } from "./service.js";
+import type { Timer } from "./timer.js";
 
-export type Unit = Service | Timer; 
+export type Unit = Service | Timer;

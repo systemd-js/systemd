@@ -54,7 +54,7 @@ User=root
 const unitOnlyDesc = `
 [Unit]
 Description=example
-`
+`;
 
 describe("INI - fromString", () => {
   test("should parse INI data", () => {
@@ -92,7 +92,7 @@ describe("INI - fromString", () => {
     const ini = INI.fromObject(obj);
     const result = ini.toString();
     expect(result.trim()).toEqual(unitOnlyDesc.trim());
-  })
+  });
 
   test("should parse INI data with line dataUnitWithBackslash", () => {
     const expected = {

@@ -1583,18 +1583,30 @@ export class Service {
     this.installSection = new InstallSectionBuilder(Install); 
   }
 
-  public getType() {
-    return 'service'
+  public static getType() {
+    return "service";
   }
 
+  /**
+   * Get builder for [Service] section
+   * @returns {ServiceSectionBuilder} Unit section
+   */
   public getServiceSection() {
     return this.serviceSection;
   }
 
+  /**
+   * Get builder for [Unit] section
+   * @returns {UnitSectionBuilder} Unit section
+   */
   public getUnitSection() {
     return this.unitSection;
   }
 
+  /**
+   * Get builder for [Install] section
+   * @returns {InstallSectionBuilder} Install section
+   */
   public getInstallSection() {
     return this.installSection;
   }
