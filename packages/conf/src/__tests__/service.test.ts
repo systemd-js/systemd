@@ -101,7 +101,8 @@ describe("Service", () => {
 
       service
         .getInstallSection()
-        .setWantedBy("multi-user.target");
+        .setWantedBy("multi-user.target")
+        .setRequiredBy();
 
       expect(service.toObject()).toMatchObject(serviceObj);
     });

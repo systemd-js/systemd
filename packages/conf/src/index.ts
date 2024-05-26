@@ -27,6 +27,7 @@ export {
   TimerSectionBuilder,
 } from "./timer.js";
 
-
-
+export type {
+  Unit,
+} from "./types.js";
 

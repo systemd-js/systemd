@@ -1,9 +1,9 @@
 {
-  "name": "@systemd-js/conf",
-  "version": "0.1.3",
+  "name": "@systemd-js/ctl",
+  "version": "0.1.2",
   "engines": {
     "node": "20.x",
-    "yarn": "4.2.2"
+    "yarn": "4.x"
   },
   "repository": {
     "type": "git",
@@ -17,10 +17,10 @@
   "type": "module",
   "author": "chyzwar",
   "license": "Apache-2.0",
-  "description": "Reading and creating systemd configs",
+  "description": "Controlling runtime of systemd units",
   "keywords": [
     "systemd",
-    "ini",
+    "systemctl",
     "systemd-timer",
     "systemd-service"
   ],
@@ -34,7 +34,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "zod": "^3.23.8"
+    "@systemd-js/ctl": "^0.1.2"
   },
   "devDependencies": {
     "@chyzwar/eslint-config": "^0.2.26",

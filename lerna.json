@@ -8,14 +8,20 @@
   "version": "0.1.3",
   "changelogPreset": "conventional-changelog-conventionalcommits",
   "command": {
+    "publish": {
+      "cleanupTempFiles": true,
+      "removePackageFields": [
+        "devDependencies",
+        "scripts"
+      ]
+    },
     "version": {
-      "noPrivate": true,
-      "skipBumpOnlyReleases": true,
       "conventionalCommits": true,
       "syncWorkspaceLock": true,
       "createRelease": "github",
-      "message": "chore(release): new versions",
+      "message": "chore(release): publish new version %v",
       "changelogIncludeCommitsClientLogin": " - by @%l",
+      "changelogHeaderMessage": "## Manage systemd services with Node.js",
       "allowBranch": "master",
       "ignoreChanges": [
         "yarn.lock"

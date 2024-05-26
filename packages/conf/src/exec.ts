@@ -1308,7 +1308,7 @@ export class ExecSectionBuilder {
    * Set ExecSearchPath
    * @see {@link ExecSectionConfig.ExecSearchPath}
    */
-  public setExecSearchPath(value: string): this {
+  public setExecSearchPath(value?: string): this {
     this.section.ExecSearchPath = value;
     return this;
   }
@@ -1317,7 +1317,7 @@ export class ExecSectionBuilder {
    * Set WorkingDirectory
    * @see {@link ExecSectionConfig.WorkingDirectory}
    */
-  public setWorkingDirectory(value: string): this {
+  public setWorkingDirectory(value?: string): this {
     this.section.WorkingDirectory = value;
     return this;
   }
@@ -1326,7 +1326,7 @@ export class ExecSectionBuilder {
    * Set RootDirectory
    * @see {@link ExecSectionConfig.RootDirectory}
    */
-  public setRootDirectory(value: string): this {
+  public setRootDirectory(value?: string): this {
     this.section.RootDirectory = value;
     return this;
   }
@@ -1335,7 +1335,7 @@ export class ExecSectionBuilder {
    * Set RootImage
    * @see {@link ExecSectionConfig.RootImage}
    */
-  public setRootImage(value: string): this {
+  public setRootImage(value?: string): this {
     this.section.RootImage = value;
     return this;
   }
@@ -1344,7 +1344,7 @@ export class ExecSectionBuilder {
    * Set RootImageOptions
    * @see {@link ExecSectionConfig.RootImageOptions}
    */
-  public setRootImageOptions(value: string): this {
+  public setRootImageOptions(value?: string): this {
     this.section.RootImageOptions = value;
     return this;
   }
@@ -1353,7 +1353,7 @@ export class ExecSectionBuilder {
    * Set RootEphemeral
    * @see {@link ExecSectionConfig.RootEphemeral}
    */
-  public setRootEphemeral(value: boolean): this {
+  public setRootEphemeral(value?: boolean): this {
     this.section.RootEphemeral = value;
     return this;
   }
@@ -1362,7 +1362,7 @@ export class ExecSectionBuilder {
    * Set RootHash
    * @see {@link ExecSectionConfig.RootHash}
    */
-  public setRootHash(value: string): this {
+  public setRootHash(value?: string): this {
     this.section.RootHash = value;
     return this;
   }
@@ -1371,7 +1371,7 @@ export class ExecSectionBuilder {
    * Set RootHashSignature
    * @see {@link ExecSectionConfig.RootHashSignature}
    */
-  public setRootHashSignature(value: string): this {
+  public setRootHashSignature(value?: string): this {
     this.section.RootHashSignature = value;
     return this;
   }
@@ -1380,7 +1380,7 @@ export class ExecSectionBuilder {
    * Set RootVerity
    * @see {@link ExecSectionConfig.RootVerity}
    */
-  public setRootVerity(value: string): this {
+  public setRootVerity(value?: string): this {
     this.section.RootVerity = value;
     return this;
   }
@@ -1389,7 +1389,7 @@ export class ExecSectionBuilder {
    * Set RootImagePolicy
    * @see {@link ExecSectionConfig.RootImagePolicy}
    */
-  public setRootImagePolicy(value: string): this {
+  public setRootImagePolicy(value?: string): this {
     this.section.RootImagePolicy = value;
     return this;
   }
@@ -1398,7 +1398,7 @@ export class ExecSectionBuilder {
    * Set MountImagePolicy
    * @see {@link ExecSectionConfig.MountImagePolicy}
    */
-  public setMountImagePolicy(value: string): this {
+  public setMountImagePolicy(value?: string): this {
     this.section.MountImagePolicy = value;
     return this;
   }
@@ -1407,7 +1407,7 @@ export class ExecSectionBuilder {
    * Set ExtensionImagePolicy
    * @see {@link ExecSectionConfig.ExtensionImagePolicy}
    */
-  public setExtensionImagePolicy(value: string): this {
+  public setExtensionImagePolicy(value?: string): this {
     this.section.ExtensionImagePolicy = value;
     return this;
   }
@@ -1416,7 +1416,7 @@ export class ExecSectionBuilder {
    * Set MountAPIVFS
    * @see {@link ExecSectionConfig.MountAPIVFS}
    */
-  public setMountAPIVFS(value: boolean): this {
+  public setMountAPIVFS(value?: boolean): this {
     this.section.MountAPIVFS = value;
     return this;
   }
@@ -1426,7 +1426,7 @@ export class ExecSectionBuilder {
    * @see {@link ExecSectionConfig.ProtectProc}
    */
 
-  public setProtectProc(value: "default" | "invisible" | "noaccess" | "ptraceable"): this {
+  public setProtectProc(value?: "default" | "invisible" | "noaccess" | "ptraceable"): this {
     this.section.ProtectProc = value;
     return this;
   }
@@ -1435,7 +1435,7 @@ export class ExecSectionBuilder {
    * Set ProcSubset
    * @see {@link ExecSectionConfig.ProcSubset}
    */
-  public setProcSubset(value: "all" | "pid"): this {
+  public setProcSubset(value?: "all" | "pid"): this {
     this.section.ProcSubset = value;
     return this;
   }
@@ -1444,7 +1444,7 @@ export class ExecSectionBuilder {
    * Set BindPaths
    * @see {@link ExecSectionConfig.BindPaths}
    */
-  public setBindPaths(value: string): this {
+  public setBindPaths(value?: string): this {
     this.section.BindPaths = value;
     return this;
   }
@@ -1453,7 +1453,7 @@ export class ExecSectionBuilder {
    * Set BindReadOnlyPaths
    * @see {@link ExecSectionConfig.BindReadOnlyPaths}
    */
-  public setBindReadOnlyPaths(value: string): this {
+  public setBindReadOnlyPaths(value?: string): this {
     this.section.BindReadOnlyPaths = value;
     return this;
   }
@@ -1462,7 +1462,7 @@ export class ExecSectionBuilder {
    * Set MountImages
    * @see {@link ExecSectionConfig.MountImages}
    */
-  public setMountImages(value: string): this {
+  public setMountImages(value?: string): this {
     this.section.MountImages = value;
     return this;
   }
@@ -1471,7 +1471,7 @@ export class ExecSectionBuilder {
    * Set ExtensionImages
    * @see {@link ExecSectionConfig.ExtensionImages}
    */
-  public setExtensionImages(value: string): this {
+  public setExtensionImages(value?: string): this {
     this.section.ExtensionImages = value;
     return this;
   }
@@ -1480,7 +1480,7 @@ export class ExecSectionBuilder {
    * Set ExtensionDirectories
    * @see {@link ExecSectionConfig.ExtensionDirectories}
    */
-  public setExtensionDirectories(value: string): this {
+  public setExtensionDirectories(value?: string): this {
     this.section.ExtensionDirectories = value;
     return this;
   }
@@ -1489,7 +1489,7 @@ export class ExecSectionBuilder {
    * Set User
    * @see {@link ExecSectionConfig.User}
    */
-  public setUser(value: string): this {
+  public setUser(value?: string): this {
     this.section.User = value;
     return this;
   }
@@ -1498,7 +1498,7 @@ export class ExecSectionBuilder {
    * Set Group
    * @see {@link ExecSectionConfig.Group}
    */
-  public setGroup(value: string): this {
+  public setGroup(value?: string): this {
     this.section.Group = value;
     return this;
   }
@@ -1507,7 +1507,7 @@ export class ExecSectionBuilder {
    * Set DynamicUser
    * @see {@link ExecSectionConfig.DynamicUser}
    */
-  public setDynamicUser(value: boolean): this {
+  public setDynamicUser(value?: boolean): this {
     this.section.DynamicUser = value;
     return this;
   }
@@ -1516,7 +1516,7 @@ export class ExecSectionBuilder {
    * Set SupplementaryGroups
    * @see {@link ExecSectionConfig.SupplementaryGroups}
    */
-  public setSupplementaryGroups(value: string): this {
+  public setSupplementaryGroups(value?: string): this {
     this.section.SupplementaryGroups = value;
     return this;
   }
@@ -1525,7 +1525,7 @@ export class ExecSectionBuilder {
    * Set SetLoginEnvironment
    * @see {@link ExecSectionConfig.SetLoginEnvironment}
    */
-  public setSetLoginEnvironment(value: boolean): this {
+  public setSetLoginEnvironment(value?: boolean): this {
     this.section.SetLoginEnvironment = value;
     return this;
   }
@@ -1534,7 +1534,7 @@ export class ExecSectionBuilder {
    * Set PAMName
    * @see {@link ExecSectionConfig.PAMName}
    */
-  public setPAMName(value: string): this {
+  public setPAMName(value?: string): this {
     this.section.PAMName = value;
     return this;
   }
@@ -1543,7 +1543,7 @@ export class ExecSectionBuilder {
    * Set CapabilityBoundingSet
    * @see {@link ExecSectionConfig.CapabilityBoundingSet}
    */
-  public setCapabilityBoundingSet(value: string): this {
+  public setCapabilityBoundingSet(value?: string): this {
     this.section.CapabilityBoundingSet = value;
     return this;
   }
@@ -1552,7 +1552,7 @@ export class ExecSectionBuilder {
    * Set AmbientCapabilities
    * @see {@link ExecSectionConfig.AmbientCapabilities}
    */
-  public setAmbientCapabilities(value: string): this {
+  public setAmbientCapabilities(value?: string): this {
     this.section.AmbientCapabilities = value;
     return this;
   }
@@ -1561,7 +1561,7 @@ export class ExecSectionBuilder {
    * Set NoNewPrivileges
    * @see {@link ExecSectionConfig.NoNewPrivileges}
    */
-  public setNoNewPrivileges(value: boolean): this {
+  public setNoNewPrivileges(value?: boolean): this {
     this.section.NoNewPrivileges = value;
     return this;
   }
@@ -1570,7 +1570,7 @@ export class ExecSectionBuilder {
    * Set SecureBits
    * @see {@link ExecSectionConfig.SecureBits}
    */
-  public setSecureBits(value: string): this {
+  public setSecureBits(value?: string): this {
     this.section.SecureBits = value;
     return this;
   }
@@ -1579,7 +1579,7 @@ export class ExecSectionBuilder {
    * Set Environment
    * @see {@link ExecSectionConfig.Environment}
    */
-  public setEnvironment(value: string[] | string): this {
+  public setEnvironment(value?: string[] | string): this {
     this.section.Environment = value;
     return this;
   }
@@ -1588,7 +1588,7 @@ export class ExecSectionBuilder {
    * Set EnvironmentFile
    * @see {@link ExecSectionConfig.EnvironmentFile}
    */
-  public setEnvironmentFile(value: string[] | string): this {
+  public setEnvironmentFile(value?: string[] | string): this {
     this.section.EnvironmentFile = value;
     return this;
   }
@@ -1597,7 +1597,7 @@ export class ExecSectionBuilder {
    * Set PassEnvironment
    * @see {@link ExecSectionConfig.PassEnvironment}
    */
-  public setPassEnvironment(value: string[] | string): this {
+  public setPassEnvironment(value?: string[] | string): this {
     this.section.PassEnvironment = value;
     return this;
   }
@@ -1606,7 +1606,7 @@ export class ExecSectionBuilder {
    * Set UnsetEnvironment
    * @see {@link ExecSectionConfig.UnsetEnvironment}
    */
-  public setUnsetEnvironment(value: string[] | string): this {
+  public setUnsetEnvironment(value?: string[] | string): this {
     this.section.UnsetEnvironment = value;
     return this;
   }
@@ -1615,7 +1615,7 @@ export class ExecSectionBuilder {
    * Set SELinuxContext
    * @see {@link ExecSectionConfig.SELinuxContext}
    */
-  public setSELinuxContext(value: string): this {
+  public setSELinuxContext(value?: string): this {
     this.section.SELinuxContext = value;
     return this;
   }
@@ -1624,7 +1624,7 @@ export class ExecSectionBuilder {
    * Set AppArmorProfile
    * @see {@link ExecSectionConfig.AppArmorProfile}
    */
-  public setAppArmorProfile(value: string): this {
+  public setAppArmorProfile(value?: string): this {
     this.section.AppArmorProfile = value;
     return this;
   }
@@ -1633,7 +1633,7 @@ export class ExecSectionBuilder {
    * Set SmackProcessLabel
    * @see {@link ExecSectionConfig.SmackProcessLabel}
    */
-  public setSmackProcessLabel(value: string): this {
+  public setSmackProcessLabel(value?: string): this {
     this.section.SmackProcessLabel = value;
     return this;
   }

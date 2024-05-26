@@ -109,7 +109,7 @@ export class InstallSectionBuilder {
    * Set alias for the unit
    * @see {@link InstallSectionConfig.Alias}
    */
-  public setAlias(alias: string[] | string): this {
+  public setAlias(alias?: string[] | string): this {
     this.section.Alias = alias;
     return this;
   }
@@ -118,7 +118,7 @@ export class InstallSectionBuilder {
    * Set WantedBy for the unit
    * @see {@link InstallSectionConfig.WantedBy}
    */
-  public setWantedBy(wantedBy: string[] | string): this {
+  public setWantedBy(wantedBy?: string[] | string): this {
     this.section.WantedBy = wantedBy;
     return this;
   }
@@ -127,7 +127,7 @@ export class InstallSectionBuilder {
    * Set RequiredBy for the unit
    * @see {@link InstallSectionConfig.RequiredBy}
    */
-  public setRequiredBy(requiredBy: string[] | string): this {
+  public setRequiredBy(requiredBy?: string[] | string): this {
     this.section.RequiredBy = requiredBy;
     return this;
   }
@@ -136,7 +136,7 @@ export class InstallSectionBuilder {
    * Set UpheldBy for the unit
    * @see {@link InstallSectionConfig.UpheldBy}
    */
-  public setUpheldBy(upheldBy: string[] | string): this {
+  public setUpheldBy(upheldBy?: string[] | string): this {
     this.section.UpheldBy = upheldBy;
     return this;
   }
@@ -145,7 +145,7 @@ export class InstallSectionBuilder {
    * Set Also for the unit
    * @see {@link InstallSectionConfig.Also}
    */
-  public setAlso(also: string[] | string): this {
+  public setAlso(also?: string[] | string): this {
     this.section.Also = also;
     return this;
   }
@@ -154,7 +154,7 @@ export class InstallSectionBuilder {
    * Set DefaultInstance for the unit
    * @see {@link InstallSectionConfig.DefaultInstance}
    */
-  public setDefaultInstance(defaultInstance: string): this {
+  public setDefaultInstance(defaultInstance?: string): this {
     this.section.DefaultInstance = defaultInstance;
     return this;
   }

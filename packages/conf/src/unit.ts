@@ -90,7 +90,7 @@ export interface UnitSection {
 
     Added in version 201.
   */
-  Requires?: string[] | string;
+  Requires?: string;
 
   /**
   Requisite=
@@ -106,7 +106,7 @@ export interface UnitSection {
 
     Added in version 201.
   */
-  Requisite?: string[] | string;
+  Requisite?: string;
 
   /**
   BindsTo=
@@ -133,7 +133,7 @@ export interface UnitSection {
 
     Added in version 201.
   */
-  BindsTo?: string[] | string;
+  BindsTo?: string;
 
   /**
   PartOf=
@@ -148,7 +148,7 @@ export interface UnitSection {
 
     Added in version 201.
   */
-  PartOf?: string[] | string;
+  PartOf?: string;
 
   /**
   Upholds=
@@ -165,7 +165,7 @@ export interface UnitSection {
 
     Added in version 249.
   */
-  Upholds?: string[] | string;
+  Upholds?: string;
 
   /**
   Conflicts=
@@ -189,7 +189,7 @@ export interface UnitSection {
 
     Added in version 201.
   */
-  Conflicts?: string[] | string;
+  Conflicts?: string;
 
   /**
   Before=, After=
@@ -239,13 +239,19 @@ export interface UnitSection {
     the "failed" state.
 
     Added in version 201.
+  */
+  OnFailure?: string;
 
+  /**
   OnSuccess=
     A space-separated list of one or more units that are activated when this unit enters
     the "inactive" state.
 
     Added in version 249.
+  */
+  OnSuccess?: string;
 
+  /**
   PropagatesReloadTo=, ReloadPropagatedFrom=
     A space-separated list of one or more units to which reload requests from this unit
     shall be propagated to, or units from which reload requests shall be propagated to
@@ -253,7 +259,10 @@ export interface UnitSection {
     enqueue reload requests on all units that are linked to it using these two settings.
 
     Added in version 201.
+  */
+  PropagatesReloadTo?: string;
 
+  /**
   PropagatesStopTo=, StopPropagatedFrom=
     A space-separated list of one or more units to which stop requests from this unit
     shall be propagated to, or units from which stop requests shall be propagated to this
@@ -261,7 +270,10 @@ export interface UnitSection {
     stop requests on all units that are linked to it using these two settings.
 
     Added in version 249.
+  */
+  PropagatesStopTo?: string;
 
+  /**
   JoinsNamespaceOf=
     For units that start processes (such as service units), lists one or more other units
     whose network and/or temporary file namespace to join. If this is specified on a unit
@@ -278,7 +290,10 @@ export interface UnitSection {
     namespace is joined.
 
     Added in version 209.
+  */
+  JoinsNamespaceOf?: string;
 
+  /**
   RequiresMountsFor=
     Takes a space-separated list of absolute paths. Automatically adds dependencies of
     type Requires= and After= for all mount units required to access the specified path.
@@ -1013,14 +1028,19 @@ export const UnitSectionSchema = implement<UnitSection>().with({
   Description: z.string().optional(),
   Documentation: z.union([z.string(), z.array(z.string())]).optional(),
   Wants: z.union([z.string(), z.array(z.string())]).optional(),
-  Requires: z.union([z.string(), z.array(z.string())]).optional(),
-  Requisite: z.union([z.string(), z.array(z.string())]).optional(),
-  BindsTo: z.union([z.string(), z.array(z.string())]).optional(),
-  PartOf: z.union([z.string(), z.array(z.string())]).optional(),
-  Upholds: z.union([z.string(), z.array(z.string())]).optional(),
-  Conflicts: z.union([z.string(), z.array(z.string())]).optional(),
+  Requires: z.string().optional(),
+  Requisite: z.string().optional(),
+  BindsTo: z.string().optional(),
+  PartOf: z.string().optional(),
+  Upholds: z.string().optional(),
+  Conflicts: z.string().optional(),
   After: z.union([z.string(), z.array(z.string())]).optional(),
   Before: z.union([z.string(), z.array(z.string())]).optional(),
+  OnFailure: z.string().optional(),
+  OnSuccess: z.string().optional(),
+  PropagatesReloadTo: z.string().optional(),
+  PropagatesStopTo: z.string().optional(),
+  JoinsNamespaceOf: z.string().optional(),
 });
 
 export class UnitSectionBuilder {
@@ -1041,7 +1061,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.Description}
    */
-  public setDescription(description: string) {
+  public setDescription(description?: string) {
     this.section.Description = description;
     return this;
   }
@@ -1049,7 +1069,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.Documentation}
    */
-  public setDocumentation(documentation: string[] | string) {
+  public setDocumentation(documentation?: string[] | string) {
     this.section.Documentation = documentation;
     return this;
   }
@@ -1057,7 +1077,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.Wants}
    */
-  public setWants(wants: string[] | string) {
+  public setWants(wants?: string) {
     this.section.Wants = wants;
     return this;
   }
@@ -1065,7 +1085,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.Requires}
    */
-  public setRequires(requires: string[] | string) {
+  public setRequires(requires?: string) {
     this.section.Requires = requires;
     return this;
   }
@@ -1073,7 +1093,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.Requisite}
    */
-  public setRequisite(requisite: string[] | string) {
+  public setRequisite(requisite?: string) {
     this.section.Requisite = requisite;
     return this;
   }
@@ -1081,7 +1101,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.BindsTo}
    */
-  public setBindsTo(bindsTo: string[] | string) {
+  public setBindsTo(bindsTo?: string) {
     this.section.BindsTo = bindsTo;
     return this;
   }
@@ -1089,7 +1109,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.PartOf}
    */
-  public setPartOf(partOf: string[] | string) {
+  public setPartOf(partOf?: string) {
     this.section.PartOf = partOf;
     return this;
   }
@@ -1097,7 +1117,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.Upholds}
    */
-  public setUpholds(upholds: string[] | string) {
+  public setUpholds(upholds?: string) {
     this.section.Upholds = upholds;
     return this;
   }
@@ -1105,7 +1125,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.Conflicts}
    */
-  public setConflicts(conflicts: string[] | string) {
+  public setConflicts(conflicts?: string) {
     this.section.Conflicts = conflicts;
     return this;
   }
@@ -1113,7 +1133,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.After}
    */
-  public setAfter(after: string[] | string) {
+  public setAfter(after?: string[] | string) {
     this.section.After = after;
     return this;
   }
@@ -1121,10 +1141,48 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.Before}
    */
-  public setBefore(before: string[] | string) {
+  public setBefore(before?: string[] | string) {
     this.section.Before = before;
     return this;
   }
 
-  
+  /**
+   * @see {@link UnitSection.OnFailure}
+   */
+  public setOnFailure(onFailure?: string) {
+    this.section.OnFailure = onFailure;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.OnSuccess}
+   */
+  public setOnSuccess(onSuccess?: string) {
+    this.section.OnSuccess = onSuccess;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.PropagatesReloadTo}
+   */
+  public setPropagatesReloadTo(propagatesReloadTo?: string) {
+    this.section.PropagatesReloadTo = propagatesReloadTo;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.PropagatesStopTo}
+   */
+  public setPropagatesStopTo(propagatesStopTo?: string) {
+    this.section.PropagatesStopTo = propagatesStopTo;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.JoinsNamespaceOf}
+   */
+  public setJoinsNamespaceOf(joinsNamespaceOf?: string) {
+    this.section.JoinsNamespaceOf = joinsNamespaceOf;
+    return this;
+  }  
 }
