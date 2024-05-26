@@ -367,7 +367,10 @@ export interface ResourceSectionConfig {
     system.conf(5).
 
     Added in version 230.
-
+  */
+  IOAccounting?: boolean;
+      
+  /**
   IOWeight=weight, StartupIOWeight=weight
       These settings control the io controller in the unified hierarchy.
 
@@ -385,7 +388,11 @@ export interface ResourceSectionConfig {
       boot-up and shutdown differently than during runtime.
 
       Added in version 230.
+  */
+  IOWeight?: number;
+  StartupIOWeight?: number;
 
+  /**
   IODeviceWeight=device weight
       This setting controls the io controller in the unified hierarchy.
 
@@ -1163,6 +1170,9 @@ export const ResourceSectionConfigSchema = implement<ResourceSectionConfig>().wi
   StartupAllowedMemoryNodes: z.string().optional(),
   TasksAccounting: z.boolean().optional(),
   TasksMax: z.number().optional(),
+  IOAccounting: z.boolean().optional(),
+  IOWeight: z.number().optional(),
+  StartupIOWeight: z.number().optional(),
 });
 
 
@@ -1383,6 +1393,33 @@ export class ResourceSectionBuilder {
    */
   public setTasksMax(value?: ResourceSectionConfig["TasksMax"]): this {
     this.section.TasksMax = value;
+    return this;
+  }
+
+  /**
+   * Set resource IOAccounting
+   * @see {@link ResourceSectionConfig.IOAccounting}
+   */
+  public setIOAccounting(value?: ResourceSectionConfig["IOAccounting"]): this {
+    this.section.IOAccounting = value;
+    return this;
+  }
+
+  /**
+   * Set resource IOWeight
+   * @see {@link ResourceSectionConfig.IOWeight}
+   */
+  public setIOWeight(value?: ResourceSectionConfig["IOWeight"]): this {
+    this.section.IOWeight = value;
+    return this;
+  }
+
+  /**
+   * Set resource StartupIOWeight
+   * @see {@link ResourceSectionConfig.StartupIOWeight}
+   */
+  public setStartupIOWeight(value?: ResourceSectionConfig["StartupIOWeight"]): this {
+    this.section.StartupIOWeight = value;
     return this;
   }
 }
