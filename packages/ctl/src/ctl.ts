@@ -1,12 +1,14 @@
+/* eslint-disable @typescript-eslint/consistent-return */
 import { execSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
-import { INI, Service, Timer, Unit } from "@systemd-js/conf";
+import type { Unit } from "@systemd-js/conf";
+import { INI, Service, Timer } from "@systemd-js/conf";
 import { extname } from "node:path";
 
 
-const getType = (name: string, unit?: Unit) => {
+const getType = (name: string, unit?: Unit): string => {
   if(unit) {
-    return unit.getType();
+    return (unit.constructor as typeof Service).getType();
   }
   const type = extname(name).slice(1);
   if (!type) {
@@ -31,44 +33,43 @@ const getUnit = (unitName: string, type: string = getType(unitName)): Unit | und
   const name = getName(unitName);
   const path = `/etc/systemd/system/${name}.${type}`;
 
-  if (existsSync(path)) {
-    const content = readFileSync(path, "utf-8");
-    switch (type) {
-      case "service": {
-        const ini = INI.fromString(content);
-        const unit = Service.fromINI(ini);
-        return unit;
-      }
-      case "timer": {
-        const ini = INI.fromString(content);
-        const unit = Timer.fromINI(ini);
-        return unit;
-      }
-      default:
-        throw new Error(`Unit type not supported: ${type}`);
-    }
+  if (!existsSync(path)) {
+    return;
   }
-  return;
+
+  const content = readFileSync(path, "utf-8");
+  switch (type) {
+    case "service": {
+      const ini = INI.fromString(content);
+      return Service.fromINI(ini);
+    }
+    case "timer": {
+      const ini = INI.fromString(content);
+      return Timer.fromINI(ini);
+    }
+    default:
+      throw new Error(`Unit type not supported: ${type}`);
+  }
 };
 
 export class Ctl {
-  private type: string;
-  private name: string;
-  private path: string;
+  private readonly type: string;
+  private readonly name: string;
+  private readonly path: string;
 
-  private unit?: Unit;
-  private current?: Unit;
+  private readonly unit?: Unit;
+  private readonly current?: Unit;
 
-  constructor(name: string, unit?: Unit) {
+  public constructor(name: string, unit?: Unit) {
     this.name = getName(name);
     this.type = getType(name, unit);
     this.current = getUnit(
       this.name,
-      this.type,
+      this.type
     );
     this.path = getPath(
       this.name,
-      this.type,
+      this.type
     );
     this.unit = unit;
   }
