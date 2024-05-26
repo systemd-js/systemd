@@ -1,6 +1,6 @@
 {
   "name": "@systemd-js/conf",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "engines": {
     "node": "20.x",
     "yarn": "4.2.2"

@@ -1,6 +1,6 @@
 {
   "name": "@systemd-js/ctl",
-  "version": "0.1.2",
+  "version": "0.1.4",
   "engines": {
     "node": "20.x",
     "yarn": "4.x"
@@ -34,7 +34,7 @@
     "test:watch": "vitest"
   },
   "dependencies": {
-    "@systemd-js/ctl": "^0.1.2"
+    "@systemd-js/ctl": "^0.1.4"
   },
   "devDependencies": {
     "@chyzwar/eslint-config": "^0.2.26",
