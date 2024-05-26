@@ -1218,7 +1218,7 @@ __metadata:
     "@lerna-lite/publish": "npm:^3.4.0"
     "@lerna-lite/version": "npm:^3.4.0"
     "@types/node": "npm:^20.12.12"
-    conventional-changelog-conventionalcommits: "npm:^7.0.2"
+    conventional-changelog-conventionalcommits: "npm:^8.0.0"
     eslint: "npm:^9.3.0"
     husky: "npm:^9.0.11"
     lint-staged: "npm:^15.2.5"
@@ -2113,6 +2113,15 @@ __metadata:
   dependencies:
     compare-func: "npm:^2.0.0"
   checksum: 10c2/a97040620f09ee6322012a59ff53699b1a67f764953de76a5247a6edfc3984e6e280965c41fec8c1b0d08726935916269da35e4b2594d846c17f78d2ad745778
+  languageName: node
+  linkType: hard
+
+"conventional-changelog-conventionalcommits@npm:^8.0.0":
+  version: 8.0.0
+  resolution: "conventional-changelog-conventionalcommits@npm:8.0.0"
+  dependencies:
+    compare-func: "npm:^2.0.0"
+  checksum: 10c2/767b40c4d56d71939d9e46148c21d7bae7fb155d21effbbfa46b7ce4e21261f045175267e0626546a002eda6f6d6575524db9a3cf1288f1bdf1214ec1fbbe242
   languageName: node
   linkType: hard
 
