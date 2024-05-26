@@ -1193,13 +1193,13 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@systemd-js/ctl@npm:^0.1.4, @systemd-js/ctl@workspace:packages/ctl":
+"@systemd-js/ctl@npm:^0.2.0, @systemd-js/ctl@workspace:packages/ctl":
   version: 0.0.0-use.local
   resolution: "@systemd-js/ctl@workspace:packages/ctl"
   dependencies:
     "@chyzwar/eslint-config": "npm:^0.2.26"
     "@chyzwar/tsconfig": "npm:^0.2.26"
-    "@systemd-js/ctl": "npm:^0.1.4"
+    "@systemd-js/ctl": "npm:^0.2.0"
     "@types/node": "npm:^20.12.12"
     eslint: "npm:^9.3.0"
     typescript: "npm:^5.4.5"
