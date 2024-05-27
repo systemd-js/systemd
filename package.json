@@ -2,7 +2,7 @@
   "name": "@systemd/root",
   "version": "1.0.0",
   "engines": {
-    "node": "20.x",
+    "node": "20.13.1",
     "yarn": "4.2.2"
   },
   "type": "module",
