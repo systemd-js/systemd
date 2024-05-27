@@ -1,10 +1,11 @@
 export {
   Ctl,
   
-  createUnit,
-  enableUnit,
-  disableUnit,
-  startUnit,
-  stopUnit,
-  restartUnit,
+  reload,
+  create,
+  enable,
+  disable,
+  start,
+  stop,
+  restart,
 } from "./ctl.js";
