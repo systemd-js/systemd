@@ -2,12 +2,11 @@
   "name": "@systemd-js/conf",
   "version": "0.2.0",
   "engines": {
-    "node": "20.x",
-    "yarn": "4.2.2"
+    "node": "^20.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/chyzwar/systemd"
+    "url": "https://github.com/systemd-js/systemd"
   },
   "sideEffects": false,
   "publishConfig": {
@@ -17,12 +16,12 @@
   "type": "module",
   "author": "chyzwar",
   "license": "Apache-2.0",
-  "description": "Reading and creating systemd configs",
+  "description": "Parsing and building systemd units",
   "keywords": [
     "systemd",
-    "ini",
-    "systemd-timer",
-    "systemd-service"
+    "unit",
+    "timer",
+    "service"
   ],
   "scripts": {
     "lint": "eslint . --cache",
