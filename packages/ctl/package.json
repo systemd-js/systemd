@@ -2,12 +2,11 @@
   "name": "@systemd-js/ctl",
   "version": "0.2.0",
   "engines": {
-    "node": "20.x",
-    "yarn": "4.x"
+    "node": "^20.0.0"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/chyzwar/systemd"
+    "url": "https://github.com/systemd-js/systemd"
   },
   "sideEffects": false,
   "publishConfig": {
@@ -20,9 +19,7 @@
   "description": "Controlling runtime of systemd units",
   "keywords": [
     "systemd",
-    "systemctl",
-    "systemd-timer",
-    "systemd-service"
+    "systemctl"
   ],
   "scripts": {
     "lint": "eslint . --cache",

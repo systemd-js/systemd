@@ -29,7 +29,7 @@ const getPath = (name: string, type: string) => {
   return `/etc/systemd/system/${name}.${type}`;
 };
 
-const getUnit = (unitName: string, type: string = getType(unitName)): Unit | undefined => {
+function getUnit(unitName: string, type: string = getType(unitName)): Unit | undefined {
   const name = getName(unitName);
   const path = `/etc/systemd/system/${name}.${type}`;
 
@@ -105,9 +105,13 @@ export class Ctl {
   public restart() {
     execSync(`systemctl restart ${this.name}.${this.type}`);
   }
+
+  public reload() { 
+    execSync(`systemctl daemon-reload ${this.name}.${this.type}`);
+  }
 }
 
-export function createUnit(unitName: string, unit: Unit) {
+export function create(unitName: string, unit: Unit) {
   const name = getName(unitName);
   const type = getType(unitName, unit);
   const path = getPath (name, type);
@@ -121,35 +125,42 @@ export function createUnit(unitName: string, unit: Unit) {
   }
 }
 
-export function enableUnit(unitName: string, unit?: Unit) {
+export function reload(unitName: string, unit?: Unit) {
+  const type = getType(unitName, unit);
+  const name = getName(unitName);
+
+  execSync(`systemctl daemon-reload ${name}.${type}`);
+}
+
+export function enable(unitName: string, unit?: Unit) {
   const type = getType(unitName, unit);
   const name = getName(unitName);
 
   execSync(`systemctl enable ${name}.${type}`);
 }
 
-export function disableUnit(unitName: string, unit?: Unit) {
+export function disable(unitName: string, unit?: Unit) {
   const type = getType(unitName, unit);
   const name = getName(unitName);
 
   execSync(`systemctl disable ${name}.${type}`);
 }
 
-export function startUnit(unitName: string, unit?: Unit) {
+export function start(unitName: string, unit?: Unit) {
   const type = getType(unitName, unit);
   const name = getName(unitName);
 
   execSync(`systemctl start ${name}.${type}`);
 }
 
-export function stopUnit(unitName: string, unit?: Unit) {
+export function stop(unitName: string, unit?: Unit) {
   const type = getType(unitName, unit);
   const name = getName(unitName);
 
   execSync(`systemctl stop ${name}.${type}`);
 }
 
-export function restartUnit(unitName: string, unit?: Unit) {
+export function restart(unitName: string, unit?: Unit) {
   const type = getType(unitName, unit);
   const name = getName(unitName);
 
