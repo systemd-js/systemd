@@ -55,3 +55,17 @@ ctl.enable()
 ctl.start()
 
 ```
+
+In addition to `Ctl` class, package expose functions to call systemctl directly
+
+```ts
+import {restart, start, stop} from "@systemd-js/ctl";
+
+stop("example.service")
+start("example.service")
+enable("example.service")
+disable("example.service")
+reload("example.service")
+restart("example.service")
+
+```
