@@ -56,7 +56,7 @@ ctl.start()
 
 ```
 
-In addition to `Ctl` class, package expose functions to call systemctl directly
+In addition to `Ctl` class, package expose functions to call systemctl directly.
 
 ```ts
 import {restart, start, stop} from "@systemd-js/ctl";
