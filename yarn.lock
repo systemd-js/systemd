@@ -1179,7 +1179,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@systemd-js/conf@npm:^0.2.0, @systemd-js/conf@workspace:packages/conf":
+"@systemd-js/conf@npm:^0.2.1, @systemd-js/conf@workspace:packages/conf":
   version: 0.0.0-use.local
   resolution: "@systemd-js/conf@workspace:packages/conf"
   dependencies:
@@ -1199,7 +1199,7 @@ __metadata:
   dependencies:
     "@chyzwar/eslint-config": "npm:^0.2.26"
     "@chyzwar/tsconfig": "npm:^0.2.26"
-    "@systemd-js/conf": "npm:^0.2.0"
+    "@systemd-js/conf": "npm:^0.2.1"
     "@types/node": "npm:^20.12.12"
     eslint: "npm:^9.3.0"
     typescript: "npm:^5.4.5"
