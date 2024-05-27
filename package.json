@@ -2,8 +2,7 @@
   "name": "@systemd/root",
   "version": "1.0.0",
   "engines": {
-    "node": "20.x",
-    "yarn": "4.2.2"
+    "node": "^20.0.0"
   },
   "type": "module",
   "workspaces": [
