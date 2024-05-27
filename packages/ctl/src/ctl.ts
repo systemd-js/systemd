@@ -74,6 +74,9 @@ export class Ctl {
     this.unit = unit;
   }
 
+  /**
+   * Create the unit file if it does not exist or if it is different from the current unit.
+   */
   public create() {
     if (!this.unit) {
       throw new Error("Unit not found");
