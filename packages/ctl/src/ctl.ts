@@ -26,7 +26,9 @@ const getName = (name: string) => {
 };
 
 const getPath = (name: string, type: string) => {
-  return `/etc/systemd/system/${name}.${type}`;
+  return type !== "container"
+    ? `/etc/systemd/system/${name}.${type}`
+    : `/etc/containers/systemd/${name}.${type}`;
 };
 
 function getUnit(unitName: string, type: string = getType(unitName)): Unit | undefined {
