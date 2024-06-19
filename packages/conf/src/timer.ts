@@ -331,7 +331,7 @@ export const TimerUnitSchema = implement<TimerUnit>().with({
 });
 
 export class TimerSectionBuilder {
-  public section: ExecSectionConfig & TimerSection = {};
+  public section: TimerSection = {};
 
   public constructor(section: TimerSection = {}) {
     this.section = TimerSectionSchema.parse(section);
@@ -572,7 +572,7 @@ export class Timer {
     const object = {
       Unit: this.unitSection.toObject(),
       Install: this.installSection.toObject(),
-      Service: this.timerSection.toObject(),
+      Timer: this.timerSection.toObject(),
     };
 
     return INI
