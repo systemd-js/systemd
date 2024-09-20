@@ -8,6 +8,7 @@ import { InstallSectionBuilder, InstallSectionSchema } from "./install.js";
 import type { UnitSection } from "./unit.js";
 import { UnitSectionBuilder, UnitSectionSchema } from "./unit.js";
 import { INI } from "./ini.js";
+import type { AbstractUnit, Unit } from "./types.js";
 
 /**
  * Timer section of a systemd unit file.
@@ -508,7 +509,7 @@ applyMixins(TimerSectionBuilder, [
   ExecSectionBuilder,
 ]);
 
-export class Timer {
+export class Timer implements AbstractUnit {
   private readonly unitSection: UnitSectionBuilder;
   private readonly timerSection: TimerSectionBuilder;
   private readonly installSection: InstallSectionBuilder;
@@ -606,7 +607,7 @@ export class Timer {
   /**
    * Compare current timer with another timer
    */
-  public equals(timer: Timer) {
-    return JSON.stringify(this.toObject()) === JSON.stringify(timer.toObject());
+  public equals(timer?: Unit) {
+    return JSON.stringify(this.toObject()) === JSON.stringify(timer?.toObject());
   }
 }

@@ -12,6 +12,7 @@ import type { KillSectionConfig } from "./kill.js";
 import { KillSectionBuilder, KillSectionSchema } from "./kill.js";
 import type { ResourceSectionConfig } from "./resource.js";
 import { ResourceSectionBuilder, ResourceSectionConfigSchema } from "./resource.js";
+import type { AbstractUnit, Unit } from "./types.js";
 
 /**
  * @see https://manpages.ubuntu.com/manpages/noble/en/man5/systemd.service.5.html
@@ -1602,7 +1603,7 @@ applyMixins(ServiceSectionBuilder, [
   ResourceSectionBuilder,
 ]);
 
-export class Service {
+export class Service implements AbstractUnit {
   private readonly unitSection: UnitSectionBuilder;
   private readonly serviceSection: ServiceSectionBuilder;
   private readonly installSection: InstallSectionBuilder;
@@ -1694,7 +1695,7 @@ export class Service {
   /**
    * Compare current service with another service
    */
-  public equals(service: Service) {
-    return JSON.stringify(this.toObject()) === JSON.stringify(service.toObject());
+  public equals(service?: Unit) {
+    return JSON.stringify(this.toObject()) === JSON.stringify(service?.toObject());
   }
 }
