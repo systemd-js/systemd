@@ -124,13 +124,9 @@ export function create(unitName: string, unit: Unit) {
   const path = getPath (name, type);
 
   const current = getUnit(name, type);
-  const currentUnit = current?.toINIString();
-  const unitString = unit.toINIString();
 
-  // TODO use equal instead of !== to compare
-  if (currentUnit !== unitString) {
-    // TODO add file mode
-    writeFileSync(path, unitString);
+  if (unit.equals(current)) {
+    writeFileSync(path, unit.toINIString());
   }
 }
 
