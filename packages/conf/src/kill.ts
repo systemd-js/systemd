@@ -1,7 +1,6 @@
 import { z } from "zod";
 import { implement } from "./utils.js";
 
-
 /**
   Unit configuration files for services, sockets, mount points, swap devices and scopes
   share a subset of configuration options which define the killing procedure of processes

@@ -5,9 +5,8 @@ import type { Unit } from "@systemd-js/conf";
 import { INI, Service, Timer } from "@systemd-js/conf";
 import { extname } from "node:path";
 
-
 const getType = (name: string, unit?: Unit): string => {
-  if(unit) {
+  if (unit) {
     return (unit.constructor as typeof Service).getType();
   }
   const type = extname(name).slice(1);
@@ -67,11 +66,11 @@ export class Ctl {
     this.type = getType(name, unit);
     this.current = getUnit(
       this.name,
-      this.type
+      this.type,
     );
     this.path = getPath(
       this.name,
-      this.type
+      this.type,
     );
     this.unit = unit;
   }
@@ -111,11 +110,14 @@ export class Ctl {
     execSync(`systemctl restart ${this.name}.${this.type}`);
   }
 
-  public reload() { 
+  public reload() {
     execSync(`systemctl daemon-reload ${this.name}.${this.type}`);
   }
 }
 
+/**
+ * Create a unit file if it does not exist or if it is different from the current unit.
+ */
 export function create(unitName: string, unit: Unit) {
   const name = getName(unitName);
   const type = getType(unitName, unit);
@@ -126,6 +128,7 @@ export function create(unitName: string, unit: Unit) {
   const unitString = unit.toINIString();
 
   if (currentUnit !== unitString) {
+    // TODO add mode
     writeFileSync(path, unitString);
   }
 }
@@ -171,4 +174,3 @@ export function restart(unitName: string, unit?: Unit) {
 
   execSync(`systemctl restart ${name}.${type}`);
 }
-

@@ -233,7 +233,7 @@ export interface UnitSection {
   After?: string[] | string;
   Before?: string[] | string;
 
-  /**  
+  /**
   OnFailure=
     A space-separated list of one or more units that are activated when this unit enters
     the "failed" state.
@@ -1184,5 +1184,5 @@ export class UnitSectionBuilder {
   public setJoinsNamespaceOf(joinsNamespaceOf?: string) {
     this.section.JoinsNamespaceOf = joinsNamespaceOf;
     return this;
-  }  
+  }
 }

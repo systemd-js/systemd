@@ -1,21 +1,21 @@
 export type { INIData } from "./ini.js";
 export { INI } from "./ini.js";
 
-export type { 
+export type {
   ServiceSection,
 } from "./service.js";
-export { 
-  Service, 
-  ServiceUnitSchema, 
-  ServiceSectionBuilder, 
+export {
+  Service,
+  ServiceUnitSchema,
+  ServiceSectionBuilder,
 } from "./service.js";
 
-export type { 
-  UnitSection, 
+export type {
+  UnitSection,
 } from "./unit.js";
-export { 
-  UnitSectionSchema, 
-  UnitSectionBuilder, 
+export {
+  UnitSectionSchema,
+  UnitSectionBuilder,
 } from "./unit.js";
 
 export type {
@@ -37,4 +37,3 @@ export {
 export type {
   Unit,
 } from "./types.js";
-

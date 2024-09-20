@@ -1,4 +1,4 @@
-import type { ZodType} from "zod";
+import type { ZodType } from "zod";
 import { z } from "zod";
 import { implement } from "./utils.js";
 
@@ -317,7 +317,7 @@ export interface ResourceSectionConfig {
   */
   AllowedMemoryNodes?: string;
   StartupAllowedMemoryNodes?: string;
-  
+
   /**
   Process Accounting and Control
   TasksAccounting=
@@ -334,7 +334,7 @@ export interface ResourceSectionConfig {
     Added in version 227.
   */
   TasksAccounting?: boolean;
-  
+
   /**
   TasksMax=N
     This setting controls the pids controller in the unified hierarchy.
@@ -354,7 +354,7 @@ export interface ResourceSectionConfig {
   */
   TasksMax?: number | "infinity" | `${number}%`;
 
-  /**  
+  /**
   IO Accounting and Control
   IOAccounting=
     This setting controls the io controller in the unified hierarchy.
@@ -369,7 +369,7 @@ export interface ResourceSectionConfig {
     Added in version 230.
   */
   IOAccounting?: boolean;
-      
+
   /**
   IOWeight=weight, StartupIOWeight=weight
       These settings control the io controller in the unified hierarchy.
@@ -1144,7 +1144,6 @@ export const ResourceLimitSchema = z.union([
   z.number(),
 ]) as ZodType<ResourceLimit>;
 
-
 export const ResourceSectionConfigSchema = implement<ResourceSectionConfig>().with({
   CPUAccounting: z.boolean().optional(),
   CPUWeight: z.union([z.number(), z.literal("idle")]).optional(),
@@ -1175,10 +1174,8 @@ export const ResourceSectionConfigSchema = implement<ResourceSectionConfig>().wi
   StartupIOWeight: z.number().optional(),
 });
 
-
 export class ResourceSectionBuilder {
   public section: ResourceSectionConfig = {};
-
 
   /**
    * Set resource CPUAccounting
@@ -1242,7 +1239,7 @@ export class ResourceSectionBuilder {
     this.section.StartupAllowedCPUs = value;
     return this;
   }
-  
+
   /**
    * Set resource MemoryAccounting
    * @see {@link ResourceSectionConfig.MemoryAccounting}

@@ -1,4 +1,3 @@
- 
 export type INIData = Record<string, Record<string, string[] | boolean | number | string>>;
 
 function readValue(value: string): boolean | number | string {
@@ -76,7 +75,7 @@ export class INI {
         if (typeof sectionValue === "boolean") {
           continue;
         }
-        if (Array.isArray(sectionValue) && sectionValue.every((value) => typeof value === "string")) {
+        if (Array.isArray(sectionValue) && sectionValue.every(value => typeof value === "string")) {
           continue;
         }
         throw new Error(`Invalid data for key: ${key}, value: ${sectionValue as string}`, {
@@ -102,11 +101,10 @@ export class INI {
 
     const lines = rawData
       .split("\n")
-      .map((line) => line.trim())
-      .filter((line) => line.length > 0)
-      .filter((line) => !line.startsWith("#"))
-      .filter((line) => !line.startsWith(";"));
-      
+      .map(line => line.trim())
+      .filter(line => line.length > 0)
+      .filter(line => !line.startsWith("#"))
+      .filter(line => !line.startsWith(";"));
 
     let currentSection: string | null = null;
 
@@ -192,6 +190,5 @@ export class INI {
       result.push("\n");
     }
     return result.join("").trim();
-
   }
 }

@@ -84,7 +84,7 @@ describe("Service", () => {
       service
         .getServiceSection()
         .setExecStartPre([
-          "/opt/example/agent start-1", 
+          "/opt/example/agent start-1",
           "/opt/example/agent start-2",
         ])
         .setExecStart("/opt/example/agent start")

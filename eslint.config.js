@@ -3,7 +3,7 @@ import nodeConfig from "@chyzwar/eslint-config/node";
 export default [
   ...nodeConfig,
   {
-    ignores: ["**/lib/"],
+    ignores: ["**/lib/", ".yarn/"],
   },
   {
     files: ["packages/*/src/**/*.{ts,tsx}"],
@@ -19,4 +19,4 @@ export default [
       "@typescript-eslint/no-unsafe-declaration-merging": "off",
     },
   },
-]; 
+];

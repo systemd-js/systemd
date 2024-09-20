@@ -59,10 +59,10 @@ describe("Timer", () => {
         .getUnitSection()
         .setDescription("example")
         .setAfter("network.target");
-      
+
       timer
         .getInstallSection()
-        .setWantedBy("multi-user.target");  
+        .setWantedBy("multi-user.target");
 
       timer
         .getTimerSection()
