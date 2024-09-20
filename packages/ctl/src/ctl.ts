@@ -142,6 +142,9 @@ export function reload(unitName: string, unit?: Unit) {
 
 export function enable(unitName: string, unit?: Unit) {
   const type = getType(unitName, unit);
+  if (type === "container") {
+    throw new Error("Containers are not supported");
+  }
   const name = getName(unitName);
 
   execSync(`systemctl enable ${name}.${type}`);
@@ -149,6 +152,9 @@ export function enable(unitName: string, unit?: Unit) {
 
 export function disable(unitName: string, unit?: Unit) {
   const type = getType(unitName, unit);
+  if (type === "container") {
+    throw new Error("Containers are not supported");
+  }
   const name = getName(unitName);
 
   execSync(`systemctl disable ${name}.${type}`);
