@@ -138,7 +138,7 @@ export class Container {
   }
 
   /**
-   * Create an service from an INI instance
+   * Create an container from an INI instance
    */
   public static fromINI(ini: INI) {
     if (ini instanceof INI) {
