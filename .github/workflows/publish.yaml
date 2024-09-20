@@ -32,7 +32,7 @@ jobs:
       with:
         fetch-depth: 0
 
-    - name: "Use NodeJS 22"
+    - name: "Setup NodeJS 22"
       uses: actions/setup-node@v4
       with:
         node-version: '22'
@@ -42,24 +42,26 @@ jobs:
     - name: Install
       run: yarn install
       
-    - name: Run build
+    - name: Build
       run: yarn build
 
-    - name: Run test
+    - name: Test
       run: yarn test
 
-    - name: Run lint
+    - name: Lint
       run: yarn lint
     
+    - name: Setup git user
+      run: |
+        echo "Setup git user to github action user"
+        git config user.name "${{ github.actor }}"
+        git config user.email "${{ github.actor}}@users.noreply.github.com"
+
     - name: "Version and publish"
       env:
         NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        # Setup git user for lerna publish
-        git config --global user.name "${{ github.actor }}"
-        git config --global user.email "${{ github.actor }}@users.noreply.github.com"
-
         echo "Version"
         yarn lerna version \
           --conventional-commits \

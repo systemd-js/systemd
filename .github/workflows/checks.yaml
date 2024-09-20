@@ -12,7 +12,7 @@ jobs:
     - name: "Checkout"
       uses: actions/checkout@v4
 
-    - name: "Use NodeJS 22"
+    - name: "Setup NodeJS 22"
       uses: actions/setup-node@v4
       with:
         node-version: '22'
@@ -21,11 +21,11 @@ jobs:
     - name: Install
       run: yarn install
 
-    - name: Run build
+    - name: Build
       run: yarn build
 
-    - name: Run test
+    - name: Test
       run: yarn test
   
-    - name: Run lint
+    - name: Lint
       run: yarn lint

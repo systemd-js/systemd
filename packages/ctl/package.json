@@ -37,7 +37,7 @@
     "@chyzwar/eslint-config": "^0.2.29",
     "@chyzwar/tsconfig": "^0.2.29",
     "@types/node": "^22.5.5",
-    "eslint": "^9.10.0",
+    "eslint": "^9.11.0",
     "typescript": "^5.6.2",
     "vitest": "^2.1.1"
   }
