@@ -4,6 +4,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.3.0](https://github.com/systemd-js/systemd/compare/v0.2.3...v0.3.0) (2024-09-20)
+
+### Features
+
+* **conf:** added service section to container ([c75a65a](https://github.com/systemd-js/systemd/commit/c75a65a1cc92e6eceb0af868e5281283a26b3c06)) - by @chyzwar
+
 ## 0.2.3 (2024-09-20)
 
 **Note:** Version bump only for package @systemd-js/conf
