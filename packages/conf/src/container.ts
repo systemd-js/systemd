@@ -6,6 +6,7 @@ import { UnitSectionBuilder, UnitSectionSchema } from "./unit.js";
 import { implement } from "./utils.js";
 import { INI } from "./ini.js";
 import { ServiceSectionBuilder, ServiceSectionSchema, type ServiceSection } from "./service.js";
+import type { AbstractUnit, Unit } from "./types.js";
 
 /**
  * @see https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html
@@ -59,7 +60,7 @@ export class ContainerSectionBuilder {
   }
 }
 
-export class Container {
+export class Container implements AbstractUnit {
   private readonly unitSection: UnitSectionBuilder;
   private readonly containerSection: ContainerSectionBuilder;
   private readonly installSection: InstallSectionBuilder;
@@ -169,7 +170,7 @@ export class Container {
   /**
    * Compare current container with another container
    */
-  public equals(container: Container) {
-    return JSON.stringify(this.toObject()) === JSON.stringify(container.toObject());
+  public equals(container?: Unit) {
+    return JSON.stringify(this.toObject()) === JSON.stringify(container?.toObject());
   }
 }
