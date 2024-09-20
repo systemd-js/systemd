@@ -29,7 +29,7 @@
     "@lerna-lite/publish": "^3.9.1",
     "@lerna-lite/version": "^3.9.1",
     "@types/node": "^22.5.5",
-    "conventional-changelog-conventionalcommits": "^8.0.0",
+    "conventional-changelog-conventionalcommits": "^7.0.2",
     "eslint": "^9.11.0",
     "husky": "^9.1.6",
     "lint-staged": "^15.2.10",
