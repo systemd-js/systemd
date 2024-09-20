@@ -30,6 +30,9 @@ const getPath = (name: string, type: string) => {
     : `/etc/containers/systemd/${name}.${type}`;
 };
 
+/**
+ * Create Unit from filesystem
+ */
 function getUnit(unitName: string, type: string = getType(unitName)): Unit | undefined {
   const name = getName(unitName);
   const path = `/etc/systemd/system/${name}.${type}`;
