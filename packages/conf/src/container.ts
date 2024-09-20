@@ -5,6 +5,7 @@ import type { UnitSection } from "./unit.js";
 import { UnitSectionBuilder, UnitSectionSchema } from "./unit.js";
 import { implement } from "./utils.js";
 import { INI } from "./ini.js";
+import { ServiceSectionBuilder, ServiceSectionSchema, type ServiceSection } from "./service.js";
 
 /**
  * @see https://docs.podman.io/en/latest/markdown/podman-systemd.unit.5.html
@@ -17,6 +18,7 @@ export interface ContainerUnit {
   Unit: UnitSection;
   Install?: InstallSectionConfig;
   Container: ContainerSection;
+  Service?: ServiceSection;
 }
 
 export const ContainerSectionSchema = implement<ContainerSection>().with({
@@ -35,6 +37,10 @@ export const ContainerUnitSchema = implement<ContainerUnit>().with({
   /**
    */
   Container: ContainerSectionSchema,
+  /**
+   * @see {@link ServiceSection}
+   */
+  Service: ServiceSectionSchema.optional(),
 });
 
 export class ContainerSectionBuilder {
@@ -57,15 +63,17 @@ export class Container {
   private readonly unitSection: UnitSectionBuilder;
   private readonly containerSection: ContainerSectionBuilder;
   private readonly installSection: InstallSectionBuilder;
+  private readonly serviceSection: ServiceSectionBuilder;
 
   public constructor(timer: object = {
     Unit: {},
     Container: {},
   }) {
-    const { Unit, Install, Container: ContainerObj } = ContainerUnitSchema.parse(timer);
+    const { Unit, Install, Service, Container: ContainerObj } = ContainerUnitSchema.parse(timer);
     this.containerSection = new ContainerSectionBuilder(ContainerObj);
     this.unitSection = new UnitSectionBuilder(Unit);
     this.installSection = new InstallSectionBuilder(Install);
+    this.serviceSection = new ServiceSectionBuilder(Service);
   }
 
   public static getType() {
@@ -97,6 +105,14 @@ export class Container {
   }
 
   /**
+   * Get the [Service] section of the container
+   * @returns {ServiceSectionBuilder}
+   */
+  public getServiceSection() {
+    return this.serviceSection;
+  }
+
+  /**
    * Convert the container to an object
    */
   public toObject() {
@@ -104,6 +120,7 @@ export class Container {
       Unit: this.unitSection.toObject(),
       Install: this.installSection.toObject(),
       Container: this.containerSection.toObject(),
+      Service: this.serviceSection.toObject(),
     };
 
     return INI
@@ -119,6 +136,7 @@ export class Container {
       Unit: this.unitSection.toObject(),
       Install: this.installSection.toObject(),
       Container: this.containerSection.toObject(),
+      Service: this.serviceSection.toObject(),
     };
 
     return INI
