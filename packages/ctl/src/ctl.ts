@@ -127,8 +127,9 @@ export function create(unitName: string, unit: Unit) {
   const currentUnit = current?.toINIString();
   const unitString = unit.toINIString();
 
+  // TODO use equal instead of !== to compare
   if (currentUnit !== unitString) {
-    // TODO add mode
+    // TODO add file mode
     writeFileSync(path, unitString);
   }
 }
