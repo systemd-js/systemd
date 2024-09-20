@@ -4,6 +4,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.4.0](https://github.com/systemd-js/systemd/compare/v0.3.0...v0.4.0) (2024-09-20)
+
+### Features
+
+* **ctl:** use equals instead of string comparision ([0b9fbc7](https://github.com/systemd-js/systemd/commit/0b9fbc7de407e13827282e003f77f694bdea348a)) - by @chyzwar
+
 ## [0.3.0](https://github.com/systemd-js/systemd/compare/v0.2.3...v0.3.0) (2024-09-20)
 
 **Note:** Version bump only for package @systemd-js/ctl

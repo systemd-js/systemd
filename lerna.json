@@ -1,6 +1,6 @@
 {
   "npmClient": "yarn",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "changelogPreset": "conventional-changelog-conventionalcommits",
   "command": {
     "publish": {
