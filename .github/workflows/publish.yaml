@@ -1,19 +1,16 @@
 name: Publish
 
-# Inspired by: 
 # https://dev.to/xcanchal/automatic-versioning-in-a-lerna-monorepo-using-github-actions-4hij
 # Problems:
 #   I tried to use github registry to publish public packages,
 #   but packages in github require auth to install even if package is public.
 #
-#   Lerna use npm for publish, even if npm client is set to yarn
-#   Publish only use npm as client and it ignore any config in yarnrc and npmClient settings
-#
 #   Npm token will not be configured without registry-url set in actions/setup-node
 #   To configure authToken for npm both registry-url and secret is needed.
-#   
-#   When publishing public package, publishConfig.access need to be configured
-# 
+#   When publishing public package, publishConfig.access need to be configured on each package
+#
+#   Lerna need fetch-depth: 0 (full fetch) on checkout to be able generate full changelog
+
 
 on:
   pull_request:
