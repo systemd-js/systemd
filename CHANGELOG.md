@@ -4,6 +4,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.5.0](https://github.com/systemd-js/systemd/compare/v0.4.1...v0.5.0) (2024-09-20)
+
+### Features
+
+* **ctl:** added isActive ctl function ([0665976](https://github.com/systemd-js/systemd/commit/066597677d5bfc4c4a7fd6d00ba6a673a2fe1fec)) - by @chyzwar
+
 ## [0.4.1](https://github.com/systemd-js/systemd/compare/v0.4.0...v0.4.1) (2024-09-20)
 
 **Note:** Version bump only for package @systemd/root
