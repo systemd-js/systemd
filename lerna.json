@@ -1,9 +1,4 @@
 {
-  "workspaces": [
-    "packages/*",
-    "packages/*/examples",
-    "packages/*/examples/packages/*"
-  ],
   "npmClient": "yarn",
   "version": "0.2.2",
   "changelogPreset": "conventional-changelog-conventionalcommits",
@@ -24,7 +19,9 @@
       "changelogHeaderMessage": "## Manage systemd services with Node.js",
       "allowBranch": "master",
       "ignoreChanges": [
-        "yarn.lock"
+        "**/__fixtures__/**",
+        "**/__tests__/**",
+        "**/*.md"
       ]
     }
   },
