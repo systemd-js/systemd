@@ -55,7 +55,7 @@ export interface InstallSectionConfig {
   WantedBy?: string[] | string;
   RequiredBy?: string[] | string;
   UpheldBy?: string[] | string;
-  
+
   /**
   Also=
     Additional units to install/deinstall when this unit is installed/deinstalled. If the

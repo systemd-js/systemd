@@ -17,7 +17,7 @@ export interface ExecSectionConfig {
     Added in version 250.
   */
   ExecSearchPath?: string;
-     
+
   /**
   WorkingDirectory=
     Takes a directory path relative to the service's root directory specified by
@@ -29,7 +29,7 @@ export interface ExecSectionConfig {
     If RootDirectory=/RootImage= is not set, then WorkingDirectory= is relative to the
     root of the system running the service manager. Note that setting this parameter might
     result in additional dependencies to be added to the unit (see above).
-  */ 
+  */
   WorkingDirectory?: string;
 
   /**
@@ -214,7 +214,7 @@ export interface ExecSectionConfig {
     Added in version 246.
   */
   RootVerity?: string;
-  
+
   /**
   RootImagePolicy=, MountImagePolicy=, ExtensionImagePolicy=
     Takes an image policy string as per systemd.image-policy(7) to use when mounting the
@@ -479,7 +479,7 @@ export interface ExecSectionConfig {
   ExtensionDirectories?: string;
 
   /**
-  * 
+  *
   * USER/GROUP IDENTITY
   */
 
@@ -623,15 +623,14 @@ export interface ExecSectionConfig {
     NotifyAccess=all, as these child processes will not be able to affect changes in the
     original unit through notification messages. These messages will be considered
     belonging to the session scope unit and not the original unit. It is hence not
-    recommended to use PAMName= in combination with NotifyAccess=all. 
+    recommended to use PAMName= in combination with NotifyAccess=all.
   */
   PAMName?: string;
 
-
   /**
-  * 
+  *
   * CAPABILITIES
-  * 
+  *
   * These options are only available for system services, or for services running in per-user
   * instances of the service manager in which case PrivateUsers= is implicitly enabled
   * (requires unprivileged user namespaces support to be enabled in the kernel via the
@@ -694,7 +693,7 @@ export interface ExecSectionConfig {
     over the user change.  AmbientCapabilities= does not affect commands prefixed with
     "+".
 
-    Added in version 229.     
+    Added in version 229.
     */
   AmbientCapabilities?: string;
 
@@ -732,9 +731,8 @@ export interface ExecSectionConfig {
   */
   SecureBits?: string;
 
-
   /**
-   * 
+   *
    * MANDATORY ACCESS CONTROL
    * These options are only available for system services and are not supported for services
    * running in per-user instances of the service manager.
@@ -967,8 +965,7 @@ export interface ExecSectionConfig {
   LimitNICE?: number | string;
   LimitRTPRIO?: number | string;
   LimitRTTIME?: number | string;
-  
-  
+
   /**
   UMask=
     Controls the file mode creation mask. Takes an access mode in octal notation. See
@@ -983,7 +980,7 @@ export interface ExecSectionConfig {
     pam_umask(8).
   */
   UMask?: string;
-  
+
   /**
   CoredumpFilter=
       Controls which types of memory mappings will be saved if the process dumps core (using
@@ -1225,7 +1222,6 @@ export interface ExecSectionConfig {
   UnsetEnvironment?: string[] | string;
 }
 
-
 export const ExecSectionSchema = implement<ExecSectionConfig>().with({
   ExecSearchPath: z.string().optional(),
   WorkingDirectory: z.string().optional(),
@@ -1241,13 +1237,13 @@ export const ExecSectionSchema = implement<ExecSectionConfig>().with({
   ExtensionImagePolicy: z.string().optional(),
   MountAPIVFS: z.boolean().optional(),
   ProtectProc: z.enum([
-    "noaccess", 
-    "invisible", 
-    "ptraceable", 
+    "noaccess",
+    "invisible",
+    "ptraceable",
     "default",
   ]).optional(),
   ProcSubset: z.enum([
-    "all", 
+    "all",
     "pid",
   ]).optional(),
   BindPaths: z.string().optional(),
@@ -1493,7 +1489,7 @@ export class ExecSectionBuilder {
     this.section.User = value;
     return this;
   }
-  
+
   /**
    * Set Group
    * @see {@link ExecSectionConfig.Group}

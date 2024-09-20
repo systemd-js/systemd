@@ -1,16 +1,16 @@
 import type { ZodType } from "zod";
 import { z } from "zod";
-import type { UnitSection} from "./unit.js";
+import type { UnitSection } from "./unit.js";
 import { UnitSectionBuilder, UnitSectionSchema } from "./unit.js";
 import { INI } from "./ini.js";
-import type { ExecSectionConfig} from "./exec.js";
+import type { ExecSectionConfig } from "./exec.js";
 import { ExecSectionBuilder, ExecSectionSchema } from "./exec.js";
 import { applyMixins, implement } from "./utils.js";
-import type { InstallSectionConfig} from "./install.js";
+import type { InstallSectionConfig } from "./install.js";
 import { InstallSectionBuilder, InstallSectionSchema } from "./install.js";
-import type { KillSectionConfig} from "./kill.js";
+import type { KillSectionConfig } from "./kill.js";
 import { KillSectionBuilder, KillSectionSchema } from "./kill.js";
-import type { ResourceSectionConfig} from "./resource.js";
+import type { ResourceSectionConfig } from "./resource.js";
 import { ResourceSectionBuilder, ResourceSectionConfigSchema } from "./resource.js";
 
 /**
@@ -153,7 +153,7 @@ export interface ServiceSectionConfig {
     for such service execution setup operations to complete before proceeding.
   */
   Type?:
-  "dbus" | "exec" | "forking"   | "idle" | "notify" | "oneshot" | "simple";
+  "dbus" | "exec" | "forking" | "idle" | "notify" | "oneshot" | "simple";
 
   /**
   ExitType=
@@ -977,7 +977,7 @@ export interface ServiceSectionConfig {
 export type ServiceSection = ExecSectionConfig & ServiceSectionConfig;
 
 export interface ServiceUnit {
-  Unit: UnitSection
+  Unit: UnitSection;
   Install?: InstallSectionConfig;
   Service: ExecSectionConfig & KillSectionConfig & ResourceSectionConfig & ServiceSectionConfig;
 }
@@ -1202,20 +1202,20 @@ export const ServiceUnitSchema = implement<ServiceUnit>().with({
   Service: ServiceSectionSchema,
 });
 
-
-
 export class ServiceSectionBuilder {
   public section: ExecSectionConfig & KillSectionConfig & ResourceSectionConfig & ServiceSectionConfig;
-  
+
   public constructor(section: ServiceSectionConfig = {}) {
     this.section = ServiceSectionSchema.parse(section);
   }
+
   /**
    * Get object representation of service section
    */
   public toObject(): ServiceSectionConfig {
-    return ServiceSectionSchema.parse(this.section);  
+    return ServiceSectionSchema.parse(this.section);
   }
+
   /**
    * Set service type
    * @see {@link ServiceSectionConfig.Type}
@@ -1224,6 +1224,7 @@ export class ServiceSectionBuilder {
     this.section.Type = type;
     return this;
   }
+
   /**
    * Set service ExitType
    * @see {@link ServiceSectionConfig.ExitType}
@@ -1232,6 +1233,7 @@ export class ServiceSectionBuilder {
     this.section.ExitType = exitType;
     return this;
   }
+
   /**
    * Set service RemainAfterExit
    * @see {@link ServiceSectionConfig.RemainAfterExit}
@@ -1240,6 +1242,7 @@ export class ServiceSectionBuilder {
     this.section.RemainAfterExit = remainAfterExit;
     return this;
   }
+
   /**
    * Set service GuessMainPID
    * @see {@link ServiceSectionConfig.GuessMainPID}
@@ -1248,6 +1251,7 @@ export class ServiceSectionBuilder {
     this.section.GuessMainPID = guessMainPID;
     return this;
   }
+
   /**
    * Set service PIDFile
    * @see {@link ServiceSectionConfig.PIDFile}
@@ -1256,6 +1260,7 @@ export class ServiceSectionBuilder {
     this.section.PIDFile = pidFile;
     return this;
   }
+
   /**
    * Set service BusName
    * @see {@link ServiceSectionConfig.BusName}
@@ -1264,6 +1269,7 @@ export class ServiceSectionBuilder {
     this.section.BusName = busName;
     return this;
   }
+
   /**
    * Set service ExecStart
    * @see {@link ServiceSectionConfig.ExecStart}
@@ -1272,6 +1278,7 @@ export class ServiceSectionBuilder {
     this.section.ExecStart = execStart;
     return this;
   }
+
   /**
    * Set service ExecStartPre
    * @see {@link ServiceSectionConfig.ExecStartPre}
@@ -1280,6 +1287,7 @@ export class ServiceSectionBuilder {
     this.section.ExecStartPre = execStartPre;
     return this;
   }
+
   /**
    * Set service ExecStartPost
    * @see {@link ServiceSectionConfig.ExecStartPre}
@@ -1288,6 +1296,7 @@ export class ServiceSectionBuilder {
     this.section.ExecStartPost = execStartPost;
     return this;
   }
+
   /**
    * Set service ExecCondition
    * @see {@link ServiceSectionConfig.ExecCondition}
@@ -1296,6 +1305,7 @@ export class ServiceSectionBuilder {
     this.section.ExecCondition = execCondition;
     return this;
   }
+
   /**
    * Set service ExecReload
    * @see {@link ServiceSectionConfig.ExecReload}
@@ -1304,6 +1314,7 @@ export class ServiceSectionBuilder {
     this.section.ExecReload = execReload;
     return this;
   }
+
   /**
    * Set service ExecStop
    * @see {@link ServiceSectionConfig.ExecStop}
@@ -1312,6 +1323,7 @@ export class ServiceSectionBuilder {
     this.section.ExecStop = execStop;
     return this;
   }
+
   /**
    * Set service ExecStopPost
    * @see {@link ServiceSectionConfig.ExecStopPost}
@@ -1320,6 +1332,7 @@ export class ServiceSectionBuilder {
     this.section.ExecStopPost = execStopPost;
     return this;
   }
+
   /**
    * Set service RestartSec
    * @see {@link ServiceSectionConfig.RestartSec}
@@ -1328,6 +1341,7 @@ export class ServiceSectionBuilder {
     this.section.RestartSec = restartSec;
     return this;
   }
+
   /**
    * Set service RestartSteps
    * @see {@link ServiceSectionConfig.RestartSteps}
@@ -1336,6 +1350,7 @@ export class ServiceSectionBuilder {
     this.section.RestartSteps = restartSteps;
     return this;
   }
+
   /**
    * Set service RestartMaxDelaySec
    * @see {@link ServiceSectionConfig.RestartMaxDelaySec}
@@ -1353,6 +1368,7 @@ export class ServiceSectionBuilder {
     this.section.TimeoutStartSec = timeoutStartSec;
     return this;
   }
+
   /**
    * Set service TimeoutStopSec
    * @see {@link ServiceSectionConfig.TimeoutStopSec}
@@ -1361,6 +1377,7 @@ export class ServiceSectionBuilder {
     this.section.TimeoutStopSec = timeoutStopSec;
     return this;
   }
+
   /**
    * Set service TimeoutAbortSec
    * @see {@link ServiceSectionConfig.TimeoutAbortSec}
@@ -1369,6 +1386,7 @@ export class ServiceSectionBuilder {
     this.section.TimeoutAbortSec = timeoutAbortSec;
     return this;
   }
+
   /**
    * Set service TimeoutSec
    * @see {@link ServiceSectionConfig.TimeoutSec}
@@ -1377,22 +1395,24 @@ export class ServiceSectionBuilder {
     this.section.TimeoutSec = timeoutSec;
     return this;
   }
+
   /**
    * Set service TimeoutStartFailureMode
    * @see {@link ServiceSectionConfig.TimeoutStartFailureMode}
    */
   public setTimeoutStartFailureMode(
-    timeoutStartFailureMode: ServiceSectionConfig["TimeoutStartFailureMode"]
+    timeoutStartFailureMode: ServiceSectionConfig["TimeoutStartFailureMode"],
   ) {
     this.section.TimeoutStartFailureMode = timeoutStartFailureMode;
     return this;
   }
+
   /**
    * Set service TimeoutStopFailureMode
    * @see {@link ServiceSectionConfig.TimeoutStopFailureMode}
    */
   public setTimeoutStopFailureMode(
-    timeoutStopFailureMode: ServiceSectionConfig["TimeoutStopFailureMode"]
+    timeoutStopFailureMode: ServiceSectionConfig["TimeoutStopFailureMode"],
   ) {
     this.section.TimeoutStopFailureMode = timeoutStopFailureMode;
     return this;
@@ -1406,16 +1426,18 @@ export class ServiceSectionBuilder {
     this.section.RuntimeMaxSec = runtimeMaxSec;
     return this;
   }
+
   /**
    * Set service RuntimeRandomizedExtraSec
    * @see {@link ServiceSectionConfig.RuntimeRandomizedExtraSec}
    */
   public setRuntimeRandomizedExtraSec(
-    runtimeRandomizedExtraSec: number
+    runtimeRandomizedExtraSec: number,
   ) {
     this.section.RuntimeRandomizedExtraSec = runtimeRandomizedExtraSec;
     return this;
   }
+
   /**
    * Set service WatchdogSec
    * @see {@link ServiceSectionConfig.WatchdogSec}
@@ -1424,6 +1446,7 @@ export class ServiceSectionBuilder {
     this.section.WatchdogSec = watchdogSec;
     return this;
   }
+
   /**
    * Set service Restart
    * @see {@link ServiceSectionConfig.Restart}
@@ -1432,6 +1455,7 @@ export class ServiceSectionBuilder {
     this.section.Restart = restart;
     return this;
   }
+
   /**
    * Set service RestartMode
    * @see {@link ServiceSectionConfig.RestartMode}
@@ -1440,6 +1464,7 @@ export class ServiceSectionBuilder {
     this.section.RestartMode = restartMode;
     return this;
   }
+
   /**
    * Set service SuccessExitStatus
    * @see {@link ServiceSectionConfig.SuccessExitStatus}
@@ -1448,6 +1473,7 @@ export class ServiceSectionBuilder {
     this.section.SuccessExitStatus = successExitStatus;
     return this;
   }
+
   /**
    * Set service RestartPreventExitStatus
    * @see {@link ServiceSectionConfig.RestartPreventExitStatus}
@@ -1456,6 +1482,7 @@ export class ServiceSectionBuilder {
     this.section.RestartPreventExitStatus = restartPreventExitStatus;
     return this;
   }
+
   /**
    * Set service RestartForceExitStatus
    * @see {@link ServiceSectionConfig.RestartForceExitStatus}
@@ -1464,6 +1491,7 @@ export class ServiceSectionBuilder {
     this.section.RestartForceExitStatus = restartForceExitStatus;
     return this;
   }
+
   /**
    * Set service RootDirectoryStartOnly
    * @see {@link ServiceSectionConfig.RootDirectoryStartOnly}
@@ -1472,6 +1500,7 @@ export class ServiceSectionBuilder {
     this.section.RootDirectoryStartOnly = rootDirectoryStartOnly;
     return this;
   }
+
   /**
    * Set service NonBlocking
    * @see {@link ServiceSectionConfig.NonBlocking}
@@ -1480,6 +1509,7 @@ export class ServiceSectionBuilder {
     this.section.NonBlocking = nonBlocking;
     return this;
   }
+
   /**
    * Set service NotifyAccess
    * @see {@link ServiceSectionConfig.NotifyAccess}
@@ -1488,6 +1518,7 @@ export class ServiceSectionBuilder {
     this.section.NotifyAccess = notifyAccess;
     return this;
   }
+
   /**
    * Set service Sockets
    * @see {@link ServiceSectionConfig.Sockets}
@@ -1496,6 +1527,7 @@ export class ServiceSectionBuilder {
     this.section.Sockets = sockets;
     return this;
   }
+
   /**
    * Set service FileDescriptorStoreMax
    * @see {@link ServiceSectionConfig.FileDescriptorStoreMax}
@@ -1504,12 +1536,13 @@ export class ServiceSectionBuilder {
     this.section.FileDescriptorStoreMax = fileDescriptorStoreMax;
     return this;
   }
+
   /**
    * Set service FileDescriptorStorePreserve
    * @see {@link ServiceSectionConfig.FileDescriptorStorePreserve}
    */
   public setFileDescriptorStorePreserve(
-    fileDescriptorStorePreserve: ServiceSectionConfig["FileDescriptorStorePreserve"]
+    fileDescriptorStorePreserve: ServiceSectionConfig["FileDescriptorStorePreserve"],
   ) {
     this.section.FileDescriptorStorePreserve = fileDescriptorStorePreserve;
     return this;
@@ -1523,7 +1556,7 @@ export class ServiceSectionBuilder {
     this.section.USBFunctionDescriptors = usbFunctionDescriptors;
     return this;
   }
-  
+
   /**
    * Set service USBFunctionStrings
    * @see {@link ServiceSectionConfig.USBFunctionStrings}
@@ -1541,6 +1574,7 @@ export class ServiceSectionBuilder {
     this.section.OOMPolicy = oomPolicy;
     return this;
   }
+
   /**
    * Set service OpenFile
    * @see {@link ServiceSectionConfig.OpenFile}
@@ -1549,6 +1583,7 @@ export class ServiceSectionBuilder {
     this.section.OpenFile = openFile;
     return this;
   }
+
   /**
    * Set service ReloadSignal
    * @see {@link ServiceSectionConfig.ReloadSignal}
@@ -1558,15 +1593,14 @@ export class ServiceSectionBuilder {
     return this;
   }
 }
- 
-export interface ServiceSectionBuilder extends ExecSectionBuilder, KillSectionBuilder, ResourceSectionBuilder  {}
+
+export interface ServiceSectionBuilder extends ExecSectionBuilder, KillSectionBuilder, ResourceSectionBuilder {}
 
 applyMixins(ServiceSectionBuilder, [
   ExecSectionBuilder,
   KillSectionBuilder,
   ResourceSectionBuilder,
 ]);
-
 
 export class Service {
   private readonly unitSection: UnitSectionBuilder;
@@ -1577,10 +1611,10 @@ export class Service {
     Unit: {},
     Service: {},
   }) {
-    const {Unit, Install, Service: ServiceObj} = ServiceUnitSchema.parse(service); 
+    const { Unit, Install, Service: ServiceObj } = ServiceUnitSchema.parse(service);
     this.serviceSection = new ServiceSectionBuilder(ServiceObj);
     this.unitSection = new UnitSectionBuilder(Unit);
-    this.installSection = new InstallSectionBuilder(Install); 
+    this.installSection = new InstallSectionBuilder(Install);
   }
 
   public static getType() {
@@ -1610,7 +1644,7 @@ export class Service {
   public getInstallSection() {
     return this.installSection;
   }
-  
+
   public toObject() {
     const object = {
       Unit: this.unitSection.toObject(),

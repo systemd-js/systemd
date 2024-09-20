@@ -1,11 +1,11 @@
-import type { ZodType} from "zod";
+import type { ZodType } from "zod";
 import { z } from "zod";
-import type { ExecSectionConfig} from "./exec.js";
+import type { ExecSectionConfig } from "./exec.js";
 import { ExecSectionBuilder, ExecSectionSchema } from "./exec.js";
 import { applyMixins, implement } from "./utils.js";
-import type { InstallSectionConfig} from "./install.js";
+import type { InstallSectionConfig } from "./install.js";
 import { InstallSectionBuilder, InstallSectionSchema } from "./install.js";
-import type { UnitSection} from "./unit.js";
+import type { UnitSection } from "./unit.js";
 import { UnitSectionBuilder, UnitSectionSchema } from "./unit.js";
 import { INI } from "./ini.js";
 
@@ -280,9 +280,9 @@ export interface TimerSectionConfig {
 export type TimerSection = ExecSectionConfig & TimerSectionConfig;
 
 export interface TimerUnit {
-  Unit: UnitSection
+  Unit: UnitSection;
   Install?: InstallSectionConfig;
-  Timer: TimerSection
+  Timer: TimerSection;
 }
 
 export const TimerSectionConfigSchema = implement<TimerSectionConfig>().with({
@@ -311,7 +311,7 @@ export const TimerSectionSchema: ZodType<TimerSection> = TimerSectionConfigSchem
   .strict();
 
 /**
- * Systemd Service schema in Zod
+ * Systemd Timer schema in Zod
  */
 export const TimerUnitSchema = implement<TimerUnit>().with({
   /**
@@ -350,7 +350,7 @@ export class TimerSectionBuilder {
    * @see {@link TimerSection.OnActiveSec}
    */
   public setOnActiveSec(
-    onActiveSec?: TimerSection["OnActiveSec"]
+    onActiveSec?: TimerSection["OnActiveSec"],
   ) {
     this.section.OnActiveSec = onActiveSec;
     return this;
@@ -361,7 +361,7 @@ export class TimerSectionBuilder {
    * @see {@link TimerSection.OnBootSec}
    */
   public setOnBootSec(
-    onBootSec?: TimerSection["OnBootSec"]
+    onBootSec?: TimerSection["OnBootSec"],
   ) {
     this.section.OnBootSec = onBootSec;
     return this;
@@ -373,7 +373,7 @@ export class TimerSectionBuilder {
    */
 
   public setOnStartupSec(
-    onStartupSec?: TimerSection["OnStartupSec"]
+    onStartupSec?: TimerSection["OnStartupSec"],
   ) {
     this.section.OnStartupSec = onStartupSec;
     return this;
@@ -384,7 +384,7 @@ export class TimerSectionBuilder {
    * @see {@link TimerSection.OnUnitActiveSec}
    */
   public setOnUnitActiveSec(
-    onUnitActiveSec?: TimerSection["OnUnitActiveSec"]
+    onUnitActiveSec?: TimerSection["OnUnitActiveSec"],
   ) {
     this.section.OnUnitActiveSec = onUnitActiveSec;
     return this;
@@ -395,7 +395,7 @@ export class TimerSectionBuilder {
    * @see {@link TimerSection.OnUnitInactiveSec}
    */
   public setOnUnitInactiveSec(
-    onUnitInactiveSec?: TimerSection["OnUnitInactiveSec"]
+    onUnitInactiveSec?: TimerSection["OnUnitInactiveSec"],
   ) {
     this.section.OnUnitInactiveSec = onUnitInactiveSec;
     return this;
@@ -406,7 +406,7 @@ export class TimerSectionBuilder {
    * @see {@link TimerSectionConfig.OnCalendar}
    */
   public setOnCalendar(
-    onCalendar?: TimerSectionConfig["OnCalendar"]
+    onCalendar?: TimerSectionConfig["OnCalendar"],
   ) {
     this.section.OnCalendar = onCalendar;
     return this;
@@ -417,7 +417,7 @@ export class TimerSectionBuilder {
    * @see {@link TimerSectionConfig.AccuracySec}
    */
   public setAccuracySec(
-    accuracySec?: TimerSectionConfig["AccuracySec"]
+    accuracySec?: TimerSectionConfig["AccuracySec"],
   ) {
     this.section.AccuracySec = accuracySec;
     return this;
@@ -428,7 +428,7 @@ export class TimerSectionBuilder {
    * @see {@link TimerSectionConfig.RandomizedDelaySec}
    */
   public setRandomizedDelaySec(
-    randomizedDelaySec?: TimerSectionConfig["RandomizedDelaySec"]
+    randomizedDelaySec?: TimerSectionConfig["RandomizedDelaySec"],
   ) {
     this.section.RandomizedDelaySec = randomizedDelaySec;
     return this;
@@ -439,7 +439,7 @@ export class TimerSectionBuilder {
    * @see {@link TimerSectionConfig.FixedRandomDelay}
    */
   public setFixedRandomDelay(
-    fixedRandomDelay?: TimerSectionConfig["FixedRandomDelay"]
+    fixedRandomDelay?: TimerSectionConfig["FixedRandomDelay"],
   ) {
     this.section.FixedRandomDelay = fixedRandomDelay;
     return this;
@@ -450,7 +450,7 @@ export class TimerSectionBuilder {
    * @see {@link TimerSectionConfig.OnClockChange}
    */
   public setOnClockChange(
-    onClockChange?: TimerSectionConfig["OnClockChange"]
+    onClockChange?: TimerSectionConfig["OnClockChange"],
   ) {
     this.section.OnClockChange = onClockChange;
     return this;
@@ -461,7 +461,7 @@ export class TimerSectionBuilder {
    * @see {@link TimerSectionConfig.Unit}
    */
   public setUnit(
-    unit?: TimerSectionConfig["Unit"]
+    unit?: TimerSectionConfig["Unit"],
   ) {
     this.section.Unit = unit;
     return this;
@@ -472,7 +472,7 @@ export class TimerSectionBuilder {
    * @see {@link TimerSectionConfig.Persistent}
    */
   public setPersistent(
-    persistent?: TimerSectionConfig["Persistent"]
+    persistent?: TimerSectionConfig["Persistent"],
   ) {
     this.section.Persistent = persistent;
     return this;
@@ -483,7 +483,7 @@ export class TimerSectionBuilder {
    * @see {@link TimerSectionConfig.WakeSystem}
    */
   public setWakeSystem(
-    wakeSystem?: TimerSectionConfig["WakeSystem"]
+    wakeSystem?: TimerSectionConfig["WakeSystem"],
   ) {
     this.section.WakeSystem = wakeSystem;
     return this;
@@ -494,14 +494,14 @@ export class TimerSectionBuilder {
    * @see {@link TimerSectionConfig.RemainAfterElapse}
    */
   public setRemainAfterElapse(
-    remainAfterElapse?: TimerSectionConfig["RemainAfterElapse"]
+    remainAfterElapse?: TimerSectionConfig["RemainAfterElapse"],
   ) {
     this.section.RemainAfterElapse = remainAfterElapse;
     return this;
   }
 }
 
-/* eslint-disable-next-line @typescript-eslint/no-empty-interface */
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 export interface TimerSectionBuilder extends ExecSectionBuilder {}
 
 applyMixins(TimerSectionBuilder, [
@@ -517,11 +517,12 @@ export class Timer {
     Unit: {},
     Timer: {},
   }) {
-    const {Unit, Install, Timer: TimerObj} = TimerUnitSchema.parse(timer); 
+    const { Unit, Install, Timer: TimerObj } = TimerUnitSchema.parse(timer);
     this.timerSection = new TimerSectionBuilder(TimerObj);
     this.unitSection = new UnitSectionBuilder(Unit);
-    this.installSection = new InstallSectionBuilder(Install); 
+    this.installSection = new InstallSectionBuilder(Install);
   }
+
   public static getType() {
     return "timer";
   }
@@ -549,7 +550,7 @@ export class Timer {
   public getInstallSection() {
     return this.installSection;
   }
-  
+
   /**
    * Convert the timer to an object
    */
@@ -585,14 +586,14 @@ export class Timer {
    */
   public static fromObject(obj: unknown) {
     if (obj instanceof Object) {
-      const service = TimerUnitSchema.parse(obj);
-      return new Timer(service);
+      const timer = TimerUnitSchema.parse(obj);
+      return new Timer(timer);
     }
     throw new Error("Expected object");
   }
 
   /**
-   * Create an service from an INI instance
+   * Create an timer from an INI instance
    */
   public static fromINI(ini: INI) {
     if (ini instanceof INI) {

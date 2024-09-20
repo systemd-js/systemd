@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { InstallSectionConfig } from "./install.js";
 import { InstallSectionBuilder, InstallSectionSchema } from "./install.js";
-import type { UnitSection} from "./unit.js";
+import type { UnitSection } from "./unit.js";
 import { UnitSectionBuilder, UnitSectionSchema } from "./unit.js";
 import { implement } from "./utils.js";
 import { INI } from "./ini.js";
@@ -14,15 +14,14 @@ export interface ContainerSection {
 }
 
 export interface ContainerUnit {
-  Unit: UnitSection
+  Unit: UnitSection;
   Install?: InstallSectionConfig;
-  Container: ContainerSection
+  Container: ContainerSection;
 }
 
 export const ContainerSectionSchema = implement<ContainerSection>().with({
   Image: z.string().optional(),
 });
-
 
 export const ContainerUnitSchema = implement<ContainerUnit>().with({
   /**
@@ -37,7 +36,6 @@ export const ContainerUnitSchema = implement<ContainerUnit>().with({
    */
   Container: ContainerSectionSchema,
 });
-
 
 export class ContainerSectionBuilder {
   public section: ContainerSection = {};
@@ -64,10 +62,10 @@ export class Container {
     Unit: {},
     Container: {},
   }) {
-    const {Unit, Install, Container: ContainerObj} = ContainerUnitSchema.parse(timer); 
+    const { Unit, Install, Container: ContainerObj } = ContainerUnitSchema.parse(timer);
     this.containerSection = new ContainerSectionBuilder(ContainerObj);
     this.unitSection = new UnitSectionBuilder(Unit);
-    this.installSection = new InstallSectionBuilder(Install); 
+    this.installSection = new InstallSectionBuilder(Install);
   }
 
   public static getType() {
@@ -97,9 +95,9 @@ export class Container {
   public getInstallSection() {
     return this.installSection;
   }
-  
+
   /**
-   * Convert the timer to an object
+   * Convert the container to an object
    */
   public toObject() {
     const object = {
@@ -114,7 +112,7 @@ export class Container {
   }
 
   /**
-   * Convert the timer to an INI string
+   * Convert the container to an INI string
    */
   public toINIString() {
     const object = {
@@ -129,7 +127,7 @@ export class Container {
   }
 
   /**
-   * Create an timer from an object
+   * Create an container from an object
    */
   public static fromObject(obj: unknown) {
     if (obj instanceof Object) {
@@ -151,7 +149,7 @@ export class Container {
   }
 
   /**
-   * Compare current timer with another timer
+   * Compare current container with another container
    */
   public equals(container: Container) {
     return JSON.stringify(this.toObject()) === JSON.stringify(container.toObject());

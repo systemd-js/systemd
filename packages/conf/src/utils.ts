@@ -1,5 +1,5 @@
+/* eslint-disable @typescript-eslint/no-empty-object-type */
 /* eslint-disable @typescript-eslint/no-type-alias */
-/* eslint-disable @typescript-eslint/ban-types */
 /* eslint-disable @typescript-eslint/no-unsafe-argument */
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 
@@ -17,8 +17,8 @@ export function applyMixins(derivedCtor: Constructor, constructors: Constructor[
       Object.defineProperty(
         derivedCtor.prototype,
         name,
-        Object.getOwnPropertyDescriptor(baseCtor.prototype, name) ??
-          Object.create(null)
+        Object.getOwnPropertyDescriptor(baseCtor.prototype, name)
+        ?? Object.create(null),
       );
     });
   });
@@ -49,7 +49,7 @@ export function implement<Model = never>() {
         [unknownKey in Exclude<keyof Schema, keyof Model>]: never;
       },
     >(
-      schema: Schema
+      schema: Schema,
     ) => z.object(schema),
   };
 }

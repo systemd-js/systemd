@@ -113,7 +113,6 @@ describe("INI - fromString", () => {
   });
 });
 
-
 const dataIni = `
 [section1]
 key1=value1
