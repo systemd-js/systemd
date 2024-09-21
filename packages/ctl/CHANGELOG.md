@@ -4,6 +4,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.6.1](https://github.com/systemd-js/systemd/compare/v0.6.0...v0.6.1) (2024-09-21)
+
+### Bug Fixes
+
+* **ctl:** fix reload ([736d007](https://github.com/systemd-js/systemd/commit/736d0078339a4526e1a460d0a4c4f4e2e5061740)) - by @chyzwar
+
 ## [0.6.0](https://github.com/systemd-js/systemd/compare/v0.5.0...v0.6.0) (2024-09-21)
 
 ### Features
