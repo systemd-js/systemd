@@ -57,9 +57,11 @@ function getUnit(unitName: string, type: string = getType(unitName)): Unit | und
 };
 
 /**
- * Create a unit file if it does not exist or if it is different from the current unit.
+ * Write unit file to filesystem.
+ * Create the unit file if it does not or update if it is different from the current unit.
+ * @returns "created" | "updated" | "unchanged"
  */
-export function create(unitName: string, unit: Unit) {
+export function write(unitName: string, unit: Unit) {
   const name = getName(unitName);
   const type = getType(unitName, unit);
   const path = getPath (name, type);
@@ -67,8 +69,13 @@ export function create(unitName: string, unit: Unit) {
   const current = getUnit(name, type);
 
   if (unit.equals(current)) {
-    writeFileSync(path, unit.toINIString());
+    return "unchanged";
   }
+  writeFileSync(path, unit.toINIString());
+
+  return current
+    ? "updated"
+    : "created";
 }
 
 export function reload(unitName: string, unit?: Unit) {
@@ -170,15 +177,24 @@ export class Ctl {
   }
 
   /**
-   * Create the unit file if it does not exist or if it is different from the current unit.
+   * Write unit file to filesystem.
+   * Create the unit file if it does not or update if it is different from the current unit.
+   * @returns "created" | "updated" | "unchanged"
    */
-  public create() {
+  public write() {
     if (!this.unit) {
       throw new Error("Unit not found");
     }
-    if (!this.unit.equals(this.current)) {
-      writeFileSync(this.path, this.unit.toINIString());
+
+    if (this.unit.equals(this.current)) {
+      return "unchanged";
     }
+
+    writeFileSync(this.path, this.unit.toINIString());
+
+    return this.current
+      ? "updated"
+      : "created";
   }
 
   /**
