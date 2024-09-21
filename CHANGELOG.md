@@ -4,6 +4,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.1](https://github.com/systemd-js/systemd/compare/v0.7.0...v0.7.1) (2024-09-21)
+
+### Bug Fixes
+
+* **ctl:** handle exic codes on isActive and isEnabled ([2f4f8d7](https://github.com/systemd-js/systemd/commit/2f4f8d7e146262508a0f0067af02d7d343c359ad)) - by @chyzwar
+
 ## [0.7.0](https://github.com/systemd-js/systemd/compare/v0.6.1...v0.7.0) (2024-09-21)
 
 ### Features
