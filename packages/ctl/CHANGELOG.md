@@ -4,6 +4,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.7.0](https://github.com/systemd-js/systemd/compare/v0.6.1...v0.7.0) (2024-09-21)
+
+### Features
+
+* **ctl:** added deamonReload ([bb4c239](https://github.com/systemd-js/systemd/commit/bb4c2397e63124761f5648eac43b2e9ee3485619)) - by @chyzwar
+
 ## [0.6.1](https://github.com/systemd-js/systemd/compare/v0.6.0...v0.6.1) (2024-09-21)
 
 ### Bug Fixes
