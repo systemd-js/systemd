@@ -75,7 +75,7 @@ export function reload(unitName: string, unit?: Unit) {
   const type = getType(unitName, unit);
   const name = getName(unitName);
 
-  execSync(`systemctl daemon-reload ${name}.${type}`);
+  execSync(`systemctl reload ${name}.${type}`);
 }
 
 export function enable(unitName: string, unit?: Unit) {
@@ -162,11 +162,8 @@ export class Ctl {
     if (!this.unit) {
       throw new Error("Unit not found");
     }
-    const unitString = this.unit.toINIString();
-    const currentUnit = this.current?.toINIString();
-
-    if (currentUnit !== unitString) {
-      writeFileSync(this.path, unitString);
+    if (!this.unit.equals(this.current)) {
+      writeFileSync(this.path, this.unit.toINIString());
     }
   }
 
@@ -191,7 +188,7 @@ export class Ctl {
   }
 
   public reload() {
-    execSync(`systemctl daemon-reload ${this.name}.${this.type}`);
+    execSync(`systemctl reload ${this.name}.${this.type}`);
   }
 
   public isActive() {
