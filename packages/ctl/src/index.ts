@@ -8,4 +8,6 @@ export {
   start,
   stop,
   restart,
+  isActive,
+  isEnabled,
 } from "./ctl.js";
