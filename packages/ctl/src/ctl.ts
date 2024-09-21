@@ -126,6 +126,13 @@ export function isActive(unitName: string, unit?: Unit) {
   return execSync(`systemctl is-active ${name}.${type}`).toString().trim() === "active";
 }
 
+export function isEnabled(unitName: string, unit?: Unit) {
+  const type = getType(unitName, unit);
+  const name = getName(unitName);
+
+  return execSync(`systemctl is-enabled ${name}.${type}`).toString().trim() === "enabled";
+}
+
 export class Ctl {
   private readonly type: string;
   private readonly name: string;
@@ -189,5 +196,9 @@ export class Ctl {
 
   public isActive() {
     return isActive(this.name, this.unit);
+  }
+
+  public isEnabled() {
+    return isEnabled(this.name, this.unit);
   }
 }
