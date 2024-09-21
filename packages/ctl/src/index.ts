@@ -10,4 +10,5 @@ export {
   restart,
   isActive,
   isEnabled,
+  daemonReload,
 } from "./ctl.js";

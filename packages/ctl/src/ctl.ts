@@ -133,6 +133,10 @@ export function isEnabled(unitName: string, unit?: Unit) {
   return execSync(`systemctl is-enabled ${name}.${type}`).toString().trim() === "enabled";
 }
 
+export function daemonReload() {
+  execSync(`systemctl daemon-reload`);
+}
+
 export class Ctl {
   private readonly type: string;
   private readonly name: string;
