@@ -123,14 +123,24 @@ export function isActive(unitName: string, unit?: Unit) {
   const type = getType(unitName, unit);
   const name = getName(unitName);
 
-  return execSync(`systemctl is-active ${name}.${type}`).toString().trim() === "active";
+  try {
+    return execSync(`systemctl is-active ${name}.${type}`).toString().trim() === "active";
+  }
+  catch {
+    return false;
+  }
 }
 
 export function isEnabled(unitName: string, unit?: Unit) {
   const type = getType(unitName, unit);
   const name = getName(unitName);
 
-  return execSync(`systemctl is-enabled ${name}.${type}`).toString().trim() === "enabled";
+  try {
+    return execSync(`systemctl is-enabled ${name}.${type}`).toString().trim() === "enabled";
+  }
+  catch {
+    return false;
+  }
 }
 
 export function daemonReload() {
@@ -171,6 +181,9 @@ export class Ctl {
     }
   }
 
+  /**
+   * Enabled Unit will be started on next boot
+   */
   public enable() {
     execSync(`systemctl enable ${this.name}.${this.type}`);
   }
