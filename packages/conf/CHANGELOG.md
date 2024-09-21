@@ -4,6 +4,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.8.0](https://github.com/systemd-js/systemd/compare/v0.7.1...v0.8.0) (2024-09-21)
+
+### Features
+
+* **ctl,conf:** update docs, chaneg create to write ([5cfb1ec](https://github.com/systemd-js/systemd/commit/5cfb1ec46f88cc390ef53f4a9aa4445e8dd4593a)) - by @chyzwar
+
 ## [0.7.0](https://github.com/systemd-js/systemd/compare/v0.6.1...v0.7.0) (2024-09-21)
 
 **Note:** Version bump only for package @systemd-js/conf
