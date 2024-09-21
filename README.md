@@ -166,6 +166,9 @@ import { Ctl } from "@systemd-js/ctl";
 
 const ctl = new Ctl("test.service");
 
+ctl.isActive();
+ctl.isEnabled();
+ctl.write();
 ctl.disable();
 ctl.enable();
 ctl.stop();
@@ -196,7 +199,7 @@ service
 
 const ctl = new Ctl("example", service);
 
-ctl.create();
+ctl.write();
 ctl.enable();
 ctl.start();
 ```
@@ -206,10 +209,14 @@ In addition to `Ctl` class, package expose functions to call systemctl directly.
 ```ts
 import { restart, start, stop } from "@systemd-js/ctl";
 
+write("example.service");
 stop("example.service");
 start("example.service");
 enable("example.service");
 disable("example.service");
 reload("example.service");
 restart("example.service");
+isActive("example.service");
+isEnabled("example.service");
+daemonReload();
 ```

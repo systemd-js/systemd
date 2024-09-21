@@ -1,7 +1,7 @@
 ## @systemd-js/conf
 
-INI parser for systemd config files. Set of fluent builders to create and modify unit files.
-Based on systemd v255.4
+INI parser for systemd config files. Set of fluent builders to create and modify
+unit files. Based on systemd v255.4
 
 ### Installation
 
@@ -13,7 +13,8 @@ yarn add @systemd-js/conf
 
 Parse systemd ini file into object.
 
-Note: Ini parser is not fully implemented, lacks support for escaping and quoting.
+Note: Ini parser is not fully implemented, lacks support for escaping and
+quoting.
 
 ```ts
 import {INI} from "@systemd-js/conf";
@@ -58,7 +59,6 @@ const ini = INI.fromString(unit).toObject();
     User: "root",
   },
 };
-
 ```
 
 Create service unit for ini string and modify service user definition.
@@ -82,12 +82,12 @@ PrivateTmp=yes
 User=root
 `;
 
-const ini = INI.fromString(unit)
-const service = Service.fromINI(ini)
+const ini = INI.fromString(unit);
+const service = Service.fromINI(ini);
 
 service
   .getServiceSection()
-  .setUser("test")
+  .setUser("test");
 
 service.toINIString();
 ```
@@ -95,33 +95,33 @@ service.toINIString();
 Create service unit using fluent builder
 
 ```ts
-import {Service} from "@systemd-js/config";
+import { Service } from "@systemd-js/config";
 
 const service = new Service();
 
 service
   .getUnitSection()
-  .setDescription("This is a example unit")
+  .setDescription("This is a example unit");
 
 service
   .getInstallSection()
-  .setWantedBy("multi-user.target")
-  
+  .setWantedBy("multi-user.target");
+
 service
- .getServiceSection()
- .setType("simple")
- .setWorkingDirectory("/tmp")
- .setRestart("always")
- .setExecStartPre("/usr/bin/echo 'Before'")
- .setExecStart("/usr/bin/echo 'Hello World'")
- .setExecStartPost("/usr/bin/echo 'After'")
+  .getServiceSection()
+  .setType("simple")
+  .setWorkingDirectory("/tmp")
+  .setRestart("always")
+  .setExecStartPre("/usr/bin/echo 'Before'")
+  .setExecStart("/usr/bin/echo 'Hello World'")
+  .setExecStartPost("/usr/bin/echo 'After'");
 ```
 
 Create timer unit using fluent builder
 
 ```ts
-import {Timer} from "@systemd-js/config";
-const timer = new Timer()
+import { Timer } from "@systemd-js/config";
+const timer = new Timer();
 
 timer
   .getUnitSection()
@@ -130,7 +130,7 @@ timer
 
 timer
   .getInstallSection()
-  .setWantedBy("multi-user.target");  
+  .setWantedBy("multi-user.target");
 
 timer
   .getTimerSection()

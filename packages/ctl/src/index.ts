@@ -2,7 +2,7 @@ export {
   Ctl,
 
   reload,
-  create,
+  write,
   enable,
   disable,
   start,
