@@ -4,6 +4,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.9.0](https://github.com/systemd-js/systemd/compare/v0.8.0...v0.9.0) (2025-01-18)
+
+### Features
+
+* **conf:** added scheduling exec subsection, fixed typo in ExecStartPre ([71da997](https://github.com/systemd-js/systemd/commit/71da9974c23c1179a94499b6a033fda4ddbea318)) - by @chyzwar
+
 ## [0.8.0](https://github.com/systemd-js/systemd/compare/v0.7.1...v0.8.0) (2024-09-21)
 
 ### Features
