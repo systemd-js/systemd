@@ -28,8 +28,8 @@ After=network.target
 WantedBy=multi-user.target
 
 [Service]
-ExecPreStart=/opt/example/agent start-1
-ExecPreStart=/opt/example/agent start-2
+ExecStartPre=/opt/example/agent start-1
+ExecStartPre=/opt/example/agent start-2
 ExecStart=/opt/example/agent start
 EnvironmentFile=/opt/example/.env
 Restart=always
@@ -48,7 +48,7 @@ const ini = INI.fromString(unit).toObject();
     WantedBy: "multi-user.target",
   },
   Service: {
-    ExecPreStart: [
+    ExecStartPre: [
       "/opt/example/agent start-1",
       "/opt/example/agent start-2",
     ],
@@ -73,8 +73,8 @@ After=network.target
 WantedBy=multi-user.target
 
 [Service]
-ExecPreStart=/opt/example/agent start-1
-ExecPreStart=/opt/example/agent start-2
+ExecStartPre=/opt/example/agent start-1
+ExecStartPre=/opt/example/agent start-2
 ExecStart=/opt/example/agent start
 EnvironmentFile=/opt/example/.env
 Restart=always
