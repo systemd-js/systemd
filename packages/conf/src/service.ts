@@ -282,6 +282,7 @@ export interface ServiceSectionConfig {
     Before=/After= ordering constraints.
   */
   ExecStartPre?: string[] | string;
+
   /**
    * @see {@link ServiceSectionConfig.ExecStartPre}
    */

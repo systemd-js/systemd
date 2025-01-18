@@ -28,8 +28,8 @@ After=network.target
 WantedBy=multi-user.target
 
 [Service]
-ExecPreStart=/opt/example/agent start-1
-ExecPreStart=/opt/example/agent start-2
+ExecStartPre=/opt/example/agent start-1
+ExecStartPre=/opt/example/agent start-2
 ExecStart=/opt/example/agent start
 EnvironmentFile=/opt/example/.env
 Restart=always
@@ -43,8 +43,8 @@ Description=example
 After=network.target
 
 [Service]
-ExecPreStart=/opt/example/agent start-1
-ExecPreStart=/opt/example/agent start-2 \
+ExecStartPre=/opt/example/agent start-1
+ExecStartPre=/opt/example/agent start-2 \
   --option1=value1 \
   --option2=value2 \
   --option3=value3
@@ -67,7 +67,7 @@ describe("INI - fromString", () => {
         WantedBy: "multi-user.target",
       },
       Service: {
-        ExecPreStart: [
+        ExecStartPre: [
           "/opt/example/agent start-1",
           "/opt/example/agent start-2",
         ],
@@ -101,7 +101,7 @@ describe("INI - fromString", () => {
         After: "network.target",
       },
       Service: {
-        ExecPreStart: [
+        ExecStartPre: [
           "/opt/example/agent start-1",
           "/opt/example/agent start-2   --option1=value1   --option2=value2   --option3=value3",
         ],

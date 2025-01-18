@@ -20,7 +20,7 @@ const serviceObj = {
     Restart: "always",
     WorkingDirectory: "/opt/example",
     KillMode: "mixed",
-    // PrivateTmp: true,
+    PrivateTmp: true,
     User: "root",
   },
 };
@@ -92,6 +92,7 @@ describe("Service", () => {
         .setRestart("always")
         .setWorkingDirectory("/opt/example")
         .setKillMode("mixed")
+        .setPrivateTmp(true)
         .setUser("root");
 
       service
