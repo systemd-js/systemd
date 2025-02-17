@@ -1,7 +1,8 @@
 {
   "eslint.enable": true,
   "editor.formatOnSave": true,
-  "eslint.experimental.useFlatConfig": true,
+  "eslint.useFlatConfig": true,
+  "biome.enabled": false,
   "[typescript]": { 
     "editor.defaultFormatter": "dbaeumer.vscode-eslint" 
   }

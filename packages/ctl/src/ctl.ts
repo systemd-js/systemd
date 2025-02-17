@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/consistent-return */
 import { execSync } from "node:child_process";
 import { existsSync, readFileSync, writeFileSync } from "node:fs";
 import type { Unit } from "@systemd-js/conf";
