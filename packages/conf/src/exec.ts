@@ -2238,7 +2238,428 @@ export interface ExecSectionConfig {
     Added in version 235.
   */
   UnsetEnvironment?: string[] | string;
+
+  /*
+  LOGGING AND STANDARD INPUT/OUTPUT
+  StandardInput=
+      Controls where file descriptor 0 (STDIN) of the executed processes is connected to. Takes one of
+      null, tty, tty-force, tty-fail, data, file:path, socket or fd:name.
+
+      If null is selected, standard input will be connected to /dev/null, i.e. all read attempts by the
+      process will result in immediate EOF.
+
+      If tty is selected, standard input is connected to a TTY (as configured by TTYPath=, see below) and
+      the executed process becomes the controlling process of the terminal. If the terminal is already
+      being controlled by another process, the executed process waits until the current controlling process
+      releases the terminal.
+
+      tty-force is similar to tty, but the executed process is forcefully and immediately made the
+      controlling process of the terminal, potentially removing previous controlling processes from the
+      terminal.
+
+      tty-fail is similar to tty, but if the terminal already has a controlling process start-up of the
+      executed process fails.
+
+      The data option may be used to configure arbitrary textual or binary data to pass via standard input
+      to the executed process. The data to pass is configured via StandardInputText=/StandardInputData=
+      (see below). Note that the actual file descriptor type passed (memory file, regular file, UNIX pipe,
+      ...) might depend on the kernel and available privileges. In any case, the file descriptor is
+      read-only, and when read returns the specified data followed by EOF.
+
+      The file:path option may be used to connect a specific file system object to standard input. An
+      absolute path following the ":" character is expected, which may refer to a regular file, a FIFO or
+      special file. If an AF_UNIX socket in the file system is specified, a stream socket is connected to
+      it. The latter is useful for connecting standard input of processes to arbitrary system services.
+
+      The socket option is valid in socket-activated services only, and requires the relevant socket unit
+      file (see systemd.socket(5) for details) to have Accept=yes set, or to specify a single socket only.
+      If this option is set, standard input will be connected to the socket the service was activated from,
+      which is primarily useful for compatibility with daemons designed for use with the traditional
+      inetd(8) socket activation daemon ($LISTEN_FDS (and related) environment variables are not passed
+      when socket value is configured).
+
+      The fd:name option connects standard input to a specific, named file descriptor provided by a socket
+      unit. The name may be specified as part of this option, following a ":" character (e.g.
+      "fd:foobar"). If no name is specified, the name "stdin" is implied (i.e.  "fd" is equivalent to
+      "fd:stdin"). At least one socket unit defining the specified name must be provided via the Sockets=
+      option, and the file descriptor name may differ from the name of its containing socket unit. If
+      multiple matches are found, the first one will be used. See FileDescriptorName= in systemd.socket(5)
+      for more details about named file descriptors and their ordering.
+
+      This setting defaults to null, unless StandardInputText=/StandardInputData= are set, in which case it
+      defaults to data.
+  */
+  StandardInput?:
+    | "null"
+    | "tty"
+    | "tty-force"
+    | "tty-fail"
+    | "data"
+    | "socket"
+    | `file:${string}`
+    | `fd:${string}`;
+
+  /*
+  StandardOutput=
+      Controls where file descriptor 1 (stdout) of the executed processes is connected to. Takes one of
+      inherit, null, tty, journal, kmsg, journal+console, kmsg+console, file:path, append:path,
+      truncate:path, socket or fd:name.
+
+      inherit duplicates the file descriptor of standard input for standard output.
+
+      null connects standard output to /dev/null, i.e. everything written to it will be lost.
+
+      tty connects standard output to a tty (as configured via TTYPath=, see below). If the TTY is used for
+      output only, the executed process will not become the controlling process of the terminal, and will
+      not fail or wait for other processes to release the terminal.
+
+      journal connects standard output with the journal, which is accessible via journalctl(1). Note that
+      everything that is written to kmsg (see below) is implicitly stored in the journal as well, the
+      specific option listed below is hence a superset of this one. (Also note that any external,
+      additional syslog daemons receive their log data from the journal, too, hence this is the option to
+      use when logging shall be processed with such a daemon.)
+
+      kmsg connects standard output with the kernel log buffer which is accessible via dmesg(1), in
+      addition to the journal. The journal daemon might be configured to send all logs to kmsg anyway, in
+      which case this option is no different from journal.
+
+      journal+console and kmsg+console work in a similar way as the two options above but copy the output
+      to the system console as well.
+
+      The file:path option may be used to connect a specific file system object to standard output. The
+      semantics are similar to the same option of StandardInput=, see above. If path refers to a regular
+      file on the filesystem, it is opened (created if it doesn't exist yet) for writing at the beginning
+      of the file, but without truncating it. If standard input and output are directed to the same file
+      path, it is opened only once — for reading as well as writing — and duplicated. This is particularly
+      useful when the specified path refers to an AF_UNIX socket in the file system, as in that case only a
+      single stream connection is created for both input and output.
+
+      append:path is similar to file:path above, but it opens the file in append mode.
+
+      truncate:path is similar to file:path above, but it truncates the file when opening it. For units
+      with multiple command lines, e.g.  Type=oneshot services with multiple ExecStart=, or services with
+      ExecCondition=, ExecStartPre= or ExecStartPost=, the output file is reopened and therefore
+      re-truncated for each command line. If the output file is truncated while another process still has
+      the file open, e.g. by an ExecReload= running concurrently with an ExecStart=, and the other process
+      continues writing to the file without adjusting its offset, then the space between the file pointers
+      of the two processes may be filled with NUL bytes, producing a sparse file. Thus, truncate:path is
+      typically only useful for units where only one process runs at a time, such as services with a single
+      ExecStart= and no ExecStartPost=, ExecReload=, ExecStop= or similar.
+
+      socket connects standard output to a socket acquired via socket activation. The semantics are similar
+      to the same option of StandardInput=, see above.
+
+      The fd:name option connects standard output to a specific, named file descriptor provided by a socket
+      unit. A name may be specified as part of this option, following a ":" character (e.g.  "fd:foobar").
+      If no name is specified, the name "stdout" is implied (i.e.  "fd" is equivalent to "fd:stdout"). At
+      least one socket unit defining the specified name must be provided via the Sockets= option, and the
+      file descriptor name may differ from the name of its containing socket unit. If multiple matches are
+      found, the first one will be used. See FileDescriptorName= in systemd.socket(5) for more details
+      about named descriptors and their ordering.
+
+      If the standard output (or error output, see below) of a unit is connected to the journal or the
+      kernel log buffer, the unit will implicitly gain a dependency of type After= on
+      systemd-journald.socket (also see the "Implicit Dependencies" section above). Also note that in this
+      case stdout (or stderr, see below) will be an AF_UNIX stream socket, and not a pipe or FIFO that can
+      be re-opened. This means when executing shell scripts the construct echo "hello" > /dev/stderr for
+      writing text to stderr will not work. To mitigate this use the construct echo "hello" >&2 instead,
+      which is mostly equivalent and avoids this pitfall.
+
+      If StandardInput= is set to one of tty, tty-force, tty-fail, socket, or fd:name, this setting
+      defaults to inherit.
+
+      In other cases, this setting defaults to the value set with DefaultStandardOutput= in systemd-
+      system.conf(5), which defaults to journal. Note that setting this parameter might result in
+      additional dependencies to be added to the unit (see above).
+  */
+  StandardOutput?:
+    | "inherit"
+    | "null"
+    | "tty"
+    | "journal"
+    | "kmsg"
+    | "journal+console"
+    | "kmsg+console"
+    | "socket"
+    | `file:${string}`
+    | `append:${string}`
+    | `truncate:${string}`
+    | `fd:${string}`;
+
+  /*
+  StandardError=
+      Controls where file descriptor 2 (stderr) of the executed processes is connected to. The available
+      options are identical to those of StandardOutput=, with some exceptions: if set to inherit the file
+      descriptor used for standard output is duplicated for standard error, while fd:name will use a
+      default file descriptor name of "stderr".
+
+      This setting defaults to the value set with DefaultStandardError= in systemd-system.conf(5), which
+      defaults to inherit. Note that setting this parameter might result in additional dependencies to be
+      added to the unit (see above).
+  */
+  StandardError?: ExecSectionConfig["StandardOutput"];
+
+  /**
+  StandardInputText=, StandardInputData=
+      Configures arbitrary textual or binary data to pass via file descriptor 0 (STDIN) to the executed
+      processes. These settings have no effect unless StandardInput= is set to data (which is the default
+      if StandardInput= is not set otherwise, but StandardInputText=/StandardInputData= is). Use this
+      option to embed process input data directly in the unit file.
+
+      StandardInputText= accepts arbitrary textual data. C-style escapes for special characters as well as
+      the usual "%"-specifiers are resolved. Each time this setting is used the specified text is appended
+      to the per-unit data buffer, followed by a newline character (thus every use appends a new line to
+      the end of the buffer). Note that leading and trailing whitespace of lines configured with this
+      option is removed. If an empty line is specified the buffer is cleared (hence, in order to insert an
+      empty line, add an additional "\n" to the end or beginning of a line).
+
+      StandardInputData= accepts arbitrary binary data, encoded in Base64[14]. No escape sequences or
+      specifiers are resolved. Any whitespace in the encoded version is ignored during decoding.
+
+      Note that StandardInputText= and StandardInputData= operate on the same data buffer, and may be mixed
+      in order to configure both binary and textual data for the same input stream. The textual or binary
+      data is joined strictly in the order the settings appear in the unit file. Assigning an empty string
+      to either will reset the data buffer.
+
+      Please keep in mind that in order to maintain readability long unit file settings may be split into
+      multiple lines, by suffixing each line (except for the last) with a "\" character (see
+      systemd.unit(5) for details). This is particularly useful for large data configured with these two
+      options. Example:
+
+          ...
+          StandardInput=data
+          StandardInputData=V2XigLJyZSBubyBzdHJhbmdlcnMgdG8gbG92ZQpZb3Uga25vdyB0aGUgcnVsZXMgYW5kIHNvIGRv \
+                            IEkKQSBmdWxsIGNvbW1pdG1lbnQncyB3aGF0IEnigLJtIHRoaW5raW5nIG9mCllvdSB3b3VsZG4n \
+                            dCBnZXQgdGhpcyBmcm9tIGFueSBvdGhlciBndXkKSSBqdXN0IHdhbm5hIHRlbGwgeW91IGhvdyBJ \
+                            J20gZmVlbGluZwpHb3R0YSBtYWtlIHlvdSB1bmRlcnN0YW5kCgpOZXZlciBnb25uYSBnaXZlIHlv \
+                            dSB1cApOZXZlciBnb25uYSBsZXQgeW91IGRvd24KTmV2ZXIgZ29ubmEgcnVuIGFyb3VuZCBhbmQg \
+                            ZGVzZXJ0IHlvdQpOZXZlciBnb25uYSBtYWtlIHlvdSBjcnkKTmV2ZXIgZ29ubmEgc2F5IGdvb2Ri \
+                            eWUKTmV2ZXIgZ29ubmEgdGVsbCBhIGxpZSBhbmQgaHVydCB5b3UK
+          ...
+
+      Added in version 236.
+  */
+  StandardInputText?: string;
+  StandardInputData?: string;
+
+  /*
+  LogLevelMax=
+      Configures filtering by log level of log messages generated by this unit. Takes a syslog log level,
+      one of emerg (lowest log level, only highest priority messages), alert, crit, err, warning, notice,
+      info, debug (highest log level, also lowest priority messages). See syslog(3) for details. By default
+      no filtering is applied (i.e. the default maximum log level is debug). Use this option to configure
+      the logging system to drop log messages of a specific service above the specified level. For example,
+      set LogLevelMax=info in order to turn off debug logging of a particularly chatty unit. Note that the
+      configured level is applied to any log messages written by any of the processes belonging to this
+      unit, as well as any log messages written by the system manager process (PID 1) in reference to this
+      unit, sent via any supported logging protocol. The filtering is applied early in the logging
+      pipeline, before any kind of further processing is done. Moreover, messages which pass through this
+      filter successfully might still be dropped by filters applied at a later stage in the logging
+      subsystem. For example, MaxLevelStore= configured in journald.conf(5) might prohibit messages of
+      higher log levels to be stored on disk, even though the per-unit LogLevelMax= permitted it to be
+      processed.
+
+      Added in version 236.
+  */
+  LogLevelMax?: "emerg" | "alert" | "crit" | "err" | "warning" | "notice" | "info" | "debug";
+
+  /**
+  LogExtraFields=
+      Configures additional log metadata fields to include in all log records generated by processes
+      associated with this unit, including systemd. This setting takes one or more journal field
+      assignments in the format "FIELD=VALUE" separated by whitespace. See systemd.journal-fields(7) for
+      details on the journal field concept. Even though the underlying journal implementation permits
+      binary field values, this setting accepts only valid UTF-8 values. To include space characters in a
+      journal field value, enclose the assignment in double quotes (").  The usual specifiers are expanded
+      in all assignments (see below). Note that this setting is not only useful for attaching additional
+      metadata to log records of a unit, but given that all fields and values are indexed may also be used
+      to implement cross-unit log record matching. Assign an empty string to reset the list.
+
+      Added in version 236.
+  */
+  LogExtraFields?: string;
+
+  /**
+  LogRateLimitIntervalSec=, LogRateLimitBurst=
+      Configures the rate limiting that is applied to log messages generated by this unit. If, in the time
+      interval defined by LogRateLimitIntervalSec=, more messages than specified in LogRateLimitBurst= are
+      logged by a service, all further messages within the interval are dropped until the interval is over.
+      A message about the number of dropped messages is generated. The time specification for
+      LogRateLimitIntervalSec= may be specified in the following units: "s", "min", "h", "ms", "us". See
+      systemd.time(7) for details. The default settings are set by RateLimitIntervalSec= and
+      RateLimitBurst= configured in journald.conf(5). Note that this only applies to log messages that are
+      processed by the logging subsystem, i.e. by systemd-journald.service(8). This means that if you
+      connect a service's stderr directly to a file via StandardOutput=file:...  or a similar setting, the
+      rate limiting will not be applied to messages written that way (but it will be enforced for messages
+      generated via syslog(3) and similar functions).
+
+      Added in version 240.
+  */
+  LogRateLimitIntervalSec?: number;
+  LogRateLimitBurst?: number;
+
+  /**
+  LogFilterPatterns=
+      Define an extended regular expression to filter log messages based on the MESSAGE= field of the
+      structured message. If the first character of the pattern is "~", log entries matching the pattern
+      should be discarded. This option takes a single pattern as an argument but can be used multiple times
+      to create a list of allowed and denied patterns. If the empty string is assigned, the filter is
+      reset, and all prior assignments will have no effect.
+
+      Because the "~" character is used to define denied patterns, it must be replaced with "\x7e" to allow
+      a message starting with "~". For example, "~foobar" would add a pattern matching "foobar" to the deny
+      list, while "\x7efoobar" would add a pattern matching "~foobar" to the allow list.
+
+      Log messages are tested against denied patterns (if any), then against allowed patterns (if any). If
+      a log message matches any of the denied patterns, it will be discarded, whatever the allowed
+      patterns. Then, remaining log messages are tested against allowed patterns. Messages matching against
+      none of the allowed pattern are discarded. If no allowed patterns are defined, then all messages are
+      processed directly after going through denied filters.
+
+      Filtering is based on the unit for which LogFilterPatterns= is defined, meaning log messages coming
+      from systemd(1) about the unit are not taken into account. Filtered log messages won't be forwarded
+      to traditional syslog daemons, the kernel log buffer (kmsg), the systemd console, or sent as wall
+      messages to all logged-in users.
+
+      Added in version 253.
+  */
+  LogFilterPatterns?: string;
+
+  /*
+  LogNamespace=
+      Run the unit's processes in the specified journal namespace. Expects a short user-defined string
+      identifying the namespace. If not used the processes of the service are run in the default journal
+      namespace, i.e. their log stream is collected and processed by systemd-journald.service. If this
+      option is used any log data generated by processes of this unit (regardless if via the syslog(),
+      journal native logging or stdout/stderr logging) is collected and processed by an instance of the
+      systemd-journald@.service template unit, which manages the specified namespace. The log data is
+      stored in a data store independent from the default log namespace's data store. See systemd-
+      journald.service(8) for details about journal namespaces.
+
+      Internally, journal namespaces are implemented through Linux mount namespacing and over-mounting the
+      directory that contains the relevant AF_UNIX sockets used for logging in the unit's mount namespace.
+      Since mount namespaces are used this setting disconnects propagation of mounts from the unit's
+      processes to the host, similarly to how ReadOnlyPaths= and similar settings describe above work.
+      Journal namespaces may hence not be used for services that need to establish mount points on the
+      host.
+
+      When this option is used the unit will automatically gain ordering and requirement dependencies on
+      the two socket units associated with the systemd-journald@.service instance so that they are
+      automatically established prior to the unit starting up. Note that when this option is used log
+      output of this service does not appear in the regular journalctl(1) output, unless the --namespace=
+      option is used.
+
+      This option is only available for system services and is not supported for services running in
+      per-user instances of the service manager.
+
+      Added in version 245.
+  */
+  LogNamespace?: string;
+
+  /**
+  SyslogIdentifier=
+      Sets the process name ("syslog tag") to prefix log lines sent to the logging system or the kernel log
+      buffer with. If not set, defaults to the process name of the executed process. This option is only
+      useful when StandardOutput= or StandardError= are set to journal or kmsg (or to the same settings in
+      combination with +console) and only applies to log messages written to stdout or stderr.
+  */
+  SyslogIdentifier?: string;
+
+  /**
+  SyslogFacility=
+      Sets the syslog facility identifier to use when logging. One of kern, user, mail, daemon, auth,
+      syslog, lpr, news, uucp, cron, authpriv, ftp, local0, local1, local2, local3, local4, local5, local6
+      or local7. See syslog(3) for details. This option is only useful when StandardOutput= or
+      StandardError= are set to journal or kmsg (or to the same settings in combination with +console), and
+      only applies to log messages written to stdout or stderr. Defaults to daemon.
+  */
+  SyslogFacility?: "kern" | "user" | "mail" | "daemon" | "auth" | "syslog" | "lpr" | "news" | "uucp" | "cron" | "authpriv" | "ftp" | "local0" | "local1" | "local2" | "local3" | "local4" | "local5" | "local6" | "local7";
+
+  /**
+  SyslogLevel=
+      The default syslog log level to use when logging to the logging system or the kernel log buffer. One
+      of emerg, alert, crit, err, warning, notice, info, debug. See syslog(3) for details. This option is
+      only useful when StandardOutput= or StandardError= are set to journal or kmsg (or to the same
+      settings in combination with +console), and only applies to log messages written to stdout or stderr.
+      Note that individual lines output by executed processes may be prefixed with a different log level
+      which can be used to override the default log level specified here. The interpretation of these
+      prefixes may be disabled with SyslogLevelPrefix=, see below. For details, see sd-daemon(3). Defaults
+      to info.
+  */
+  SyslogLevel?: "emerg" | "alert" | "crit" | "err" | "warning" | "notice" | "info" | "debug";
+
+  /*
+  SyslogLevelPrefix=
+      Takes a boolean argument. If true and StandardOutput= or StandardError= are set to journal or kmsg
+      (or to the same settings in combination with +console), log lines written by the executed process
+      that are prefixed with a log level will be processed with this log level set but the prefix removed.
+      If set to false, the interpretation of these prefixes is disabled and the logged lines are passed on
+      as-is. This only applies to log messages written to stdout or stderr. For details about this
+      prefixing see sd-daemon(3). Defaults to true.
+  */
+  SyslogLevelPrefix?: boolean;
+
+  /*
+  TTYPath=
+      Sets the terminal device node to use if standard input, output, or error are connected to a TTY (see
+      above). Defaults to /dev/console.
+  */
+  TTYPath?: string;
+
+  /*
+  TTYReset=
+      Reset the terminal device specified with TTYPath= before and after execution. Defaults to "no".
+  TTYVHangup=
+      Disconnect all clients which have opened the terminal device specified with TTYPath= before and after
+      execution. Defaults to "no".
+  **/
+  TTYReset?: boolean;
+  TTYVHangup?: boolean;
+
+  /**
+  TTYRows=, TTYColumns=
+      Configure the size of the TTY specified with TTYPath=. If unset or set to the empty string, the
+      kernel default is used.
+
+      Added in version 250.
+  */
+  TTYRows?: number;
+  TTYColumns?: number;
+
+  /*
+  TTYVTDisallocate=
+      If the terminal device specified with TTYPath= is a virtual console terminal, try to deallocate the
+      TTY before and after execution. This ensures that the screen and scrollback buffer is cleared.
+      Defaults to "no".
+  */
+  TTYVTDisallocate?: boolean;
 }
+
+const StandardOutputSchema = z.union([
+  z.literal("inherit"),
+  z.literal("null"),
+  z.literal("tty"),
+  z.literal("journal"),
+  z.literal("kmsg"),
+  z.literal("journal+console"),
+  z.literal("kmsg+console"),
+  z.literal("socket"),
+  z.string().startsWith("file:") as z.ZodType<`file:${string}`>,
+  z.string().startsWith("append:") as z.ZodType<`append:${string}`>,
+  z.string().startsWith("truncate:") as z.ZodType<`truncate:${string}`>,
+  z.string().startsWith("fd:") as z.ZodType<`fd:${string}`>,
+]).optional();
+
+const LogLevelSchema = z.union([
+  z.literal("emerg"),
+  z.literal("alert"),
+  z.literal("crit"),
+  z.literal("err"),
+  z.literal("warning"),
+  z.literal("notice"),
+  z.literal("info"),
+  z.literal("debug"),
+]).optional();
 
 export const ExecSectionSchema = implement<ExecSectionConfig>().with({
   ExecSearchPath: z.string().optional(),
@@ -2363,6 +2784,59 @@ export const ExecSectionSchema = implement<ExecSectionConfig>().with({
   EnvironmentFile: z.union([z.string(), z.array(z.string())]).optional(),
   PassEnvironment: z.union([z.string(), z.array(z.string())]).optional(),
   UnsetEnvironment: z.union([z.string(), z.array(z.string())]).optional(),
+
+  // LOGGING AND STANDARD INPUT/OUTPUT
+  StandardInput: z.union([
+    z.literal("null"),
+    z.literal("tty"),
+    z.literal("tty-force"),
+    z.literal("tty-fail"),
+    z.literal("data"),
+    z.literal("socket"),
+    z.string().startsWith("file:") as z.ZodType<`file:${string}`>,
+    z.string().startsWith("fd:") as z.ZodType<`fd:${string}`>,
+  ]).optional(),
+  StandardOutput: StandardOutputSchema,
+  StandardError: StandardOutputSchema,
+  StandardInputData: z.string().optional(),
+  StandardInputText: z.string().optional(),
+  LogLevelMax: LogLevelSchema,
+  LogExtraFields: z.string().optional(),
+  LogRateLimitIntervalSec: z.number().optional(),
+  LogRateLimitBurst: z.number().optional(),
+  LogFilterPatterns: z.string().optional(),
+  LogNamespace: z.string().optional(),
+  SyslogIdentifier: z.string().optional(),
+  SyslogFacility: z.union([
+    z.literal("kern"),
+    z.literal("user"),
+    z.literal("mail"),
+    z.literal("daemon"),
+    z.literal("auth"),
+    z.literal("syslog"),
+    z.literal("lpr"),
+    z.literal("news"),
+    z.literal("uucp"),
+    z.literal("cron"),
+    z.literal("authpriv"),
+    z.literal("ftp"),
+    z.literal("local0"),
+    z.literal("local1"),
+    z.literal("local2"),
+    z.literal("local3"),
+    z.literal("local4"),
+    z.literal("local5"),
+    z.literal("local6"),
+    z.literal("local7"),
+  ]).optional(),
+  SyslogLevel: LogLevelSchema,
+  SyslogLevelPrefix: z.boolean().optional(),
+  TTYPath: z.string().optional(),
+  TTYReset: z.boolean().optional(),
+  TTYVHangup: z.boolean().optional(),
+  TTYRows: z.number().optional(),
+  TTYColumns: z.number().optional(),
+  TTYVTDisallocate: z.boolean().optional(),
 });
 
 export class ExecSectionBuilder {
@@ -3096,6 +3570,193 @@ export class ExecSectionBuilder {
    */
   public setSmackProcessLabel(value?: string): this {
     this.section.SmackProcessLabel = value;
+    return this;
+  }
+
+  /**
+   * Set StandardInput
+   * @see {@link ExecSectionConfig.StandardInput}
+   */
+  public setStandardInput(value?: ExecSectionConfig["StandardInput"]): this {
+    this.section.StandardInput = value;
+    return this;
+  }
+
+  /**
+   * Set StandardOutput
+   * @see {@link ExecSectionConfig.StandardOutput}
+   */
+  public setStandardOutput(value?: ExecSectionConfig["StandardOutput"]): this {
+    this.section.StandardOutput = value;
+    return this;
+  }
+
+  /**
+   * Set StandardError
+   * @see {@link ExecSectionConfig.StandardError}
+   */
+  public setStandardError(value?: ExecSectionConfig["StandardError"]): this {
+    this.section.StandardError = value;
+    return this;
+  }
+
+  /**
+   * Set StandardInputText
+   * @see {@link ExecSectionConfig.StandardInputText}
+   */
+  public setStandardInputText(value?: string): this {
+    this.section.StandardInputText = value;
+    return this;
+  }
+
+  /**
+   * Set StandardInputData
+   * @see {@link ExecSectionConfig.StandardInputData}
+   */
+  public setStandardInputData(value?: string): this {
+    this.section.StandardInputData = value;
+    return this;
+  }
+
+  /**
+   * Set LogLevelMax
+   * @see {@link ExecSectionConfig.LogLevelMax}
+   */
+  public setLogLevelMax(value?: "alert" | "crit" | "err" | "warning" | "notice" | "info" | "debug"): this {
+    this.section.LogLevelMax = value;
+    return this;
+  }
+
+  /**
+   * Set LogExtraFields
+   * @see {@link ExecSectionConfig.LogExtraFields}
+   */
+  public setLogExtraFields(value?: string): this {
+    this.section.LogExtraFields = value;
+    return this;
+  }
+
+  /**
+   * Set LogRateLimitIntervalSec
+   * @see {@link ExecSectionConfig.LogRateLimitIntervalSec}
+   */
+  public setLogRateLimitIntervalSec(value?: number): this {
+    this.section.LogRateLimitIntervalSec = value;
+    return this;
+  }
+
+  /**
+   * Set LogRateLimitBurst
+   * @see {@link ExecSectionConfig.LogRateLimitBurst}
+   */
+  public setLogRateLimitBurst(value?: number): this {
+    this.section.LogRateLimitBurst = value;
+    return this;
+  }
+
+  /**
+   * Set LogFilterPatterns
+   * @see {@link ExecSectionConfig.LogFilterPatterns}
+   */
+  public setLogFilterPatterns(value?: string): this {
+    this.section.LogFilterPatterns = value;
+    return this;
+  }
+
+  /**
+   * Set LogNamespace
+   * @see {@link ExecSectionConfig.LogNamespace}
+   */
+  public setLogNamespace(value?: string): this {
+    this.section.LogNamespace = value;
+    return this;
+  }
+
+  /**
+   * Set SyslogIdentifier
+   * @see {@link ExecSectionConfig.SyslogIdentifier}
+   */
+  public setSyslogIdentifier(value?: string): this {
+    this.section.SyslogIdentifier = value;
+    return this;
+  }
+
+  /**
+   * Set SyslogFacility
+   * @see {@link ExecSectionConfig.SyslogFacility}
+   */
+  public setSyslogFacility(value?: "kern" | "user" | "mail" | "daemon" | "auth" | "syslog" | "lpr" | "news" | "uucp" | "cron" | "authpriv" | "ftp" | "local0" | "local1" | "local2" | "local3" | "local4" | "local5" | "local6" | "local7"): this {
+    this.section.SyslogFacility = value;
+    return this;
+  }
+
+  /**
+   * Set SyslogLevel
+   * @see {@link ExecSectionConfig.SyslogLevel}
+   */
+  public setSyslogLevel(value?: "emerg" | "alert" | "crit" | "err" | "warning" | "notice" | "info" | "debug"): this {
+    this.section.SyslogLevel = value;
+    return this;
+  }
+
+  /**
+   * Set SyslogLevelPrefix
+   * @see {@link ExecSectionConfig.SyslogLevelPrefix}
+   */
+  public setSyslogLevelPrefix(value?: boolean): this {
+    this.section.SyslogLevelPrefix = value;
+    return this;
+  }
+
+  /**
+   * Set TTYPath
+   * @see {@link ExecSectionConfig.TTYPath}
+   */
+  public setTTYPath(value?: string): this {
+    this.section.TTYPath = value;
+    return this;
+  }
+
+  /**
+   * Set TTYReset
+   * @see {@link ExecSectionConfig.TTYReset}
+   */
+  public setTTYReset(value?: boolean): this {
+    this.section.TTYReset = value;
+    return this;
+  }
+
+  /**
+   * Set TTYVHangup
+   * @see {@link ExecSectionConfig.TTYVHangup}
+   */
+  public setTTYVHangup(value?: boolean): this {
+    this.section.TTYVHangup = value;
+    return this;
+  }
+
+  /**
+   * Set TTYRows
+   */
+  public setTTYRows(value?: number): this {
+    this.section.TTYRows = value;
+    return this;
+  }
+
+  /**
+   * Set TTYColumns
+   */
+  public setTTYColumns(value?: number): this {
+    this.section.TTYColumns = value;
+    return this;
+  }
+
+  /**
+   * Set TTYVTDisallocate
+   * @see {@link ExecSectionConfig.TTYVTDisallocate}
+   */
+  public setTTYVTDisallocate(value?: boolean): this {
+    this.section.TTYVTDisallocate = value;
     return this;
   }
 }
