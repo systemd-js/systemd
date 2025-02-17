@@ -4,6 +4,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.10.0](https://github.com/systemd-js/systemd/compare/v0.9.0...v0.10.0) (2025-02-17)
+
+### Features
+
+* **conf:** added logging section to exec ([0fb33bd](https://github.com/systemd-js/systemd/commit/0fb33bdacc238878bc06a3d7235e28d4ec1e5083)) - by @chyzwar
+
 ## [0.9.0](https://github.com/systemd-js/systemd/compare/v0.8.0...v0.9.0) (2025-01-18)
 
 **Note:** Version bump only for package @systemd-js/ctl
