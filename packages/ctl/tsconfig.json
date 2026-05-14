@@ -5,7 +5,8 @@
     "outDir": "lib",
     "rootDir": "src",
     "composite": false,
-    "tsBuildInfoFile": "./lib/buildInfo.json"
+    "tsBuildInfoFile": "./lib/buildInfo.json",
+    "types": ["node"]
   },
   "include": [
     "src/**/*"
