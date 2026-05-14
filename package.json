@@ -2,7 +2,7 @@
   "name": "@systemd/root",
   "version": "1.0.0",
   "engines": {
-    "node": "^20.0.0"
+    "node": "^24.0.0"
   },
   "type": "module",
   "workspaces": [
@@ -22,20 +22,20 @@
     "prepare": "husky"
   },
   "devDependencies": {
-    "@chyzwar/eslint-config": "^0.2.34",
-    "@commitlint/cli": "^19.7.1",
-    "@commitlint/config-conventional": "^19.7.1",
-    "@lerna-lite/cli": "^3.12.0",
-    "@lerna-lite/publish": "^3.12.0",
-    "@lerna-lite/version": "^3.12.0",
-    "@types/node": "^22.13.4",
-    "conventional-changelog-conventionalcommits": "^7.0.2",
-    "eslint": "^9.20.1",
+    "@chyzwar/eslint-config": "^0.6.4",
+    "@commitlint/cli": "^21.0.1",
+    "@commitlint/config-conventional": "^21.0.1",
+    "@lerna-lite/cli": "^5.2.1",
+    "@lerna-lite/publish": "^5.2.1",
+    "@lerna-lite/version": "^5.2.1",
+    "@types/node": "^25.7.0",
+    "conventional-changelog-conventionalcommits": "^9.3.1",
+    "eslint": "^10.3.0",
     "husky": "^9.1.7",
-    "lint-staged": "^15.4.3",
+    "lint-staged": "^17.0.4",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.3",
-    "vitest": "^3.0.5"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.6"
   },
   "lint-staged": {
     "*.{js,ts,tsx}": "yarn lint:fix"

@@ -1179,9 +1179,9 @@ export const ServiceSectionConfigSchema = implement<ServiceSectionConfig>().with
  * @see {@link KillSectionConfig}
  */
 export const ServiceSectionSchema: ZodType<ServiceSection> = ServiceSectionConfigSchema
-  .merge(ExecSectionSchema)
-  .merge(KillSectionSchema)
-  .merge(ResourceSectionConfigSchema)
+  .extend(ExecSectionSchema.shape)
+  .extend(KillSectionSchema.shape)
+  .extend(ResourceSectionConfigSchema.shape)
   .strict();
 
 /**

@@ -951,7 +951,7 @@ export interface ExecSectionConfig {
     └─────────────────┴───────────────────┴─────────────────────┴─────────────────────┘
   */
   LimitCPU?: number | string;
-  LimitFSIZE?: number | string ;
+  LimitFSIZE?: number | string;
   LimitDATA?: number | string;
   LimitSTACK?: number | string;
   LimitCORE?: number | string;

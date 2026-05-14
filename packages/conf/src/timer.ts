@@ -308,7 +308,7 @@ export const TimerSectionConfigSchema = implement<TimerSectionConfig>().with({
  * @see {@link ExecSectionConfig}
  */
 export const TimerSectionSchema: ZodType<TimerSection> = TimerSectionConfigSchema
-  .merge(ExecSectionSchema)
+  .extend(ExecSectionSchema.shape)
   .strict();
 
 /**

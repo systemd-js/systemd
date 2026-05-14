@@ -150,7 +150,7 @@ export function isEnabled(unitName: string, unit?: Unit) {
 }
 
 export function daemonReload() {
-  execSync(`systemctl daemon-reload`);
+  execSync("systemctl daemon-reload");
 }
 
 export class Ctl {
