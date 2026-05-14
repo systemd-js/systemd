@@ -1149,7 +1149,7 @@ export const ServiceSectionConfigSchema = implement<ServiceSectionConfig>().with
   /**
    * @see {@link ServiceSectionConfig.FileDescriptorStorePreserve}
    */
-  FileDescriptorStorePreserve: z.union([z.boolean(), z.enum(["restart"])]).optional(),
+  FileDescriptorStorePreserve: z.literal([true, false, "restart"]).optional(),
   /**
    * @see {@link ServiceSectionConfig.USBFunctionDescriptors}
    */
@@ -1178,11 +1178,12 @@ export const ServiceSectionConfigSchema = implement<ServiceSectionConfig>().with
  * @see {@link ExecSectionConfig}
  * @see {@link KillSectionConfig}
  */
-export const ServiceSectionSchema: ZodType<ServiceSection> = ServiceSectionConfigSchema
-  .extend(ExecSectionSchema.shape)
-  .extend(KillSectionSchema.shape)
-  .extend(ResourceSectionConfigSchema.shape)
-  .strict();
+export const ServiceSectionSchema: ZodType<ServiceSection, ServiceSection> = z.strictObject({
+  ...ServiceSectionConfigSchema.shape,
+  ...ExecSectionSchema.shape,
+  ...KillSectionSchema.shape,
+  ...ResourceSectionConfigSchema.shape,
+});
 
 /**
  * Systemd Service schema in Zod

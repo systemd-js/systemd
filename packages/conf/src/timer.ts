@@ -307,9 +307,10 @@ export const TimerSectionConfigSchema = implement<TimerSectionConfig>().with({
  * @see {@link TimerSectionConfigSchema}
  * @see {@link ExecSectionConfig}
  */
-export const TimerSectionSchema: ZodType<TimerSection> = TimerSectionConfigSchema
-  .extend(ExecSectionSchema.shape)
-  .strict();
+export const TimerSectionSchema: ZodType<TimerSection, TimerSection> = z.strictObject({
+  ...TimerSectionConfigSchema.shape,
+  ...ExecSectionSchema.shape,
+});
 
 /**
  * Systemd Timer schema in Zod
