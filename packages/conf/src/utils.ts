@@ -29,14 +29,16 @@ export function applyMixins(derivedCtor: Constructor, constructors: Constructor[
  * Method for validating zod schema with interface
  * @see https://github.com/colinhacks/zod/issues/372#issuecomment-1280054492
  */
+type Strip<T> = Exclude<T, null | undefined>;
+
 export type Implements<Model> = {
   [key in keyof Model]-?: undefined extends Model[key]
     ? null extends Model[key]
-      ? z.ZodNullable<z.ZodOptional<z.ZodType<Model[key]>>>
-      : z.ZodOptional<z.ZodType<Model[key]>>
+      ? z.ZodNullable<z.ZodOptional<z.ZodType<Strip<Model[key]>, Strip<Model[key]>>>>
+      : z.ZodOptional<z.ZodType<Strip<Model[key]>, Strip<Model[key]>>>
     : null extends Model[key]
-      ? z.ZodNullable<z.ZodType<Model[key]>>
-      : z.ZodType<Model[key]>;
+      ? z.ZodNullable<z.ZodType<Strip<Model[key]>, Strip<Model[key]>>>
+      : z.ZodType<Model[key], Model[key]>;
 };
 
 /**

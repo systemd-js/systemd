@@ -1142,7 +1142,7 @@ Coredump Control
 export const ResourceLimitSchema = z.union([
   z.string(),
   z.number(),
-]) as ZodType<ResourceLimit>;
+]) as ZodType<ResourceLimit, ResourceLimit>;
 
 export const ResourceSectionConfigSchema = implement<ResourceSectionConfig>().with({
   CPUAccounting: z.boolean().optional(),

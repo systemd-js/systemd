@@ -2636,29 +2636,15 @@ export interface ExecSectionConfig {
 }
 
 const StandardOutputSchema = z.union([
-  z.literal("inherit"),
-  z.literal("null"),
-  z.literal("tty"),
-  z.literal("journal"),
-  z.literal("kmsg"),
-  z.literal("journal+console"),
-  z.literal("kmsg+console"),
-  z.literal("socket"),
-  z.string().startsWith("file:") as z.ZodType<`file:${string}`>,
-  z.string().startsWith("append:") as z.ZodType<`append:${string}`>,
-  z.string().startsWith("truncate:") as z.ZodType<`truncate:${string}`>,
-  z.string().startsWith("fd:") as z.ZodType<`fd:${string}`>,
+  z.enum(["inherit", "null", "tty", "journal", "kmsg", "journal+console", "kmsg+console", "socket"]),
+  z.templateLiteral(["file:", z.string()]),
+  z.templateLiteral(["append:", z.string()]),
+  z.templateLiteral(["truncate:", z.string()]),
+  z.templateLiteral(["fd:", z.string()]),
 ]).optional();
 
-const LogLevelSchema = z.union([
-  z.literal("emerg"),
-  z.literal("alert"),
-  z.literal("crit"),
-  z.literal("err"),
-  z.literal("warning"),
-  z.literal("notice"),
-  z.literal("info"),
-  z.literal("debug"),
+const LogLevelSchema = z.enum([
+  "emerg", "alert", "crit", "err", "warning", "notice", "info", "debug",
 ]).optional();
 
 export const ExecSectionSchema = implement<ExecSectionConfig>().with({
@@ -2734,8 +2720,8 @@ export const ExecSectionSchema = implement<ExecSectionConfig>().with({
   IgnoreSIGPIPE: z.boolean().optional(),
 
   // SANDBOXING
-  ProtectSystem: z.union([z.boolean(), z.literal("full"), z.literal("strict")]).optional(),
-  ProtectHome: z.union([z.boolean(), z.literal("read-only"), z.literal("tmpfs")]).optional(),
+  ProtectSystem: z.literal([true, false, "full", "strict"]).optional(),
+  ProtectHome: z.literal([true, false, "read-only", "tmpfs"]).optional(),
   RuntimeDirectory: z.string().optional(),
   StateDirectory: z.string().optional(),
   CacheDirectory: z.string().optional(),
@@ -2746,7 +2732,7 @@ export const ExecSectionSchema = implement<ExecSectionConfig>().with({
   CacheDirectoryMode: z.string().optional(),
   LogsDirectoryMode: z.string().optional(),
   ConfigurationDirectoryMode: z.string().optional(),
-  RuntimeDirectoryPreserve: z.union([z.boolean(), z.literal("restart")]).optional(),
+  RuntimeDirectoryPreserve: z.literal([true, false, "restart"]).optional(),
   TimeoutCleanSec: z.number().optional(),
   ReadWritePaths: z.string().optional(),
   ReadOnlyPaths: z.string().optional(),
@@ -2787,14 +2773,9 @@ export const ExecSectionSchema = implement<ExecSectionConfig>().with({
 
   // LOGGING AND STANDARD INPUT/OUTPUT
   StandardInput: z.union([
-    z.literal("null"),
-    z.literal("tty"),
-    z.literal("tty-force"),
-    z.literal("tty-fail"),
-    z.literal("data"),
-    z.literal("socket"),
-    z.string().startsWith("file:") as z.ZodType<`file:${string}`>,
-    z.string().startsWith("fd:") as z.ZodType<`fd:${string}`>,
+    z.enum(["null", "tty", "tty-force", "tty-fail", "data", "socket"]),
+    z.templateLiteral(["file:", z.string()]),
+    z.templateLiteral(["fd:", z.string()]),
   ]).optional(),
   StandardOutput: StandardOutputSchema,
   StandardError: StandardOutputSchema,
@@ -2807,27 +2788,10 @@ export const ExecSectionSchema = implement<ExecSectionConfig>().with({
   LogFilterPatterns: z.string().optional(),
   LogNamespace: z.string().optional(),
   SyslogIdentifier: z.string().optional(),
-  SyslogFacility: z.union([
-    z.literal("kern"),
-    z.literal("user"),
-    z.literal("mail"),
-    z.literal("daemon"),
-    z.literal("auth"),
-    z.literal("syslog"),
-    z.literal("lpr"),
-    z.literal("news"),
-    z.literal("uucp"),
-    z.literal("cron"),
-    z.literal("authpriv"),
-    z.literal("ftp"),
-    z.literal("local0"),
-    z.literal("local1"),
-    z.literal("local2"),
-    z.literal("local3"),
-    z.literal("local4"),
-    z.literal("local5"),
-    z.literal("local6"),
-    z.literal("local7"),
+  SyslogFacility: z.enum([
+    "kern", "user", "mail", "daemon", "auth", "syslog", "lpr", "news", "uucp",
+    "cron", "authpriv", "ftp",
+    "local0", "local1", "local2", "local3", "local4", "local5", "local6", "local7",
   ]).optional(),
   SyslogLevel: LogLevelSchema,
   SyslogLevelPrefix: z.boolean().optional(),
