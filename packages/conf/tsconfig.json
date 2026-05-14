@@ -2,6 +2,7 @@
   "extends": "@chyzwar/tsconfig/lib.json", 
   "compilerOptions": {
     "target": "ES2022",
+    "module": "nodenext", 
     "outDir": "lib",
     "rootDir": "src",
     "composite": false,
