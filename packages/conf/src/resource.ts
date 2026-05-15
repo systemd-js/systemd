@@ -1,15 +1,13 @@
-import type { ZodType } from "zod";
 import { z } from "zod";
 import { implement } from "./utils.js";
 
 type ResourceLimit = number | "infinity" | `${number}${"%" | "G" | "K" | "M" | "T"}`;
 
 /**
- * @see https://manpages.ubuntu.com/manpages/noble/en/man5/systemd.resource-control.5.html
+ * @see https://manpages.ubuntu.com/manpages/resolute/man5/systemd.resource-control.5.html
  */
 export interface ResourceSectionConfig {
   /**
-  CPU Accounting and Control
   CPUAccounting=
     Turn on CPU usage accounting for this unit. Takes a boolean argument. Note that
     turning on CPU accounting for one unit will also implicitly turn it on for all units
@@ -51,12 +49,6 @@ export interface ResourceSectionConfig {
     to the startup and shutdown phases. Using StartupCPUWeight= allows prioritizing
     specific services at boot-up and shutdown differently than during normal runtime.
 
-    In addition to the resource allocation performed by the cpu controller, the kernel may
-    automatically divide resources based on session-id grouping, see "The autogroup
-    feature" in sched(7). The effect of this feature is similar to the cpu controller with
-    no explicit configuration, so users should be careful to not mistake one for the
-    other.
-
     Added in version 232.
   */
   CPUWeight?: number | "idle";
@@ -70,9 +62,8 @@ export interface ResourceSectionConfig {
     value, suffixed with "%". The percentage specifies how much CPU time the unit shall
     get at maximum, relative to the total CPU time available on one CPU. Use values > 100%
     for allotting CPU time on more than one CPU. This controls the "cpu.max" attribute on
-    the unified control group hierarchy and "cpu.cfs_quota_us" on legacy. For details
-    about these control group attributes, see Control Groups v2[2] and CFS Bandwidth
-    Control[4]. Setting CPUQuota= to an empty value unsets the quota.
+    the unified control group hierarchy and "cpu.cfs_quota_us" on legacy. Setting
+    CPUQuota= to an empty value unsets the quota.
 
     Example: CPUQuota=20% ensures that the executed processes will never get more than 20%
     CPU time on one CPU.
@@ -92,98 +83,86 @@ export interface ResourceSectionConfig {
     is adjusted up so that the quota interval is also at least 1ms. Setting
     CPUQuotaPeriodSec= to an empty value resets it to the default.
 
-    This controls the second field of "cpu.max" attribute on the unified control group
-    hierarchy and "cpu.cfs_period_us" on legacy. For details about these control group
-    attributes, see Control Groups v2[2] and CFS Scheduler[3].
-
-    Example: CPUQuotaPeriodSec=10ms to request that the CPU quota is measured in periods
-    of 10ms.
-
     Added in version 242.
   */
   CPUQuotaPeriodSec?: number | string;
 
   /**
   AllowedCPUs=, StartupAllowedCPUs=
-      This setting controls the cpuset controller in the unified hierarchy.
+    This setting controls the cpuset controller in the unified hierarchy.
 
-      Restrict processes to be executed on specific CPUs. Takes a list of CPU indices or
-      ranges separated by either whitespace or commas. CPU ranges are specified by the lower
-      and upper CPU indices separated by a dash.
+    Restrict processes to be executed on specific CPUs. Takes a list of CPU indices or
+    ranges separated by either whitespace or commas. CPU ranges are specified by the lower
+    and upper CPU indices separated by a dash.
 
-      Setting AllowedCPUs= or StartupAllowedCPUs= doesn't guarantee that all of the CPUs
-      will be used by the processes as it may be limited by parent units. The effective
-      configuration is reported as EffectiveCPUs=.
+    Setting AllowedCPUs= or StartupAllowedCPUs= doesn't guarantee that all of the CPUs
+    will be used by the processes as it may be limited by parent units. The effective
+    configuration is reported as EffectiveCPUs=.
 
-      While StartupAllowedCPUs= applies to the startup and shutdown phases of the system,
-      AllowedCPUs= applies to normal runtime of the system, and if the former is not set
-      also to the startup and shutdown phases. Using StartupAllowedCPUs= allows prioritizing
-      specific services at boot-up and shutdown differently than during normal runtime.
+    While StartupAllowedCPUs= applies to the startup and shutdown phases of the system,
+    AllowedCPUs= applies to normal runtime of the system, and if the former is not set
+    also to the startup and shutdown phases.
 
-      This setting is supported only with the unified control group hierarchy.
+    This setting is supported only with the unified control group hierarchy.
 
-      Added in version 244.
+    Added in version 244.
   */
   AllowedCPUs?: string;
   StartupAllowedCPUs?: string;
 
   /**
-  Memory Accounting and Control
   MemoryAccounting=
-      This setting controls the memory controller in the unified hierarchy.
+    This setting controls the memory controller in the unified hierarchy.
 
-      Turn on process and kernel memory accounting for this unit. Takes a boolean argument.
-      Note that turning on memory accounting for one unit will also implicitly turn it on
-      for all units contained in the same slice and for all its parent slices and the units
-      contained therein. The system default for this setting may be controlled with
-      DefaultMemoryAccounting= in systemd-system.conf(5).
+    Turn on process and kernel memory accounting for this unit. Takes a boolean argument.
+    Note that turning on memory accounting for one unit will also implicitly turn it on
+    for all units contained in the same slice and for all its parent slices and the units
+    contained therein. The system default for this setting may be controlled with
+    DefaultMemoryAccounting= in systemd-system.conf(5).
 
-      Added in version 208.
+    Added in version 208.
   */
   MemoryAccounting?: boolean;
 
   /**
   MemoryMin=bytes, MemoryLow=bytes, StartupMemoryLow=bytes, DefaultStartupMemoryLow=bytes
-      These settings control the memory controller in the unified hierarchy.
+    These settings control the memory controller in the unified hierarchy.
 
-      Specify the memory usage protection of the executed processes in this unit. When
-      reclaiming memory, the unit is treated as if it was using less memory resulting in
-      memory to be preferentially reclaimed from unprotected units. Using MemoryLow= results
-      in a weaker protection where memory may still be reclaimed to avoid invoking the OOM
-      killer in case there is no other reclaimable memory.
+    Specify the memory usage protection of the executed processes in this unit. When
+    reclaiming memory, the unit is treated as if it was using less memory resulting in
+    memory to be preferentially reclaimed from unprotected units. Using MemoryLow= results
+    in a weaker protection where memory may still be reclaimed to avoid invoking the OOM
+    killer in case there is no other reclaimable memory.
 
-      For a protection to be effective, it is generally required to set a corresponding
-      allocation on all ancestors, which is then distributed between children (with the
-      exception of the root slice). Any MemoryMin= or MemoryLow= allocation that is not
-      explicitly distributed to specific children is used to create a shared protection for
-      all children. As this is a shared protection, the children will freely compete for the
-      memory.
+    For a protection to be effective, it is generally required to set a corresponding
+    allocation on all ancestors, which is then distributed between children (with the
+    exception of the root slice). Any MemoryMin= or MemoryLow= allocation that is not
+    explicitly distributed to specific children is used to create a shared protection for
+    all children.
 
-      Takes a memory size in bytes. If the value is suffixed with K, M, G or T, the
-      specified memory size is parsed as Kilobytes, Megabytes, Gigabytes, or Terabytes (with
-      the base 1024), respectively. Alternatively, a percentage value may be specified,
-      which is taken relative to the installed physical memory on the system. If assigned
-      the special value "infinity", all available memory is protected, which may be useful
-      in order to always inherit all of the protection afforded by ancestors. This controls
-      the "memory.min" or "memory.low" control group attribute. For details about this
-      control group attribute, see Memory Interface Files[5].
+    Takes a memory size in bytes. If the value is suffixed with K, M, G or T, the
+    specified memory size is parsed as Kilobytes, Megabytes, Gigabytes, or Terabytes (with
+    the base 1024), respectively. Alternatively, a percentage value may be specified,
+    which is taken relative to the installed physical memory on the system. If assigned
+    the special value "infinity", all available memory is protected. This controls the
+    "memory.min" or "memory.low" control group attribute.
 
-      Units may have their children use a default "memory.min" or "memory.low" value by
-      specifying DefaultMemoryMin= or DefaultMemoryLow=, which has the same semantics as
-      MemoryMin= and MemoryLow=, or DefaultStartupMemoryLow= which has the same semantics as
-      StartupMemoryLow=. This setting does not affect "memory.min" or "memory.low" in the
-      unit itself. Using it to set a default child allocation is only useful on kernels
-      older than 5.7, which do not support the "memory_recursiveprot" cgroup2 mount option.
+    Units may have their children use a default "memory.min" or "memory.low" value by
+    specifying DefaultMemoryMin= or DefaultMemoryLow=, which has the same semantics as
+    MemoryMin= and MemoryLow=, or DefaultStartupMemoryLow= which has the same semantics as
+    StartupMemoryLow=. This setting does not affect "memory.min" or "memory.low" in the
+    unit itself. Using it to set a default child allocation is only useful on kernels
+    older than 5.7, which do not support the "memory_recursiveprot" cgroup2 mount option.
 
-      While StartupMemoryLow= applies to the startup and shutdown phases of the system,
-      MemoryMin= applies to normal runtime of the system, and if the former is not set also
-      to the startup and shutdown phases. Using StartupMemoryLow= allows prioritizing
-      specific services at boot-up and shutdown differently than during normal runtime.
+    While StartupMemoryLow= applies to the startup and shutdown phases of the system,
+    MemoryMin= applies to normal runtime of the system.
 
-      Added in version 240.
+    Added in version 240.
   */
   MemoryMin?: ResourceLimit;
+  DefaultMemoryMin?: ResourceLimit;
   MemoryLow?: ResourceLimit;
+  DefaultMemoryLow?: ResourceLimit;
   StartupMemoryLow?: ResourceLimit;
   DefaultStartupMemoryLow?: ResourceLimit;
 
@@ -201,13 +180,7 @@ export interface ResourceSectionConfig {
     the base 1024), respectively. Alternatively, a percentage value may be specified,
     which is taken relative to the installed physical memory on the system. If assigned
     the special value "infinity", no memory throttling is applied. This controls the
-    "memory.high" control group attribute. For details about this control group attribute,
-    see Memory Interface Files[5].
-
-    While StartupMemoryHigh= applies to the startup and shutdown phases of the system,
-    MemoryHigh= applies to normal runtime of the system, and if the former is not set also
-    to the startup and shutdown phases. Using StartupMemoryHigh= allows prioritizing
-    specific services at boot-up and shutdown differently than during normal runtime.
+    "memory.high" control group attribute.
 
     Added in version 231.
   */
@@ -216,27 +189,21 @@ export interface ResourceSectionConfig {
 
   /**
   MemoryMax=bytes, StartupMemoryMax=bytes
-      These settings control the memory controller in the unified hierarchy.
+    These settings control the memory controller in the unified hierarchy.
 
-      Specify the absolute limit on memory usage of the executed processes in this unit. If
-      memory usage cannot be contained under the limit, out-of-memory killer is invoked
-      inside the unit. It is recommended to use MemoryHigh= as the main control mechanism
-      and use MemoryMax= as the last line of defense.
+    Specify the absolute limit on memory usage of the executed processes in this unit. If
+    memory usage cannot be contained under the limit, out-of-memory killer is invoked
+    inside the unit. It is recommended to use MemoryHigh= as the main control mechanism
+    and use MemoryMax= as the last line of defense.
 
-      Takes a memory size in bytes. If the value is suffixed with K, M, G or T, the
-      specified memory size is parsed as Kilobytes, Megabytes, Gigabytes, or Terabytes (with
-      the base 1024), respectively. Alternatively, a percentage value may be specified,
-      which is taken relative to the installed physical memory on the system. If assigned
-      the special value "infinity", no memory limit is applied. This controls the
-      "memory.max" control group attribute. For details about this control group attribute,
-      see Memory Interface Files[5].
+    Takes a memory size in bytes. If the value is suffixed with K, M, G or T, the
+    specified memory size is parsed as Kilobytes, Megabytes, Gigabytes, or Terabytes (with
+    the base 1024), respectively. Alternatively, a percentage value may be specified,
+    which is taken relative to the installed physical memory on the system. If assigned
+    the special value "infinity", no memory limit is applied. This controls the
+    "memory.max" control group attribute.
 
-      While StartupMemoryMax= applies to the startup and shutdown phases of the system,
-      MemoryMax= applies to normal runtime of the system, and if the former is not set also
-      to the startup and shutdown phases. Using StartupMemoryMax= allows prioritizing
-      specific services at boot-up and shutdown differently than during normal runtime.
-
-      Added in version 231.
+    Added in version 231.
   */
   MemoryMax?: ResourceLimit;
   StartupMemoryMax?: ResourceLimit;
@@ -250,14 +217,7 @@ export interface ResourceSectionConfig {
     Takes a swap size in bytes. If the value is suffixed with K, M, G or T, the specified
     swap size is parsed as Kilobytes, Megabytes, Gigabytes, or Terabytes (with the base
     1024), respectively. If assigned the special value "infinity", no swap limit is
-    applied. These settings control the "memory.swap.max" control group attribute. For
-    details about this control group attribute, see Memory Interface Files[5].
-
-    While StartupMemorySwapMax= applies to the startup and shutdown phases of the system,
-    MemorySwapMax= applies to normal runtime of the system, and if the former is not set
-    also to the startup and shutdown phases. Using StartupMemorySwapMax= allows
-    prioritizing specific services at boot-up and shutdown differently than during normal
-    runtime.
+    applied. These settings control the "memory.swap.max" control group attribute.
 
     Added in version 232.
   */
@@ -272,25 +232,30 @@ export interface ResourceSectionConfig {
     lightweight compressed cache for swap pages. It takes pages that are in the process of
     being swapped out and attempts to compress them into a dynamically allocated RAM-based
     memory pool. If the limit specified is hit, no entries from this unit will be stored
-    in the pool until existing entries are faulted back or written out to disk. See the
-    kernel's Zswap[6] documentation for more details.
+    in the pool until existing entries are faulted back or written out to disk.
 
     Takes a size in bytes. If the value is suffixed with K, M, G or T, the specified size
     is parsed as Kilobytes, Megabytes, Gigabytes, or Terabytes (with the base 1024),
     respectively. If assigned the special value "infinity", no limit is applied. These
-    settings control the "memory.zswap.max" control group attribute. For details about
-    this control group attribute, see Memory Interface Files[5].
-
-    While StartupMemoryZSwapMax= applies to the startup and shutdown phases of the system,
-    MemoryZSwapMax= applies to normal runtime of the system, and if the former is not set
-    also to the startup and shutdown phases. Using StartupMemoryZSwapMax= allows
-    prioritizing specific services at boot-up and shutdown differently than during normal
-    runtime.
+    settings control the "memory.zswap.max" control group attribute.
 
     Added in version 253.
   */
   MemoryZSwapMax?: ResourceLimit;
   StartupMemoryZSwapMax?: ResourceLimit;
+
+  /**
+  MemoryZSwapWriteback=
+    This setting controls the memory controller in the unified hierarchy.
+
+    Takes a boolean argument. When true, pages stored in the Zswap cache are permitted to
+    be written to the backing storage, false otherwise. Defaults to true. This allows
+    disabling writeback of swap pages for IO-intensive applications, while retaining the
+    ability to store compressed pages in Zswap.
+
+    Added in version 256.
+  */
+  MemoryZSwapWriteback?: boolean;
 
   /**
   AllowedMemoryNodes=, StartupAllowedMemoryNodes=
@@ -305,12 +270,6 @@ export interface ResourceSectionConfig {
     of the memory NUMA nodes will be used by the processes as it may be limited by parent
     units. The effective configuration is reported as EffectiveMemoryNodes=.
 
-    While StartupAllowedMemoryNodes= applies to the startup and shutdown phases of the
-    system, AllowedMemoryNodes= applies to normal runtime of the system, and if the former
-    is not set also to the startup and shutdown phases. Using StartupAllowedMemoryNodes=
-    allows prioritizing specific services at boot-up and shutdown differently than during
-    normal runtime.
-
     This setting is supported only with the unified control group hierarchy.
 
     Added in version 244.
@@ -319,7 +278,6 @@ export interface ResourceSectionConfig {
   StartupAllowedMemoryNodes?: string;
 
   /**
-  Process Accounting and Control
   TasksAccounting=
     This setting controls the pids controller in the unified hierarchy.
 
@@ -340,12 +298,11 @@ export interface ResourceSectionConfig {
     This setting controls the pids controller in the unified hierarchy.
 
     Specify the maximum number of tasks that may be created in the unit. This ensures that
-    the number of tasks accounted for the unit (see above) stays below a specific limit.
-    This either takes an absolute number of tasks or a percentage value that is taken
-    relative to the configured maximum number of tasks on the system. If assigned the
-    special value "infinity", no tasks limit is applied. This controls the "pids.max"
-    control group attribute. For details about this control group attribute, the pids
-    controller[7].
+    the number of tasks accounted for the unit stays below a specific limit. This either
+    takes an absolute number of tasks or a percentage value that is taken relative to the
+    configured maximum number of tasks on the system. If assigned the special value
+    "infinity", no tasks limit is applied. This controls the "pids.max" control group
+    attribute.
 
     The system default for this setting may be controlled with DefaultTasksMax= in
     systemd-system.conf(5).
@@ -355,7 +312,6 @@ export interface ResourceSectionConfig {
   TasksMax?: number | "infinity" | `${number}%`;
 
   /**
-  IO Accounting and Control
   IOAccounting=
     This setting controls the io controller in the unified hierarchy.
 
@@ -363,8 +319,8 @@ export interface ResourceSectionConfig {
     used on the system. Takes a boolean argument. Note that turning on block I/O
     accounting for one unit will also implicitly turn it on for all units contained in the
     same slice and all for its parent slices and the units contained therein. The system
-    default for this setting may be controlled with DefaultIOAccounting= in systemd-
-    system.conf(5).
+    default for this setting may be controlled with DefaultIOAccounting= in
+    systemd-system.conf(5).
 
     Added in version 230.
   */
@@ -372,703 +328,389 @@ export interface ResourceSectionConfig {
 
   /**
   IOWeight=weight, StartupIOWeight=weight
-      These settings control the io controller in the unified hierarchy.
+    These settings control the io controller in the unified hierarchy.
 
-      Set the default overall block I/O weight for the executed processes, if the unified
-      control group hierarchy is used on the system. Takes a single weight value (between 1
-      and 10000) to set the default block I/O weight. This controls the "io.weight" control
-      group attribute, which defaults to 100. For details about this control group
-      attribute, see IO Interface Files[8]. The available I/O bandwidth is split up among
-      all units within one slice relative to their block I/O weight. A higher weight means
-      more I/O bandwidth, a lower weight means less.
+    Set the default overall block I/O weight for the executed processes, if the unified
+    control group hierarchy is used on the system. Takes a single weight value (between 1
+    and 10000) to set the default block I/O weight. This controls the "io.weight" control
+    group attribute, which defaults to 100. The available I/O bandwidth is split up among
+    all units within one slice relative to their block I/O weight. A higher weight means
+    more I/O bandwidth, a lower weight means less.
 
-      While StartupIOWeight= applies to the startup and shutdown phases of the system,
-      IOWeight= applies to the later runtime of the system, and if the former is not set
-      also to the startup and shutdown phases. This allows prioritizing specific services at
-      boot-up and shutdown differently than during runtime.
+    While StartupIOWeight= applies to the startup and shutdown phases of the system,
+    IOWeight= applies to the later runtime of the system.
 
-      Added in version 230.
+    Added in version 230.
   */
   IOWeight?: number;
   StartupIOWeight?: number;
 
   /**
   IODeviceWeight=device weight
-      This setting controls the io controller in the unified hierarchy.
+    This setting controls the io controller in the unified hierarchy.
 
-      Set the per-device overall block I/O weight for the executed processes, if the unified
-      control group hierarchy is used on the system. Takes a space-separated pair of a file
-      path and a weight value to specify the device specific weight value, between 1 and
-      10000. (Example: "/dev/sda 1000"). The file path may be specified as path to a block
-      device node or as any other file, in which case the backing block device of the file
-      system of the file is determined. This controls the "io.weight" control group
-      attribute, which defaults to 100. Use this option multiple times to set weights for
-      multiple devices. For details about this control group attribute, see IO Interface
-      Files[8].
+    Set the per-device overall block I/O weight for the executed processes, if the unified
+    control group hierarchy is used on the system. Takes a space-separated pair of a file
+    path and a weight value to specify the device specific weight value, between 1 and
+    10000. (Example: "/dev/sda 1000"). The file path may be specified as path to a block
+    device node or as any other file, in which case the backing block device of the file
+    system of the file is determined. This controls the "io.weight" control group
+    attribute, which defaults to 100. Use this option multiple times to set weights for
+    multiple devices.
 
-      The specified device node should reference a block device that has an I/O scheduler
-      associated, i.e. should not refer to partition or loopback block devices, but to the
-      originating, physical device. When a path to a regular file or directory is specified
-      it is attempted to discover the correct originating device backing the file system of
-      the specified path. This works correctly only for simpler cases, where the file system
-      is directly placed on a partition or physical block device, or where simple 1:1
-      encryption using dm-crypt/LUKS is used. This discovery does not cover complex storage
-      and in particular RAID and volume management storage devices.
+    Added in version 230.
+  */
+  IODeviceWeight?: string | string[];
 
-      Added in version 230.
-
+  /**
   IOReadBandwidthMax=device bytes, IOWriteBandwidthMax=device bytes
-      These settings control the io controller in the unified hierarchy.
+    These settings control the io controller in the unified hierarchy.
 
-      Set the per-device overall block I/O bandwidth maximum limit for the executed
-      processes, if the unified control group hierarchy is used on the system. This limit is
-      not work-conserving and the executed processes are not allowed to use more even if the
-      device has idle capacity. Takes a space-separated pair of a file path and a bandwidth
-      value (in bytes per second) to specify the device specific bandwidth. The file path
-      may be a path to a block device node, or as any other file in which case the backing
-      block device of the file system of the file is used. If the bandwidth is suffixed with
-      K, M, G, or T, the specified bandwidth is parsed as Kilobytes, Megabytes, Gigabytes,
-      or Terabytes, respectively, to the base of 1000. (Example:
-      "/dev/disk/by-path/pci-0000:00:1f.2-scsi-0:0:0:0 5M"). This controls the "io.max"
-      control group attributes. Use this option multiple times to set bandwidth limits for
-      multiple devices. For details about this control group attribute, see IO Interface
-      Files[8].
+    Set the per-device overall block I/O bandwidth maximum limit for the executed
+    processes, if the unified control group hierarchy is used on the system. This limit is
+    not work-conserving and the executed processes are not allowed to use more even if the
+    device has idle capacity. Takes a space-separated pair of a file path and a bandwidth
+    value (in bytes per second) to specify the device specific bandwidth. The file path
+    may be a path to a block device node, or as any other file in which case the backing
+    block device of the file system of the file is used. If the bandwidth is suffixed with
+    K, M, G, or T, the specified bandwidth is parsed as Kilobytes, Megabytes, Gigabytes,
+    or Terabytes, respectively, to the base of 1000. (Example:
+    "/dev/disk/by-path/pci-0000:00:1f.2-scsi-0:0:0:0 5M"). This controls the "io.max"
+    control group attributes. Use this option multiple times to set bandwidth limits for
+    multiple devices.
 
-      Similar restrictions on block device discovery as for IODeviceWeight= apply, see
-      above.
+    Added in version 230.
+  */
+  IOReadBandwidthMax?: string | string[];
+  IOWriteBandwidthMax?: string | string[];
 
-      Added in version 230.
-
+  /**
   IOReadIOPSMax=device IOPS, IOWriteIOPSMax=device IOPS
-      These settings control the io controller in the unified hierarchy.
+    These settings control the io controller in the unified hierarchy.
 
-      Set the per-device overall block I/O IOs-Per-Second maximum limit for the executed
-      processes, if the unified control group hierarchy is used on the system. This limit is
-      not work-conserving and the executed processes are not allowed to use more even if the
-      device has idle capacity. Takes a space-separated pair of a file path and an IOPS
-      value to specify the device specific IOPS. The file path may be a path to a block
-      device node, or as any other file in which case the backing block device of the file
-      system of the file is used. If the IOPS is suffixed with K, M, G, or T, the specified
-      IOPS is parsed as KiloIOPS, MegaIOPS, GigaIOPS, or TeraIOPS, respectively, to the base
-      of 1000. (Example: "/dev/disk/by-path/pci-0000:00:1f.2-scsi-0:0:0:0 1K"). This
-      controls the "io.max" control group attributes. Use this option multiple times to set
-      IOPS limits for multiple devices. For details about this control group attribute, see
-      IO Interface Files[8].
+    Set the per-device overall block I/O IOs-Per-Second maximum limit for the executed
+    processes, if the unified control group hierarchy is used on the system. This limit is
+    not work-conserving and the executed processes are not allowed to use more even if the
+    device has idle capacity. Takes a space-separated pair of a file path and an IOPS
+    value to specify the device specific IOPS. The file path may be a path to a block
+    device node, or as any other file in which case the backing block device of the file
+    system of the file is used. If the IOPS is suffixed with K, M, G, or T, the specified
+    IOPS is parsed as KiloIOPS, MegaIOPS, GigaIOPS, or TeraIOPS, respectively, to the base
+    of 1000. (Example: "/dev/disk/by-path/pci-0000:00:1f.2-scsi-0:0:0:0 1K"). This
+    controls the "io.max" control group attributes. Use this option multiple times to set
+    IOPS limits for multiple devices.
 
-      Similar restrictions on block device discovery as for IODeviceWeight= apply, see
-      above.
+    Added in version 230.
+  */
+  IOReadIOPSMax?: string | string[];
+  IOWriteIOPSMax?: string | string[];
 
-      Added in version 230.
-
+  /**
   IODeviceLatencyTargetSec=device target
-      This setting controls the io controller in the unified hierarchy.
+    This setting controls the io controller in the unified hierarchy.
 
-      Set the per-device average target I/O latency for the executed processes, if the
-      unified control group hierarchy is used on the system. Takes a file path and a
-      timespan separated by a space to specify the device specific latency target. (Example:
-      "/dev/sda 25ms"). The file path may be specified as path to a block device node or as
-      any other file, in which case the backing block device of the file system of the file
-      is determined. This controls the "io.latency" control group attribute. Use this option
-      multiple times to set latency target for multiple devices. For details about this
-      control group attribute, see IO Interface Files[8].
+    Set the per-device average target I/O latency for the executed processes, if the
+    unified control group hierarchy is used on the system. Takes a file path and a
+    timespan separated by a space to specify the device specific latency target. (Example:
+    "/dev/sda 25ms"). The file path may be specified as path to a block device node or as
+    any other file, in which case the backing block device of the file system of the file
+    is determined. This controls the "io.latency" control group attribute. Use this option
+    multiple times to set latency target for multiple devices.
 
-      Implies "IOAccounting=yes".
+    Implies "IOAccounting=yes".
 
-      These settings are supported only if the unified control group hierarchy is used.
+    Added in version 240.
+  */
+  IODeviceLatencyTargetSec?: string | string[];
 
-      Similar restrictions on block device discovery as for IODeviceWeight= apply, see
-      above.
-
-      Added in version 240.
-
-Network Accounting and Control
+  /**
   IPAccounting=
-      Takes a boolean argument. If true, turns on IPv4 and IPv6 network traffic accounting
-      for packets sent or received by the unit. When this option is turned on, all IPv4 and
-      IPv6 sockets created by any process of the unit are accounted for.
+    Takes a boolean argument. If true, turns on IPv4 and IPv6 network traffic accounting
+    for packets sent or received by the unit. When this option is turned on, all IPv4 and
+    IPv6 sockets created by any process of the unit are accounted for.
 
-      When this option is used in socket units, it applies to all IPv4 and IPv6 sockets
-      associated with it (including both listening and connection sockets where this
-      applies). Note that for socket-activated services, this configuration setting and the
-      accounting data of the service unit and the socket unit are kept separate, and
-      displayed separately. No propagation of the setting and the collected statistics is
-      done, in either direction. Moreover, any traffic sent or received on any of the socket
-      unit's sockets is accounted to the socket unit — and never to the service unit it
-      might have activated, even if the socket is used by it.
+    The system default for this setting may be controlled with DefaultIPAccounting= in
+    systemd-system.conf(5).
 
-      The system default for this setting may be controlled with DefaultIPAccounting= in
-      systemd-system.conf(5).
+    Added in version 235.
+  */
+  IPAccounting?: boolean;
 
-      Added in version 235.
-
+  /**
   IPAddressAllow=ADDRESS[/PREFIXLENGTH]..., IPAddressDeny=ADDRESS[/PREFIXLENGTH]...
-      Turn on network traffic filtering for IP packets sent and received over AF_INET and
-      AF_INET6 sockets. Both directives take a space separated list of IPv4 or IPv6
-      addresses, each optionally suffixed with an address prefix length in bits after a "/"
-      character. If the suffix is omitted, the address is considered a host address, i.e.
-      the filter covers the whole address (32 bits for IPv4, 128 bits for IPv6).
+    Turn on network traffic filtering for IP packets sent and received over AF_INET and
+    AF_INET6 sockets. Both directives take a space separated list of IPv4 or IPv6
+    addresses, each optionally suffixed with an address prefix length in bits after a "/"
+    character. If the suffix is omitted, the address is considered a host address.
 
-      The access lists configured with this option are applied to all sockets created by
-      processes of this unit (or in the case of socket units, associated with it). The lists
-      are implicitly combined with any lists configured for any of the parent slice units
-      this unit might be a member of. By default both access lists are empty. Both ingress
-      and egress traffic is filtered by these settings. In case of ingress traffic the
-      source IP address is checked against these access lists, in case of egress traffic the
-      destination IP address is checked. The following rules are applied in turn:
+    The access lists configured with this option are applied to all sockets created by
+    processes of this unit (or in the case of socket units, associated with it). The lists
+    are implicitly combined with any lists configured for any of the parent slice units
+    this unit might be a member of. Both ingress and egress traffic is filtered by these
+    settings.
 
-      •   Access is granted when the checked IP address matches an entry in the
-          IPAddressAllow= list.
+    In place of explicit IPv4 or IPv6 address and prefix length specifications a small set
+    of symbolic names may be used: "any", "localhost", "link-local", "multicast".
 
-      •   Otherwise, access is denied when the checked IP address matches an entry in the
-          IPAddressDeny= list.
+    If these settings are used multiple times in the same unit the specified lists are
+    combined. If an empty string is assigned to these settings the specific access list is
+    reset and all previous settings undone.
 
-      •   Otherwise, access is granted.
+    Added in version 235.
+  */
+  IPAddressAllow?: string | string[];
+  IPAddressDeny?: string | string[];
 
-      In order to implement an allow-listing IP firewall, it is recommended to use a
-      IPAddressDeny=any setting on an upper-level slice unit (such as the root slice -.slice
-      or the slice containing all system services system.slice – see systemd.special(7) for
-      details on these slice units), plus individual per-service IPAddressAllow= lines
-      permitting network access to relevant services, and only them.
-
-      Note that for socket-activated services, the IP access list configured on the socket
-      unit applies to all sockets associated with it directly, but not to any sockets
-      created by the ultimately activated services for it. Conversely, the IP access list
-      configured for the service is not applied to any sockets passed into the service via
-      socket activation. Thus, it is usually a good idea to replicate the IP access lists on
-      both the socket and the service unit. Nevertheless, it may make sense to maintain one
-      list more open and the other one more restricted, depending on the use case.
-
-      If these settings are used multiple times in the same unit the specified lists are
-      combined. If an empty string is assigned to these settings the specific access list is
-      reset and all previous settings undone.
-
-      In place of explicit IPv4 or IPv6 address and prefix length specifications a small set
-      of symbolic names may be used. The following names are defined:
-
-      Table 1. Special address/network names
-      ┌──────────────┬──────────────────────────┬──────────────────────┐
-      │Symbolic Name │ Definition               │ Meaning              │
-      ├──────────────┼──────────────────────────┼──────────────────────┤
-      │any           │ 0.0.0.0/0 ::/0           │ Any host             │
-      ├──────────────┼──────────────────────────┼──────────────────────┤
-      │localhost     │ 127.0.0.0/8 ::1/128      │ All addresses on the │
-      │              │                          │ local loopback       │
-      ├──────────────┼──────────────────────────┼──────────────────────┤
-      │link-local    │ 169.254.0.0/16 fe80::/64 │ All link-local IP    │
-      │              │                          │ addresses            │
-      ├──────────────┼──────────────────────────┼──────────────────────┤
-      │multicast     │ 224.0.0.0/4 ff00::/8     │ All IP multicasting  │
-      │              │                          │ addresses            │
-      └──────────────┴──────────────────────────┴──────────────────────┘
-      Note that these settings might not be supported on some systems (for example if eBPF
-      control group support is not enabled in the underlying kernel or container manager).
-      These settings will have no effect in that case. If compatibility with such systems is
-      desired it is hence recommended to not exclusively rely on them for IP security.
-
-      This option cannot be bypassed by prefixing "+" to the executable path in the service
-      unit, as it applies to the whole control group.
-
-      Added in version 235.
-
+  /**
   SocketBindAllow=bind-rule, SocketBindDeny=bind-rule
-      Allow or deny binding a socket address to a socket by matching it with the bind-rule
-      and applying a corresponding action if there is a match.
+    Allow or deny binding a socket address to a socket by matching it with the bind-rule
+    and applying a corresponding action if there is a match.
 
-      bind-rule describes socket properties such as address-family, transport-protocol and
-      ip-ports.
+    bind-rule describes socket properties such as address-family, transport-protocol and
+    ip-ports.
 
       bind-rule := { [address-family:][transport-protocol:][ip-ports] | any }
-
       address-family := { ipv4 | ipv6 }
-
       transport-protocol := { tcp | udp }
-
       ip-ports := { ip-port | ip-port-range }
 
-      An optional address-family expects ipv4 or ipv6 values. If not specified, a rule will
-      be matched for both IPv4 and IPv6 addresses and applied depending on other socket
-      fields, e.g.  transport-protocol, ip-port.
+    To allow multiple rules assign SocketBindAllow= or SocketBindDeny= multiple times. To
+    clear the existing assignments pass an empty SocketBindAllow= or SocketBindDeny=
+    assignment. For each of SocketBindAllow= and SocketBindDeny=, maximum allowed number
+    of assignments is 128.
 
-      An optional transport-protocol expects tcp or udp transport protocol names. If not
-      specified, a rule will be matched for any transport protocol.
+    Added in version 249.
+  */
+  SocketBindAllow?: string | string[];
+  SocketBindDeny?: string | string[];
 
-      An optional ip-port value must lie within 1...65535 interval inclusively, i.e. dynamic
-      port 0 is not allowed. A range of sequential ports is described by ip-port-range :=
-      ip-port-low-ip-port-high, where ip-port-low is smaller than or equal to ip-port-high
-      and both are within 1...65535 inclusively.
-
-      A special value any can be used to apply a rule to any address family, transport
-      protocol and any port with a positive value.
-
-      To allow multiple rules assign SocketBindAllow= or SocketBindDeny= multiple times. To
-      clear the existing assignments pass an empty SocketBindAllow= or SocketBindDeny=
-      assignment.
-
-      For each of SocketBindAllow= and SocketBindDeny=, maximum allowed number of
-      assignments is 128.
-
-      •   Binding to a socket is allowed when a socket address matches an entry in the
-          SocketBindAllow= list.
-
-      •   Otherwise, binding is denied when the socket address matches an entry in the
-          SocketBindDeny= list.
-
-      •   Otherwise, binding is allowed.
-
-      The feature is implemented with cgroup/bind4 and cgroup/bind6 cgroup-bpf hooks.
-
-      Examples:
-
-          ...
-          # Allow binding IPv6 socket addresses with a port greater than or equal to 10000.
-          [Service]
-          SocketBindAllow=ipv6:10000-65535
-          SocketBindDeny=any
-          ...
-          # Allow binding IPv4 and IPv6 socket addresses with 1234 and 4321 ports.
-          [Service]
-          SocketBindAllow=1234
-          SocketBindAllow=4321
-          SocketBindDeny=any
-          ...
-          # Deny binding IPv6 socket addresses.
-          [Service]
-          SocketBindDeny=ipv6
-          ...
-          # Deny binding IPv4 and IPv6 socket addresses.
-          [Service]
-          SocketBindDeny=any
-          ...
-          # Allow binding only over TCP
-          [Service]
-          SocketBindAllow=tcp
-          SocketBindDeny=any
-          ...
-          # Allow binding only over IPv6/TCP
-          [Service]
-          SocketBindAllow=ipv6:tcp
-          SocketBindDeny=any
-          ...
-          # Allow binding ports within 10000-65535 range over IPv4/UDP.
-          [Service]
-          SocketBindAllow=ipv4:udp:10000-65535
-          SocketBindDeny=any
-          ...
-
-      This option cannot be bypassed by prefixing "+" to the executable path in the service
-      unit, as it applies to the whole control group.
-
-      Added in version 249.
-
+  /**
   RestrictNetworkInterfaces=
-      Takes a list of space-separated network interface names. This option restricts the
-      network interfaces that processes of this unit can use. By default processes can only
-      use the network interfaces listed (allow-list). If the first character of the rule is
-      "~", the effect is inverted: the processes can only use network interfaces not listed
-      (deny-list).
+    Takes a list of space-separated network interface names. This option restricts the
+    network interfaces that processes of this unit can use. By default processes can only
+    use the network interfaces listed (allow-list). If the first character of the rule is
+    "~", the effect is inverted: the processes can only use network interfaces not listed
+    (deny-list).
 
-      This option can appear multiple times, in which case the network interface names are
-      merged. If the empty string is assigned the set is reset, all prior assignments will
-      have not effect.
+    This option can appear multiple times, in which case the network interface names are
+    merged. If the empty string is assigned the set is reset, all prior assignments will
+    have not effect.
 
-      If you specify both types of this option (i.e. allow-listing and deny-listing), the
-      first encountered will take precedence and will dictate the default action (allow vs
-      deny). Then the next occurrences of this option will add or delete the listed network
-      interface names from the set, depending of its type and the default action.
+    The loopback interface ("lo") is not treated in any special way, you have to configure
+    it explicitly in the unit file.
 
-      The loopback interface ("lo") is not treated in any special way, you have to configure
-      it explicitly in the unit file.
+    Added in version 250.
+  */
+  RestrictNetworkInterfaces?: string | string[];
 
-      Example 1: allow-list
-
-          RestrictNetworkInterfaces=eth1
-          RestrictNetworkInterfaces=eth2
-
-      Programs in the unit will be only able to use the eth1 and eth2 network interfaces.
-
-      Example 2: deny-list
-
-          RestrictNetworkInterfaces=~eth1 eth2
-
-      Programs in the unit will be able to use any network interface but eth1 and eth2.
-
-      Example 3: mixed
-
-          RestrictNetworkInterfaces=eth1 eth2
-          RestrictNetworkInterfaces=~eth1
-
-      Programs in the unit will be only able to use the eth2 network interface.
-
-      This option cannot be bypassed by prefixing "+" to the executable path in the service
-      unit, as it applies to the whole control group.
-
-      Added in version 250.
-
+  /**
   NFTSet=family:table:set
-      This setting provides a method for integrating dynamic cgroup, user and group IDs into
-      firewall rules with NFT[9] sets. The benefit of using this setting is to be able to
-      use the IDs as selectors in firewall rules easily and this in turn allows more fine
-      grained filtering. NFT rules for cgroup matching use numeric cgroup IDs, which change
-      every time a service is restarted, making them hard to use in systemd environment
-      otherwise. Dynamic and random IDs used by DynamicUser= can be also integrated with
-      this setting.
+    This setting provides a method for integrating dynamic cgroup, user and group IDs into
+    firewall rules with NFT sets. The benefit of using this setting is to be able to use
+    the IDs as selectors in firewall rules easily and this in turn allows more fine
+    grained filtering.
 
-      This option expects a whitespace separated list of NFT set definitions. Each
-      definition consists of a colon-separated tuple of source type (one of "cgroup", "user"
-      or "group"), NFT address family (one of "arp", "bridge", "inet", "ip", "ip6", or
-      "netdev"), table name and set name. The names of tables and sets must conform to
-      lexical restrictions of NFT table names. The type of the element used in the NFT
-      filter must match the type implied by the directive ("cgroup", "user" or "group") as
-      shown in the table below. When a control group or a unit is realized, the
-      corresponding ID will be appended to the NFT sets and it will be be removed when the
-      control group or unit is removed.  systemd only inserts elements to (or removes from)
-      the sets, so the related NFT rules, tables and sets must be prepared elsewhere in
-      advance. Failures to manage the sets will be ignored.
+    This option expects a whitespace separated list of NFT set definitions. Each
+    definition consists of a colon-separated tuple of source type (one of "cgroup", "user"
+    or "group"), NFT address family (one of "arp", "bridge", "inet", "ip", "ip6", or
+    "netdev"), table name and set name.
 
-      Table 2. Defined source type values
-      ┌────────────┬──────────────────┬────────────────────────┐
-      │Source type │ Description      │ Corresponding NFT type │
-      │            │                  │ name                   │
-      ├────────────┼──────────────────┼────────────────────────┤
-      │"cgroup"    │ control group ID │ "cgroupsv2"            │
-      ├────────────┼──────────────────┼────────────────────────┤
-      │"user"      │ user ID          │ "meta skuid"           │
-      ├────────────┼──────────────────┼────────────────────────┤
-      │"group"     │ group ID         │ "meta skgid"           │
-      └────────────┴──────────────────┴────────────────────────┘
-      If the firewall rules are reinstalled so that the contents of NFT sets are destroyed,
-      command systemctl daemon-reload can be used to refill the sets.
+    Added in version 255.
+  */
+  NFTSet?: string | string[];
 
-      Example:
-
-          [Unit]
-          NFTSet=cgroup:inet:filter:my_service user:inet:filter:serviceuser
-
-      Corresponding NFT rules:
-
-          table inet filter {
-                  set my_service {
-                          type cgroupsv2
-                  }
-                  set serviceuser {
-                          typeof meta skuid
-                  }
-                  chain x {
-                          socket cgroupv2 level 2 @my_service accept
-                          drop
-                  }
-                  chain y {
-                          meta skuid @serviceuser accept
-                          drop
-                  }
-          }
-
-      Added in version 255.
-
-BPF Programs
+  /**
   IPIngressFilterPath=BPF_FS_PROGRAM_PATH, IPEgressFilterPath=BPF_FS_PROGRAM_PATH
-      Add custom network traffic filters implemented as BPF programs, applying to all IP
-      packets sent and received over AF_INET and AF_INET6 sockets. Takes an absolute path to
-      a pinned BPF program in the BPF virtual filesystem (/sys/fs/bpf/).
+    Add custom network traffic filters implemented as BPF programs, applying to all IP
+    packets sent and received over AF_INET and AF_INET6 sockets. Takes an absolute path to
+    a pinned BPF program in the BPF virtual filesystem (/sys/fs/bpf/).
 
-      The filters configured with this option are applied to all sockets created by
-      processes of this unit (or in the case of socket units, associated with it). The
-      filters are loaded in addition to filters any of the parent slice units this unit
-      might be a member of as well as any IPAddressAllow= and IPAddressDeny= filters in any
-      of these units. By default there are no filters specified.
+    The filters configured with this option are applied to all sockets created by
+    processes of this unit (or in the case of socket units, associated with it). The
+    filters are loaded in addition to filters any of the parent slice units this unit
+    might be a member of as well as any IPAddressAllow= and IPAddressDeny= filters in any
+    of these units.
 
-      If these settings are used multiple times in the same unit all the specified programs
-      are attached. If an empty string is assigned to these settings the program list is
-      reset and all previous specified programs ignored.
+    If these settings are used multiple times in the same unit all the specified programs
+    are attached. If an empty string is assigned to these settings the program list is
+    reset and all previous specified programs ignored.
 
-      If the path BPF_FS_PROGRAM_PATH in IPIngressFilterPath= assignment is already being
-      handled by BPFProgram= ingress hook, e.g.  BPFProgram=ingress:BPF_FS_PROGRAM_PATH, the
-      assignment will be still considered valid and the program will be attached to a
-      cgroup. Same for IPEgressFilterPath= path and egress hook.
+    Added in version 243.
+  */
+  IPIngressFilterPath?: string | string[];
+  IPEgressFilterPath?: string | string[];
 
-      Note that for socket-activated services, the IP filter programs configured on the
-      socket unit apply to all sockets associated with it directly, but not to any sockets
-      created by the ultimately activated services for it. Conversely, the IP filter
-      programs configured for the service are not applied to any sockets passed into the
-      service via socket activation. Thus, it is usually a good idea, to replicate the IP
-      filter programs on both the socket and the service unit, however it often makes sense
-      to maintain one configuration more open and the other one more restricted, depending
-      on the use case.
-
-      Note that these settings might not be supported on some systems (for example if eBPF
-      control group support is not enabled in the underlying kernel or container manager).
-      These settings will fail the service in that case. If compatibility with such systems
-      is desired it is hence recommended to attach your filter manually (requires
-      Delegate=yes) instead of using this setting.
-
-      Added in version 243.
-
+  /**
   BPFProgram=type:program-path
-      BPFProgram= allows attaching custom BPF programs to the cgroup of a unit. (This
-      generalizes the functionality exposed via IPEgressFilterPath= and IPIngressFilterPath=
-      for other hooks.) Cgroup-bpf hooks in the form of BPF programs loaded to the BPF
-      filesystem are attached with cgroup-bpf attach flags determined by the unit. For
-      details about attachment types and flags see bpf.h[10]. Also refer to the general BPF
-      documentation[11].
+    BPFProgram= allows attaching custom BPF programs to the cgroup of a unit. (This
+    generalizes the functionality exposed via IPEgressFilterPath= and IPIngressFilterPath=
+    for other hooks.)
 
-      The specification of BPF program consists of a pair of BPF program type and program
-      path in the file system, with ":" as the separator: type:program-path.
+    The specification of BPF program consists of a pair of BPF program type and program
+    path in the file system, with ":" as the separator: type:program-path.
 
-      The BPF program type is equivalent to the BPF attach type used in bpftool(8) It may be
-      one of egress, ingress, sock_create, sock_ops, device, bind4, bind6, connect4,
-      connect6, post_bind4, post_bind6, sendmsg4, sendmsg6, sysctl, recvmsg4, recvmsg6,
-      getsockopt, or setsockopt.
+    The BPF program type may be one of egress, ingress, sock_create, sock_ops, device,
+    bind4, bind6, connect4, connect6, post_bind4, post_bind6, sendmsg4, sendmsg6, sysctl,
+    recvmsg4, recvmsg6, getsockopt, or setsockopt.
 
-      The specified program path must be an absolute path referencing a BPF program inode in
-      the bpffs file system (which generally means it must begin with /sys/fs/bpf/). If a
-      specified program does not exist (i.e. has not been uploaded to the BPF subsystem of
-      the kernel yet), it will not be installed but unit activation will continue (a warning
-      will be printed to the logs).
+    Setting BPFProgram= to an empty value makes previous assignments ineffective.
+    Multiple assignments of the same program type/path pair have the same effect as a
+    single assignment.
 
-      Setting BPFProgram= to an empty value makes previous assignments ineffective.
+    Added in version 249.
+  */
+  BPFProgram?: string | string[];
 
-      Multiple assignments of the same program type/path pair have the same effect as a
-      single assignment: the program will be attached just once.
-
-      If BPF egress pinned to program-path path is already being handled by
-      IPEgressFilterPath=, BPFProgram= assignment will be considered valid and BPFProgram=
-      will be attached to a cgroup. Similarly for ingress hook and IPIngressFilterPath=
-      assignment.
-
-      BPF programs passed with BPFProgram= are attached to the cgroup of a unit with BPF
-      attach flag multi, that allows further attachments of the same type within cgroup
-      hierarchy topped by the unit cgroup.
-
-      Examples:
-
-          BPFProgram=egress:/sys/fs/bpf/egress-hook
-          BPFProgram=bind6:/sys/fs/bpf/sock-addr-hook
-
-      Added in version 249.
-
-Device Access
+  /**
   DeviceAllow=
-      Control access to specific device nodes by the executed processes. Takes two
-      space-separated strings: a device node specifier followed by a combination of r, w, m
-      to control reading, writing, or creation of the specific device nodes by the unit
-      (mknod), respectively. This functionality is implemented using eBPF filtering.
+    Control access to specific device nodes by the executed processes. Takes two
+    space-separated strings: a device node specifier followed by a combination of r, w, m
+    to control reading, writing, or creation of the specific device nodes by the unit
+    (mknod), respectively. This functionality is implemented using eBPF filtering.
 
-      When access to all physical devices should be disallowed, PrivateDevices= may be used
-      instead. See systemd.exec(5).
+    The device node specifier is either a path to a device node in the file system,
+    starting with /dev/, or a string starting with either "char-" or "block-" followed by
+    a device group name, as listed in /proc/devices. The latter is useful to allow-list
+    all current and future devices belonging to a specific device group at once. The
+    device group is matched according to filename globbing rules, you may hence use the
+    "*" and "?" wildcards.
 
-      The device node specifier is either a path to a device node in the file system,
-      starting with /dev/, or a string starting with either "char-" or "block-" followed by
-      a device group name, as listed in /proc/devices. The latter is useful to allow-list
-      all current and future devices belonging to a specific device group at once. The
-      device group is matched according to filename globbing rules, you may hence use the
-      "*" and "?"  wildcards. (Note that such globbing wildcards are not available for
-      device node path specifications!) In order to match device nodes by numeric
-      major/minor, use device node paths in the /dev/char/ and /dev/block/ directories.
-      However, matching devices by major/minor is generally not recommended as assignments
-      are neither stable nor portable between systems or different kernel versions.
+    Added in version 208.
+  */
+  DeviceAllow?: string | string[];
 
-      Examples: /dev/sda5 is a path to a device node, referring to an ATA or SCSI block
-      device.  "char-pts" and "char-alsa" are specifiers for all pseudo TTYs and all ALSA
-      sound devices, respectively.  "char-cpu/*" is a specifier matching all CPU related
-      device groups.
-
-      Note that allow lists defined this way should only reference device groups which are
-      resolvable at the time the unit is started. Any device groups not resolvable then are
-      not added to the device allow list. In order to work around this limitation, consider
-      extending service units with a pair of After=modprobe@xyz.service and
-      Wants=modprobe@xyz.service lines that load the necessary kernel module implementing
-      the device group if missing. Example:
-
-          ...
-          [Unit]
-          Wants=modprobe@loop.service
-          After=modprobe@loop.service
-
-          [Service]
-          DeviceAllow=block-loop
-          DeviceAllow=/dev/loop-control
-          ...
-
-      This option cannot be bypassed by prefixing "+" to the executable path in the service
-      unit, as it applies to the whole control group.
-
-      Added in version 208.
-
+  /**
   DevicePolicy=auto|closed|strict
-      Control the policy for allowing device access:
+    Control the policy for allowing device access:
 
-      strict
-          means to only allow types of access that are explicitly specified.
+    strict
+        means to only allow types of access that are explicitly specified.
 
-          Added in version 208.
+    closed
+        in addition, allows access to standard pseudo devices including /dev/null,
+        /dev/zero, /dev/full, /dev/random, and /dev/urandom.
 
-      closed
-          in addition, allows access to standard pseudo devices including /dev/null,
-          /dev/zero, /dev/full, /dev/random, and /dev/urandom.
+    auto
+        in addition, allows access to all devices if no explicit DeviceAllow= is present.
+        This is the default.
 
-          Added in version 208.
+    Added in version 208.
+  */
+  DevicePolicy?: "auto" | "closed" | "strict";
 
-      auto
-          in addition, allows access to all devices if no explicit DeviceAllow= is present.
-          This is the default.
-
-          Added in version 208.
-
-      This option cannot be bypassed by prefixing "+" to the executable path in the service
-      unit, as it applies to the whole control group.
-
-      Added in version 208.
-
-Control Group Management
+  /**
   Slice=
-      The name of the slice unit to place the unit in. Defaults to system.slice for all
-      non-instantiated units of all unit types (except for slice units themselves see
-      below). Instance units are by default placed in a subslice of system.slice that is
-      named after the template name.
+    The name of the slice unit to place the unit in. Defaults to system.slice for all
+    non-instantiated units of all unit types (except for slice units themselves see
+    below). Instance units are by default placed in a subslice of system.slice that is
+    named after the template name.
 
-      This option may be used to arrange systemd units in a hierarchy of slices each of
-      which might have resource settings applied.
+    For units of type slice, the only accepted value for this setting is the parent slice.
+    Since the name of a slice unit implies the parent slice, it is hence redundant to ever
+    set this parameter directly for slice units.
 
-      For units of type slice, the only accepted value for this setting is the parent slice.
-      Since the name of a slice unit implies the parent slice, it is hence redundant to ever
-      set this parameter directly for slice units.
+    Added in version 208.
+  */
+  Slice?: string;
 
-      Special care should be taken when relying on the default slice assignment in templated
-      service units that have DefaultDependencies=no set, see systemd.service(5), section
-      "Default Dependencies" for details.
-
-      Added in version 208.
-
+  /**
   Delegate=
-      Turns on delegation of further resource control partitioning to processes of the unit.
-      Units where this is enabled may create and manage their own private subhierarchy of
-      control groups below the control group of the unit itself. For unprivileged services
-      (i.e. those using the User= setting) the unit's control group will be made accessible
-      to the relevant user.
+    Turns on delegation of further resource control partitioning to processes of the unit.
+    Units where this is enabled may create and manage their own private subhierarchy of
+    control groups below the control group of the unit itself.
 
-      When enabled the service manager will refrain from manipulating control groups or
-      moving processes below the unit's control group, so that a clear concept of ownership
-      is established: the control group tree at the level of the unit's control group and
-      above (i.e. towards the root control group) is owned and managed by the service
-      manager of the host, while the control group tree below the unit's control group is
-      owned and managed by the unit itself.
+    Takes either a boolean argument or a (possibly empty) list of control group controller
+    names. If true, delegation is turned on, and all supported controllers are enabled for
+    the unit, making them available to the unit's processes for management. If false,
+    delegation is turned off entirely. If set to a list of controllers, delegation is
+    turned on, and the specified controllers are enabled for the unit. Defaults to false.
 
-      Takes either a boolean argument or a (possibly empty) list of control group controller
-      names. If true, delegation is turned on, and all supported controllers are enabled for
-      the unit, making them available to the unit's processes for management. If false,
-      delegation is turned off entirely (and no additional controllers are enabled). If set
-      to a list of controllers, delegation is turned on, and the specified controllers are
-      enabled for the unit. Assigning the empty string will enable delegation, but reset the
-      list of controllers, and all assignments prior to this will have no effect. Note that
-      additional controllers other than the ones specified might be made available as well,
-      depending on configuration of the containing slice unit or other units contained in
-      it. Defaults to false.
+    The following controller names may be specified: cpu, cpuacct, cpuset, io, blkio,
+    memory, devices, pids, bpf-firewall, and bpf-devices.
 
-      Note that controller delegation to less privileged code is only safe on the unified
-      control group hierarchy. Accordingly, access to the specified controllers will not be
-      granted to unprivileged services on the legacy hierarchy, even when requested.
+    Added in version 218.
+  */
+  Delegate?: boolean | string;
 
-      The following controller names may be specified: cpu, cpuacct, cpuset, io, blkio,
-      memory, devices, pids, bpf-firewall, and bpf-devices.
-
-      Not all of these controllers are available on all kernels however, and some are
-      specific to the unified hierarchy while others are specific to the legacy hierarchy.
-      Also note that the kernel might support further controllers, which aren't covered here
-      yet as delegation is either not supported at all for them or not defined cleanly.
-
-      Note that because of the hierarchical nature of cgroup hierarchy, any controllers that
-      are delegated will be enabled for the parent and sibling units of the unit with
-      delegation.
-
-      For further details on the delegation model consult Control Group APIs and
-      Delegation[12].
-
-      Added in version 218.
-
+  /**
   DelegateSubgroup=
-      Place unit processes in the specified subgroup of the unit's control group. Takes a
-      valid control group name (not a path!) as parameter, or an empty string to turn this
-      feature off. Defaults to off. The control group name must be usable as filename and
-      avoid conflicts with the kernel's control group attribute files (i.e.  cgroup.procs is
-      not an acceptable name, since the kernel exposes a native control group attribute file
-      by that name). This option has no effect unless control group delegation is turned on
-      via Delegate=, see above. Note that this setting only applies to "main" processes of a
-      unit, i.e. for services to ExecStart=, but not for ExecReload= and similar. If
-      delegation is enabled, the latter are always placed inside a subgroup named .control.
-      The specified subgroup is automatically created (and potentially ownership is passed
-      to the unit's configured user/group) when a process is started in it.
+    Place unit processes in the specified subgroup of the unit's control group. Takes a
+    valid control group name (not a path!) as parameter, or an empty string to turn this
+    feature off. Defaults to off. The control group name must be usable as filename and
+    avoid conflicts with the kernel's control group attribute files. This option has no
+    effect unless control group delegation is turned on via Delegate=.
 
-      This option is useful to avoid manually moving the invoked process into a subgroup
-      after it has been started. Since no processes should live in inner nodes of the
-      control group tree it's almost always necessary to run the main ("supervising")
-      process of a unit that has delegation turned on in a subgroup.
+    Added in version 254.
+  */
+  DelegateSubgroup?: string;
 
-      Added in version 254.
-
+  /**
   DisableControllers=
-      Disables controllers from being enabled for a unit's children. If a controller listed
-      is already in use in its subtree, the controller will be removed from the subtree.
-      This can be used to avoid configuration in child units from being able to implicitly
-      or explicitly enable a controller. Defaults to empty.
+    Disables controllers from being enabled for a unit's children. If a controller listed
+    is already in use in its subtree, the controller will be removed from the subtree.
+    This can be used to avoid configuration in child units from being able to implicitly
+    or explicitly enable a controller. Defaults to empty.
 
-      Multiple controllers may be specified, separated by spaces. You may also pass
-      DisableControllers= multiple times, in which case each new instance adds another
-      controller to disable. Passing DisableControllers= by itself with no controller name
-      present resets the disabled controller list.
+    Multiple controllers may be specified, separated by spaces. You may also pass
+    DisableControllers= multiple times, in which case each new instance adds another
+    controller to disable.
 
-      It may not be possible to disable a controller after units have been started, if the
-      unit or any child of the unit in question delegates controllers to its children, as
-      any delegated subtree of the cgroup hierarchy is unmanaged by systemd.
+    The following controller names may be specified: cpu, cpuacct, cpuset, io, blkio,
+    memory, devices, pids, bpf-firewall, and bpf-devices.
 
-      The following controller names may be specified: cpu, cpuacct, cpuset, io, blkio,
-      memory, devices, pids, bpf-firewall, and bpf-devices.
+    Added in version 240.
+  */
+  DisableControllers?: string | string[];
 
-      Added in version 240.
-
-Memory Pressure Control
+  /**
   ManagedOOMSwap=auto|kill, ManagedOOMMemoryPressure=auto|kill
-      Specifies how systemd-oomd.service(8) will act on this unit's cgroups. Defaults to
-      auto.
+    Specifies how systemd-oomd.service(8) will act on this unit's cgroups. Defaults to
+    auto.
 
-      When set to kill, the unit becomes a candidate for monitoring by systemd-oomd. If the
-      cgroup passes the limits set by oomd.conf(5) or the unit configuration, systemd-oomd
-      will select a descendant cgroup and send SIGKILL to all of the processes under it. You
-      can find more details on candidates and kill behavior at systemd-oomd.service(8) and
-      oomd.conf(5).
+    When set to kill, the unit becomes a candidate for monitoring by systemd-oomd. If the
+    cgroup passes the limits set by oomd.conf(5) or the unit configuration, systemd-oomd
+    will select a descendant cgroup and send SIGKILL to all of the processes under it.
 
-      Setting either of these properties to kill will also result in After= and Wants=
-      dependencies on systemd-oomd.service unless DefaultDependencies=no.
+    Setting either of these properties to kill will also result in After= and Wants=
+    dependencies on systemd-oomd.service unless DefaultDependencies=no.
 
-      When set to auto, systemd-oomd will not actively use this cgroup's data for monitoring
-      and detection. However, if an ancestor cgroup has one of these properties set to kill,
-      a unit with auto can still be a candidate for systemd-oomd to terminate.
+    When set to auto, systemd-oomd will not actively use this cgroup's data for monitoring
+    and detection. However, if an ancestor cgroup has one of these properties set to kill,
+    a unit with auto can still be a candidate for systemd-oomd to terminate.
 
-      Added in version 247.
+    Added in version 247.
+  */
+  ManagedOOMSwap?: "auto" | "kill";
+  ManagedOOMMemoryPressure?: "auto" | "kill";
 
+  /**
   ManagedOOMMemoryPressureLimit=
-      Overrides the default memory pressure limit set by oomd.conf(5) for this unit
-      (cgroup). Takes a percentage value between 0% and 100%, inclusive. This property is
-      ignored unless ManagedOOMMemoryPressure=kill. Defaults to 0%, which means to use the
-      default set by oomd.conf(5).
+    Overrides the default memory pressure limit set by oomd.conf(5) for this unit
+    (cgroup). Takes a percentage value between 0% and 100%, inclusive. This property is
+    ignored unless ManagedOOMMemoryPressure=kill. Defaults to 0%, which means to use the
+    default set by oomd.conf(5).
 
-      Added in version 247.
+    Added in version 247.
+  */
+  ManagedOOMMemoryPressureLimit?: string;
 
+  /**
+  ManagedOOMMemoryPressureDurationSec=
+    Overrides the default memory pressure duration set by oomd.conf(5) for the cgroup of
+    this unit. The specified value supports a time unit such as "ms" or "μs", see
+    systemd.time(7) for details on the permitted syntax. Must be set to either empty or a
+    value of at least 1s. Defaults to empty, which means to use the default set by
+    oomd.conf(5). This property is ignored unless ManagedOOMMemoryPressure=kill.
+
+    Added in version 257.
+  */
+  ManagedOOMMemoryPressureDurationSec?: string;
+
+  /**
   ManagedOOMPreference=none|avoid|omit
     Allows deprioritizing or omitting this unit's cgroup as a candidate when systemd-oomd
     needs to act. Requires support for extended attributes (see xattr(7)) in order to use
     avoid or omit.
-
-    When calculating candidates to relieve swap usage, systemd-oomd will only respect
-    these extended attributes if the unit's cgroup is owned by root.
-
-    When calculating candidates to relieve memory pressure, systemd-oomd will only respect
-    these extended attributes if the unit's cgroup is owned by root, or if the unit's
-    cgroup owner, and the owner of the monitored ancestor cgroup are the same. For
-    example, if systemd-oomd is calculating candidates for -.slice, then extended
-    attributes set on descendants of /user.slice/user-1000.slice/user@1000.service/ will
-    be ignored because the descendants are owned by UID 1000, and -.slice is owned by UID
-    0. But, if calculating candidates for /user.slice/user-1000.slice/user@1000.service/,
-    then extended attributes set on the descendants would be respected.
 
     If this property is set to avoid, the service manager will convey this to
     systemd-oomd, which will only select this cgroup if there are no other viable
@@ -1077,84 +719,85 @@ Memory Pressure Control
     If this property is set to omit, the service manager will convey this to systemd-oomd,
     which will ignore this cgroup as a candidate and will not perform any actions on it.
 
-    It is recommended to use avoid and omit sparingly, as it can adversely affect
-    systemd-oomd's kill behavior. Also note that these extended attributes are not applied
-    recursively to cgroups under this unit's cgroup.
-
     Defaults to none which means systemd-oomd will rank this unit's cgroup as defined in
     systemd-oomd.service(8) and oomd.conf(5).
 
     Added in version 248.
-
-  MemoryPressureWatch=
-      Controls memory pressure monitoring for invoked processes. Takes one of "off", "on",
-      "auto" or "skip". If "off" tells the service not to watch for memory pressure events,
-      by setting the $MEMORY_PRESSURE_WATCH environment variable to the literal string
-      /dev/null. If "on" tells the service to watch for memory pressure events. This enables
-      memory accounting for the service, and ensures the memory.pressure cgroup attribute
-      file is accessible for reading and writing by the service's user. It then sets the
-      $MEMORY_PRESSURE_WATCH environment variable for processes invoked by the unit to the
-      file system path to this file. The threshold information configured with
-      MemoryPressureThresholdSec= is encoded in the $MEMORY_PRESSURE_WRITE environment
-      variable. If the "auto" value is set the protocol is enabled if memory accounting is
-      anyway enabled for the unit, and disabled otherwise. If set to "skip" the logic is
-      neither enabled, nor disabled and the two environment variables are not set.
-
-      Note that services are free to use the two environment variables, but it's
-      unproblematic if they ignore them. Memory pressure handling must be implemented
-      individually in each service, and usually means different things for different
-      software. For further details on memory pressure handling see Memory Pressure Handling
-      in systemd[13].
-
-      Services implemented using sd-event(3) may use sd_event_add_memory_pressure(3) to
-      watch for and handle memory pressure events.
-
-      If not explicit set, defaults to the DefaultMemoryPressureWatch= setting in systemd-
-      system.conf(5).
-
-      Added in version 254.
-
-  MemoryPressureThresholdSec=
-      Sets the memory pressure threshold time for memory pressure monitor as configured via
-      MemoryPressureWatch=. Specifies the maximum allocation latency before a memory
-      pressure event is signalled to the service, per 2s window. If not specified defaults
-      to the DefaultMemoryPressureThresholdSec= setting in systemd-system.conf(5) (which in
-      turn defaults to 200ms). The specified value expects a time unit such as "ms" or "μs",
-      see systemd.time(7) for details on the permitted syntax.
-
-      Added in version 254.
-
-Coredump Control
-  CoredumpReceive=
-      Takes a boolean argument. This setting is used to enable coredump forwarding for
-      containers that belong to this unit's cgroup. Units with CoredumpReceive=yes must also
-      be configured with Delegate=yes. Defaults to false.
-
-      When systemd-coredump is handling a coredump for a process from a container, if the
-      container's leader process is a descendant of a cgroup with CoredumpReceive=yes and
-      Delegate=yes, then systemd-coredump will attempt to forward the coredump to
-      systemd-coredump within the container.
-
-      Added in version 255.
   */
+  ManagedOOMPreference?: "none" | "avoid" | "omit";
+
+  /**
+  MemoryPressureWatch=
+    Controls memory pressure monitoring for invoked processes. Takes one of "off", "on",
+    "auto" or "skip". If "off" tells the service not to watch for memory pressure events,
+    by setting the $MEMORY_PRESSURE_WATCH environment variable to the literal string
+    /dev/null. If "on" tells the service to watch for memory pressure events. This enables
+    memory accounting for the service, and ensures the memory.pressure cgroup attribute
+    file is accessible for reading and writing by the service's user. If the "auto" value
+    is set the protocol is enabled if memory accounting is anyway enabled for the unit,
+    and disabled otherwise. If set to "skip" the logic is neither enabled, nor disabled
+    and the two environment variables are not set.
+
+    If not explicit set, defaults to the DefaultMemoryPressureWatch= setting in
+    systemd-system.conf(5).
+
+    Note: "on" and "off" are normalized to booleans by the INI parser of this library.
+
+    Added in version 254.
+  */
+  MemoryPressureWatch?: boolean | "auto" | "skip";
+
+  /**
+  MemoryPressureThresholdSec=
+    Sets the memory pressure threshold time for memory pressure monitor as configured via
+    MemoryPressureWatch=. Specifies the maximum allocation latency before a memory
+    pressure event is signalled to the service, per 2s window. If not specified defaults
+    to the DefaultMemoryPressureThresholdSec= setting in systemd-system.conf(5) (which in
+    turn defaults to 200ms). The specified value expects a time unit such as "ms" or "μs",
+    see systemd.time(7) for details on the permitted syntax.
+
+    Added in version 254.
+  */
+  MemoryPressureThresholdSec?: string;
+
+  /**
+  CoredumpReceive=
+    Takes a boolean argument. This setting is used to enable coredump forwarding for
+    containers that belong to this unit's cgroup. Units with CoredumpReceive=yes must also
+    be configured with Delegate=yes. Defaults to false.
+
+    When systemd-coredump is handling a coredump for a process from a container, if the
+    container's leader process is a descendant of a cgroup with CoredumpReceive=yes and
+    Delegate=yes, then systemd-coredump will attempt to forward the coredump to
+    systemd-coredump within the container.
+
+    Added in version 255.
+  */
+  CoredumpReceive?: boolean;
 }
 
 export const ResourceLimitSchema = z.union([
-  z.string(),
   z.number(),
-]) as ZodType<ResourceLimit, ResourceLimit>;
+  z.literal("infinity"),
+  z.templateLiteral([z.number(), z.enum(["%", "G", "K", "M", "T"])]),
+]);
+
+const StringOrStringArray = z.union([z.string(), z.array(z.string())]);
 
 export const ResourceSectionConfigSchema = implement<ResourceSectionConfig>().with({
   CPUAccounting: z.boolean().optional(),
   CPUWeight: z.union([z.number(), z.literal("idle")]).optional(),
   StartupCPUWeight: z.union([z.number(), z.literal("idle")]).optional(),
   CPUQuota: z.string().optional(),
-  CPUQuotaPeriodSec: z.string().optional(),
+  CPUQuotaPeriodSec: z.union([z.number(), z.string()]).optional(),
   AllowedCPUs: z.string().optional(),
   StartupAllowedCPUs: z.string().optional(),
+
   MemoryAccounting: z.boolean().optional(),
   MemoryMin: ResourceLimitSchema.optional(),
+  DefaultMemoryMin: ResourceLimitSchema.optional(),
   MemoryLow: ResourceLimitSchema.optional(),
+  DefaultMemoryLow: ResourceLimitSchema.optional(),
   StartupMemoryLow: ResourceLimitSchema.optional(),
   DefaultStartupMemoryLow: ResourceLimitSchema.optional(),
   MemoryHigh: ResourceLimitSchema.optional(),
@@ -1165,13 +808,56 @@ export const ResourceSectionConfigSchema = implement<ResourceSectionConfig>().wi
   StartupMemorySwapMax: ResourceLimitSchema.optional(),
   MemoryZSwapMax: ResourceLimitSchema.optional(),
   StartupMemoryZSwapMax: ResourceLimitSchema.optional(),
+  MemoryZSwapWriteback: z.boolean().optional(),
   AllowedMemoryNodes: z.string().optional(),
   StartupAllowedMemoryNodes: z.string().optional(),
+
   TasksAccounting: z.boolean().optional(),
-  TasksMax: z.number().optional(),
+  TasksMax: z.union([
+    z.number(),
+    z.literal("infinity"),
+    z.templateLiteral([z.number(), "%"]),
+  ]).optional(),
+
   IOAccounting: z.boolean().optional(),
   IOWeight: z.number().optional(),
   StartupIOWeight: z.number().optional(),
+  IODeviceWeight: StringOrStringArray.optional(),
+  IOReadBandwidthMax: StringOrStringArray.optional(),
+  IOWriteBandwidthMax: StringOrStringArray.optional(),
+  IOReadIOPSMax: StringOrStringArray.optional(),
+  IOWriteIOPSMax: StringOrStringArray.optional(),
+  IODeviceLatencyTargetSec: StringOrStringArray.optional(),
+
+  IPAccounting: z.boolean().optional(),
+  IPAddressAllow: StringOrStringArray.optional(),
+  IPAddressDeny: StringOrStringArray.optional(),
+  SocketBindAllow: StringOrStringArray.optional(),
+  SocketBindDeny: StringOrStringArray.optional(),
+  RestrictNetworkInterfaces: StringOrStringArray.optional(),
+  NFTSet: StringOrStringArray.optional(),
+
+  IPIngressFilterPath: StringOrStringArray.optional(),
+  IPEgressFilterPath: StringOrStringArray.optional(),
+  BPFProgram: StringOrStringArray.optional(),
+
+  DeviceAllow: StringOrStringArray.optional(),
+  DevicePolicy: z.enum(["auto", "closed", "strict"]).optional(),
+
+  Slice: z.string().optional(),
+  Delegate: z.union([z.boolean(), z.string()]).optional(),
+  DelegateSubgroup: z.string().optional(),
+  DisableControllers: StringOrStringArray.optional(),
+
+  ManagedOOMSwap: z.enum(["auto", "kill"]).optional(),
+  ManagedOOMMemoryPressure: z.enum(["auto", "kill"]).optional(),
+  ManagedOOMMemoryPressureLimit: z.string().optional(),
+  ManagedOOMMemoryPressureDurationSec: z.string().optional(),
+  ManagedOOMPreference: z.enum(["none", "avoid", "omit"]).optional(),
+  MemoryPressureWatch: z.literal([true, false, "auto", "skip"]).optional(),
+  MemoryPressureThresholdSec: z.string().optional(),
+
+  CoredumpReceive: z.boolean().optional(),
 });
 
 export class ResourceSectionBuilder {
@@ -1259,11 +945,29 @@ export class ResourceSectionBuilder {
   }
 
   /**
+   * Set resource DefaultMemoryMin
+   * @see {@link ResourceSectionConfig.DefaultMemoryMin}
+   */
+  public setDefaultMemoryMin(value?: ResourceSectionConfig["DefaultMemoryMin"]): this {
+    this.section.DefaultMemoryMin = value;
+    return this;
+  }
+
+  /**
    * Set resource MemoryLow
    * @see {@link ResourceSectionConfig.MemoryLow}
    */
   public setMemoryLow(value?: ResourceSectionConfig["MemoryLow"]): this {
     this.section.MemoryLow = value;
+    return this;
+  }
+
+  /**
+   * Set resource DefaultMemoryLow
+   * @see {@link ResourceSectionConfig.DefaultMemoryLow}
+   */
+  public setDefaultMemoryLow(value?: ResourceSectionConfig["DefaultMemoryLow"]): this {
+    this.section.DefaultMemoryLow = value;
     return this;
   }
 
@@ -1358,6 +1062,15 @@ export class ResourceSectionBuilder {
   }
 
   /**
+   * Set resource MemoryZSwapWriteback
+   * @see {@link ResourceSectionConfig.MemoryZSwapWriteback}
+   */
+  public setMemoryZSwapWriteback(value?: ResourceSectionConfig["MemoryZSwapWriteback"]): this {
+    this.section.MemoryZSwapWriteback = value;
+    return this;
+  }
+
+  /**
    * Set resource AllowedMemoryNodes
    * @see {@link ResourceSectionConfig.AllowedMemoryNodes}
    */
@@ -1417,6 +1130,276 @@ export class ResourceSectionBuilder {
    */
   public setStartupIOWeight(value?: ResourceSectionConfig["StartupIOWeight"]): this {
     this.section.StartupIOWeight = value;
+    return this;
+  }
+
+  /**
+   * Set resource IODeviceWeight
+   * @see {@link ResourceSectionConfig.IODeviceWeight}
+   */
+  public setIODeviceWeight(value?: ResourceSectionConfig["IODeviceWeight"]): this {
+    this.section.IODeviceWeight = value;
+    return this;
+  }
+
+  /**
+   * Set resource IOReadBandwidthMax
+   * @see {@link ResourceSectionConfig.IOReadBandwidthMax}
+   */
+  public setIOReadBandwidthMax(value?: ResourceSectionConfig["IOReadBandwidthMax"]): this {
+    this.section.IOReadBandwidthMax = value;
+    return this;
+  }
+
+  /**
+   * Set resource IOWriteBandwidthMax
+   * @see {@link ResourceSectionConfig.IOWriteBandwidthMax}
+   */
+  public setIOWriteBandwidthMax(value?: ResourceSectionConfig["IOWriteBandwidthMax"]): this {
+    this.section.IOWriteBandwidthMax = value;
+    return this;
+  }
+
+  /**
+   * Set resource IOReadIOPSMax
+   * @see {@link ResourceSectionConfig.IOReadIOPSMax}
+   */
+  public setIOReadIOPSMax(value?: ResourceSectionConfig["IOReadIOPSMax"]): this {
+    this.section.IOReadIOPSMax = value;
+    return this;
+  }
+
+  /**
+   * Set resource IOWriteIOPSMax
+   * @see {@link ResourceSectionConfig.IOWriteIOPSMax}
+   */
+  public setIOWriteIOPSMax(value?: ResourceSectionConfig["IOWriteIOPSMax"]): this {
+    this.section.IOWriteIOPSMax = value;
+    return this;
+  }
+
+  /**
+   * Set resource IODeviceLatencyTargetSec
+   * @see {@link ResourceSectionConfig.IODeviceLatencyTargetSec}
+   */
+  public setIODeviceLatencyTargetSec(value?: ResourceSectionConfig["IODeviceLatencyTargetSec"]): this {
+    this.section.IODeviceLatencyTargetSec = value;
+    return this;
+  }
+
+  /**
+   * Set resource IPAccounting
+   * @see {@link ResourceSectionConfig.IPAccounting}
+   */
+  public setIPAccounting(value?: ResourceSectionConfig["IPAccounting"]): this {
+    this.section.IPAccounting = value;
+    return this;
+  }
+
+  /**
+   * Set resource IPAddressAllow
+   * @see {@link ResourceSectionConfig.IPAddressAllow}
+   */
+  public setIPAddressAllow(value?: ResourceSectionConfig["IPAddressAllow"]): this {
+    this.section.IPAddressAllow = value;
+    return this;
+  }
+
+  /**
+   * Set resource IPAddressDeny
+   * @see {@link ResourceSectionConfig.IPAddressDeny}
+   */
+  public setIPAddressDeny(value?: ResourceSectionConfig["IPAddressDeny"]): this {
+    this.section.IPAddressDeny = value;
+    return this;
+  }
+
+  /**
+   * Set resource SocketBindAllow
+   * @see {@link ResourceSectionConfig.SocketBindAllow}
+   */
+  public setSocketBindAllow(value?: ResourceSectionConfig["SocketBindAllow"]): this {
+    this.section.SocketBindAllow = value;
+    return this;
+  }
+
+  /**
+   * Set resource SocketBindDeny
+   * @see {@link ResourceSectionConfig.SocketBindDeny}
+   */
+  public setSocketBindDeny(value?: ResourceSectionConfig["SocketBindDeny"]): this {
+    this.section.SocketBindDeny = value;
+    return this;
+  }
+
+  /**
+   * Set resource RestrictNetworkInterfaces
+   * @see {@link ResourceSectionConfig.RestrictNetworkInterfaces}
+   */
+  public setRestrictNetworkInterfaces(value?: ResourceSectionConfig["RestrictNetworkInterfaces"]): this {
+    this.section.RestrictNetworkInterfaces = value;
+    return this;
+  }
+
+  /**
+   * Set resource NFTSet
+   * @see {@link ResourceSectionConfig.NFTSet}
+   */
+  public setNFTSet(value?: ResourceSectionConfig["NFTSet"]): this {
+    this.section.NFTSet = value;
+    return this;
+  }
+
+  /**
+   * Set resource IPIngressFilterPath
+   * @see {@link ResourceSectionConfig.IPIngressFilterPath}
+   */
+  public setIPIngressFilterPath(value?: ResourceSectionConfig["IPIngressFilterPath"]): this {
+    this.section.IPIngressFilterPath = value;
+    return this;
+  }
+
+  /**
+   * Set resource IPEgressFilterPath
+   * @see {@link ResourceSectionConfig.IPEgressFilterPath}
+   */
+  public setIPEgressFilterPath(value?: ResourceSectionConfig["IPEgressFilterPath"]): this {
+    this.section.IPEgressFilterPath = value;
+    return this;
+  }
+
+  /**
+   * Set resource BPFProgram
+   * @see {@link ResourceSectionConfig.BPFProgram}
+   */
+  public setBPFProgram(value?: ResourceSectionConfig["BPFProgram"]): this {
+    this.section.BPFProgram = value;
+    return this;
+  }
+
+  /**
+   * Set resource DeviceAllow
+   * @see {@link ResourceSectionConfig.DeviceAllow}
+   */
+  public setDeviceAllow(value?: ResourceSectionConfig["DeviceAllow"]): this {
+    this.section.DeviceAllow = value;
+    return this;
+  }
+
+  /**
+   * Set resource DevicePolicy
+   * @see {@link ResourceSectionConfig.DevicePolicy}
+   */
+  public setDevicePolicy(value?: ResourceSectionConfig["DevicePolicy"]): this {
+    this.section.DevicePolicy = value;
+    return this;
+  }
+
+  /**
+   * Set resource Slice
+   * @see {@link ResourceSectionConfig.Slice}
+   */
+  public setSlice(value?: ResourceSectionConfig["Slice"]): this {
+    this.section.Slice = value;
+    return this;
+  }
+
+  /**
+   * Set resource Delegate
+   * @see {@link ResourceSectionConfig.Delegate}
+   */
+  public setDelegate(value?: ResourceSectionConfig["Delegate"]): this {
+    this.section.Delegate = value;
+    return this;
+  }
+
+  /**
+   * Set resource DelegateSubgroup
+   * @see {@link ResourceSectionConfig.DelegateSubgroup}
+   */
+  public setDelegateSubgroup(value?: ResourceSectionConfig["DelegateSubgroup"]): this {
+    this.section.DelegateSubgroup = value;
+    return this;
+  }
+
+  /**
+   * Set resource DisableControllers
+   * @see {@link ResourceSectionConfig.DisableControllers}
+   */
+  public setDisableControllers(value?: ResourceSectionConfig["DisableControllers"]): this {
+    this.section.DisableControllers = value;
+    return this;
+  }
+
+  /**
+   * Set resource ManagedOOMSwap
+   * @see {@link ResourceSectionConfig.ManagedOOMSwap}
+   */
+  public setManagedOOMSwap(value?: ResourceSectionConfig["ManagedOOMSwap"]): this {
+    this.section.ManagedOOMSwap = value;
+    return this;
+  }
+
+  /**
+   * Set resource ManagedOOMMemoryPressure
+   * @see {@link ResourceSectionConfig.ManagedOOMMemoryPressure}
+   */
+  public setManagedOOMMemoryPressure(value?: ResourceSectionConfig["ManagedOOMMemoryPressure"]): this {
+    this.section.ManagedOOMMemoryPressure = value;
+    return this;
+  }
+
+  /**
+   * Set resource ManagedOOMMemoryPressureLimit
+   * @see {@link ResourceSectionConfig.ManagedOOMMemoryPressureLimit}
+   */
+  public setManagedOOMMemoryPressureLimit(value?: ResourceSectionConfig["ManagedOOMMemoryPressureLimit"]): this {
+    this.section.ManagedOOMMemoryPressureLimit = value;
+    return this;
+  }
+
+  /**
+   * Set resource ManagedOOMMemoryPressureDurationSec
+   * @see {@link ResourceSectionConfig.ManagedOOMMemoryPressureDurationSec}
+   */
+  public setManagedOOMMemoryPressureDurationSec(value?: ResourceSectionConfig["ManagedOOMMemoryPressureDurationSec"]): this {
+    this.section.ManagedOOMMemoryPressureDurationSec = value;
+    return this;
+  }
+
+  /**
+   * Set resource ManagedOOMPreference
+   * @see {@link ResourceSectionConfig.ManagedOOMPreference}
+   */
+  public setManagedOOMPreference(value?: ResourceSectionConfig["ManagedOOMPreference"]): this {
+    this.section.ManagedOOMPreference = value;
+    return this;
+  }
+
+  /**
+   * Set resource MemoryPressureWatch
+   * @see {@link ResourceSectionConfig.MemoryPressureWatch}
+   */
+  public setMemoryPressureWatch(value?: ResourceSectionConfig["MemoryPressureWatch"]): this {
+    this.section.MemoryPressureWatch = value;
+    return this;
+  }
+
+  /**
+   * Set resource MemoryPressureThresholdSec
+   * @see {@link ResourceSectionConfig.MemoryPressureThresholdSec}
+   */
+  public setMemoryPressureThresholdSec(value?: ResourceSectionConfig["MemoryPressureThresholdSec"]): this {
+    this.section.MemoryPressureThresholdSec = value;
+    return this;
+  }
+
+  /**
+   * Set resource CoredumpReceive
+   * @see {@link ResourceSectionConfig.CoredumpReceive}
+   */
+  public setCoredumpReceive(value?: ResourceSectionConfig["CoredumpReceive"]): this {
+    this.section.CoredumpReceive = value;
     return this;
   }
 }
