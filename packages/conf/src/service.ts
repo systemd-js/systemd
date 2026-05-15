@@ -15,8 +15,7 @@ import { ResourceSectionBuilder, ResourceSectionConfigSchema } from "./resource.
 import type { AbstractUnit, Unit } from "./types.js";
 
 /**
- * @see https://manpages.ubuntu.com/manpages/noble/en/man5/systemd.service.5.html
- * @see https://man.archlinux.org/man/systemd.service.5
+ * @see https://manpages.ubuntu.com/manpages/resolute/man5/systemd.service.5.html
  */
 export interface ServiceSectionConfig {
   /**
@@ -154,7 +153,7 @@ export interface ServiceSectionConfig {
     for such service execution setup operations to complete before proceeding.
   */
   Type?:
-  "dbus" | "exec" | "forking" | "idle" | "notify" | "oneshot" | "simple";
+  "dbus" | "exec" | "forking" | "idle" | "notify" | "notify-reload" | "oneshot" | "simple";
 
   /**
   ExitType=
@@ -201,8 +200,9 @@ export interface ServiceSectionConfig {
   PIDFile=
     Takes a path referring to the PID file of the service. Usage of this option is
     recommended for services where Type= is set to forking. The path specified typically
-    points to a file below /run/. If a relative path is specified it is hence prefixed
-    with /run/. The service manager will read the PID of the main process of the service
+    points to a file below /run/. If a relative path is specified for system service, then
+    it is hence prefixed with /run/, and prefixed with $XDG_RUNTIME_DIR if specified in a
+    user service. The service manager will read the PID of the main process of the service
     from this file after start-up of the service. The service manager will not write to
     the file configured here, although it will remove the file after the service has shut
     down if it still exists. The PID file does not need to be owned by a privileged user,
@@ -306,6 +306,8 @@ export interface ServiceSectionConfig {
     also applies to ExecCondition=.  ExecCondition= will also run the commands in
     ExecStopPost=, as part of stopping the service, in the case of any non-zero or
     abnormal exits, like the ones described above.
+
+    Added in version 243.
   */
   ExecCondition?: string[] | string;
 
@@ -330,8 +332,22 @@ export interface ServiceSectionConfig {
     broker(1) uses the following:
 
         ExecReload=busctl call org.freedesktop.DBus /org/freedesktop/DBus org.freedesktop.DBus ReloadConfig
+
+    This setting can be combined with Type=notify-reload, in which case the service main
+    process is signaled after all specified command lines finish execution. Specially, if
+    "RELOADING=1" notification is received before ExecReload= completes, the signaling is
+    skipped and the service manager immediately starts listening for "READY=1".
   */
   ExecReload?: string[] | string;
+
+  /**
+  ExecReloadPost=
+    Commands to execute after a successful reload operation. Syntax for this setting is
+    exactly the same as ExecReload=.
+
+    Added in version 259.
+  */
+  ExecReloadPost?: string[] | string;
 
   /**
   ExecStop=
@@ -406,15 +422,19 @@ export interface ServiceSectionConfig {
     Restart=). Takes a unit-less value in seconds, or a time span value such as "5min
     20s". Defaults to 100ms.
   */
-  RestartSec?: string;
+  RestartSec?: number | string;
 
   /**
   RestartSteps=
     Configures the number of steps to take to increase the interval of auto-restarts from
     RestartSec= to RestartMaxDelaySec=. Takes a positive integer or 0 to disable it.
-    Defaults to 0.
+    Defaults to 0. The formula for the ratio is
+    (RestartMaxDelaySec / RestartSec)^(1 / RestartSteps).
 
-    This setting is effective only if RestartMaxDelaySec= is also set.
+    Hint: values between 3 and 5 are good choices when exponential backoff is desired.
+
+    This setting is effective only if RestartMaxDelaySec= is also set and RestartSec= is
+    not zero.
 
     Added in version 254.
   */
@@ -426,11 +446,12 @@ export interface ServiceSectionConfig {
     up with RestartSteps=. Takes a value in the same format as RestartSec=, or "infinity"
     to disable the setting. Defaults to "infinity".
 
-    This setting is effective only if RestartSteps= is also set.
+    This setting is effective only if RestartSteps= is also set and RestartSec= is not
+    zero.
 
     Added in version 254.
   */
-  RestartMaxDelaySec?: number | "infinity";
+  RestartMaxDelaySec?: number | string;
 
   /**
   TimeoutStartSec=
@@ -449,8 +470,15 @@ export interface ServiceSectionConfig {
     continue to start, provided the service repeats "EXTEND_TIMEOUT_USEC=..."  within the
     interval specified until the service startup status is finished by "READY=1". (see
     sd_notify(3)).
+
+    Note that the start timeout is also applied to service reloads, regardless of whether
+    implemented through ExecReload= or via the reload logic enabled via Type=notify-reload.
+    If the reload does not complete within the configured time, the reload will be
+    considered failed and the service will continue running with the old configuration.
+
+    Added in version 188.
   */
-  TimeoutStartSec?: string;
+  TimeoutStartSec?: number | string;
 
   /**
   TimeoutStopSec=
@@ -471,8 +499,10 @@ export interface ServiceSectionConfig {
     extended beyond TimeoutStopSec=, the service manager will allow the service to
     continue to stop, provided the service repeats "EXTEND_TIMEOUT_USEC=..."  within the
     interval specified, or terminates itself (see sd_notify(3)).
+
+    Added in version 188.
   */
-  TimeoutStopSec?: string;
+  TimeoutStopSec?: number | string;
 
   /**
   TimeoutAbortSec=
@@ -498,15 +528,17 @@ export interface ServiceSectionConfig {
     beyond TimeoutAbortSec=, the service manager will allow the service to continue to
     abort, provided the service repeats "EXTEND_TIMEOUT_USEC=..."  within the interval
     specified, or terminates itself (see sd_notify(3)).
+
+    Added in version 243.
   */
-  TimeoutAbortSec?: string;
+  TimeoutAbortSec?: number | string;
 
   /**
   TimeoutSec=
     A shorthand for configuring both TimeoutStartSec= and TimeoutStopSec= to the specified
     value.
   */
-  TimeoutSec?: string;
+  TimeoutSec?: number | string;
 
   /**
   TimeoutStartFailureMode=, TimeoutStopFailureMode=
@@ -523,6 +555,8 @@ export interface ServiceSectionConfig {
     or shut-down intermittently. By using kill the service is immediately terminated by
     sending FinalKillSignal= without any further timeout. This setting can be used to
     expedite the shutdown of failing services.
+
+    Added in version 246.
   */
   TimeoutStartFailureMode?: "abort" | "kill" | "terminate";
 
@@ -536,8 +570,8 @@ export interface ServiceSectionConfig {
     Configures a maximum time for the service to run. If this is used and the service has
     been active for longer than the specified time it is terminated and put into a failure
     state. Note that this setting does not have any effect on Type=oneshot services, as
-    they terminate immediately after activation completed. Pass "infinity" (the default)
-    to configure no runtime limit.
+    they terminate immediately after activation completed (use TimeoutStartSec= to limit
+    their activation). Pass "infinity" (the default) to configure no runtime limit.
 
     If a service of Type=notify/Type=notify-reload sends "EXTEND_TIMEOUT_USEC=...", this
     may cause the runtime to be extended beyond RuntimeMaxSec=. The first receipt of this
@@ -546,16 +580,20 @@ export interface ServiceSectionConfig {
     to run, provided the service repeats "EXTEND_TIMEOUT_USEC=..."  within the interval
     specified until the service shutdown is achieved by "STOPPING=1" (or termination).
     (see sd_notify(3)).
+
+    Added in version 229.
   */
-  RuntimeMaxSec?: number | "infinity";
+  RuntimeMaxSec?: number | string;
 
   /**
   RuntimeRandomizedExtraSec=
     This option modifies RuntimeMaxSec= by increasing the maximum runtime by an evenly
     distributed duration between 0 and the specified value (in seconds). If RuntimeMaxSec=
     is unspecified, then this feature will be disabled.
+
+    Added in version 250.
   */
-  RuntimeRandomizedExtraSec?: number;
+  RuntimeRandomizedExtraSec?: number | string;
 
   /**
   WatchdogSec=
@@ -575,7 +613,7 @@ export interface ServiceSectionConfig {
     notifications. See sd_watchdog_enabled(3) for details.  sd_event_set_watchdog(3) may
     be used to enable automatic watchdog notification support.
   */
-  WatchdogSec?: string;
+  WatchdogSec?: number | string;
 
   /**
   Restart=
@@ -632,6 +670,9 @@ export interface ServiceSectionConfig {
     │Timeout       │    │ X      │            │ X          │ X           │          │             │
     ├──────────────┼────┼────────┼────────────┼────────────┼─────────────┼──────────┼─────────────┤
     │Watchdog      │    │ X      │            │ X          │ X           │          │ X           │
+    ├──────────────┼────┼────────┼────────────┼────────────┼─────────────┼──────────┼─────────────┤
+    │Termination   │    │ X      │            │ X          │ X           │          │             │
+    │due to OOM    │    │        │            │            │             │          │             │
     └──────────────┴────┴────────┴────────────┴────────────┴─────────────┴──────────┴─────────────┘
     As exceptions to the setting above, the service will not be restarted if the exit code
     or signal is specified in RestartPreventExitStatus= (see below) or the service is
@@ -660,13 +701,20 @@ export interface ServiceSectionConfig {
         auto-restart, skipping failed/inactive state.  ExecStopPost= is invoked.
         OnSuccess= and OnFailure= are skipped.
 
+    •   If set to debug, the service manager will log messages that are related to this
+        unit at debug level while automated restarts are attempted, until either the
+        service hits the rate limit or it succeeds, and the $DEBUG_INVOCATION=1
+        environment variable will be set for the unit.
+
+        Added in version 257.
+
     This option is useful in cases where a dependency can fail temporarily but we don't
     want these temporary failures to make the dependent units fail. When this option is
     set to direct, dependent units are not notified of these temporary failures.
 
     Added in version 254.
   */
-  RestartMode?: "direct" | "normal";
+  RestartMode?: "debug" | "direct" | "normal";
 
   /**
   SuccessExitStatus=
@@ -736,6 +784,10 @@ export interface ServiceSectionConfig {
     process, will force automatic service restarts, regardless of the restart setting
     configured with Restart=. The argument format is similar to RestartPreventExitStatus=.
 
+    Note that for Type=oneshot services, a success exit status will prevent them from
+    auto-restarting, no matter whether the corresponding exit statuses are listed in this
+    option or not.
+
     Added in version 215.
   */
   RestartForceExitStatus?: string;
@@ -745,8 +797,9 @@ export interface ServiceSectionConfig {
     Takes a boolean argument. If true, the root directory, as configured with the
     RootDirectory= option (see systemd.exec(5) for more information), is only applied to
     the process started with ExecStart=, and not to the various other ExecStartPre=,
-    ExecStartPost=, ExecReload=, ExecStop=, and ExecStopPost= commands. If false, the
-    setting is applied to all configured commands the same way. Defaults to false.
+    ExecStartPost=, ExecReload=, ExecReloadPost=, ExecStop=, and ExecStopPost= commands.
+    If false, the setting is applied to all configured commands the same way. Defaults to
+    false.
   */
   RootDirectoryStartOnly?: boolean;
 
@@ -915,7 +968,9 @@ export interface ServiceSectionConfig {
     If set to stop the event is logged but the unit is terminated cleanly by the service
     manager. If set to kill and one of the unit's processes is killed by the OOM killer
     the kernel is instructed to kill all remaining processes of the unit too, by setting
-    the memory.oom.group attribute to 1; also see kernel page Control Group v2[3].
+    the memory.oom.group attribute to 1; also see kernel page Control Group v2[3]. In
+    case of both stop and kill, the service ultimately ends up in the oom-kill failed
+    state after which Restart= may apply.
 
     Defaults to the setting DefaultOOMPolicy= in systemd-system.conf(5) is set to, except
     for units where Delegate= is turned on, where it defaults to continue.
@@ -995,7 +1050,7 @@ export const ServiceSectionConfigSchema = implement<ServiceSectionConfig>().with
     "oneshot",
     "dbus",
     "notify",
-    "forking",
+    "notify-reload",
     "idle",
   ]).optional(),
   /**
@@ -1043,6 +1098,10 @@ export const ServiceSectionConfigSchema = implement<ServiceSectionConfig>().with
    */
   ExecReload: z.union([z.string(), z.array(z.string())]).optional(),
   /**
+   * @see {@link ServiceSectionConfig.ExecReloadPost}
+   */
+  ExecReloadPost: z.union([z.string(), z.array(z.string())]).optional(),
+  /**
    * @see {@link ServiceSectionConfig.ExecStop}
    */
   ExecStop: z.union([z.string(), z.array(z.string())]).optional(),
@@ -1053,31 +1112,31 @@ export const ServiceSectionConfigSchema = implement<ServiceSectionConfig>().with
   /**
    * @see {@link ServiceSectionConfig.RestartSec}
    */
-  RestartSec: z.string().optional(),
+  RestartSec: z.union([z.number(), z.string()]).optional(),
   /**
-   * @see {@link ServiceSectionConfig.TimeoutStartSec}
+   * @see {@link ServiceSectionConfig.RestartSteps}
    */
   RestartSteps: z.number().optional(),
   /**
    * @see {@link ServiceSectionConfig.RestartMaxDelaySec}
    */
-  RestartMaxDelaySec: z.union([z.literal("infinity"), z.number()]).optional(),
+  RestartMaxDelaySec: z.union([z.number(), z.string()]).optional(),
   /**
    * @see {@link ServiceSectionConfig.TimeoutStartSec}
    */
-  TimeoutStartSec: z.string().optional(),
+  TimeoutStartSec: z.union([z.number(), z.string()]).optional(),
   /**
    * @see {@link ServiceSectionConfig.TimeoutStopSec}
    */
-  TimeoutStopSec: z.string().optional(),
+  TimeoutStopSec: z.union([z.number(), z.string()]).optional(),
   /**
    * @see {@link ServiceSectionConfig.TimeoutAbortSec}
    */
-  TimeoutAbortSec: z.string().optional(),
+  TimeoutAbortSec: z.union([z.number(), z.string()]).optional(),
   /**
    * @see {@link ServiceSectionConfig.TimeoutSec}
    */
-  TimeoutSec: z.string().optional(),
+  TimeoutSec: z.union([z.number(), z.string()]).optional(),
   /**
    * @see {@link ServiceSectionConfig.TimeoutStartFailureMode}
    */
@@ -1089,15 +1148,15 @@ export const ServiceSectionConfigSchema = implement<ServiceSectionConfig>().with
   /**
    * @see {@link ServiceSectionConfig.RuntimeMaxSec}
    */
-  RuntimeMaxSec: z.union([z.literal("infinity"), z.number()]).optional(),
+  RuntimeMaxSec: z.union([z.number(), z.string()]).optional(),
   /**
    * @see {@link ServiceSectionConfig.RuntimeRandomizedExtraSec}
    */
-  RuntimeRandomizedExtraSec: z.number().optional(),
+  RuntimeRandomizedExtraSec: z.union([z.number(), z.string()]).optional(),
   /**
    * @see {@link ServiceSectionConfig.WatchdogSec}
    */
-  WatchdogSec: z.string().optional(),
+  WatchdogSec: z.union([z.number(), z.string()]).optional(),
   /**
    * @see {@link ServiceSectionConfig.Restart}
    */
@@ -1113,7 +1172,7 @@ export const ServiceSectionConfigSchema = implement<ServiceSectionConfig>().with
   /**
    * @see {@link ServiceSectionConfig.RestartMode}
    */
-  RestartMode: z.enum(["normal", "direct"]).optional(),
+  RestartMode: z.enum(["normal", "direct", "debug"]).optional(),
   /**
    * @see {@link ServiceSectionConfig.SuccessExitStatus}
    */
@@ -1293,7 +1352,7 @@ export class ServiceSectionBuilder {
 
   /**
    * Set service ExecStartPost
-   * @see {@link ServiceSectionConfig.ExecStartPre}
+   * @see {@link ServiceSectionConfig.ExecStartPost}
    */
   public setExecStartPost(execStartPost: string[] | string) {
     this.section.ExecStartPost = execStartPost;
@@ -1319,6 +1378,15 @@ export class ServiceSectionBuilder {
   }
 
   /**
+   * Set service ExecReloadPost
+   * @see {@link ServiceSectionConfig.ExecReloadPost}
+   */
+  public setExecReloadPost(execReloadPost: string[] | string) {
+    this.section.ExecReloadPost = execReloadPost;
+    return this;
+  }
+
+  /**
    * Set service ExecStop
    * @see {@link ServiceSectionConfig.ExecStop}
    */
@@ -1340,7 +1408,7 @@ export class ServiceSectionBuilder {
    * Set service RestartSec
    * @see {@link ServiceSectionConfig.RestartSec}
    */
-  public setRestartSec(restartSec: string) {
+  public setRestartSec(restartSec: ServiceSectionConfig["RestartSec"]) {
     this.section.RestartSec = restartSec;
     return this;
   }
@@ -1358,7 +1426,7 @@ export class ServiceSectionBuilder {
    * Set service RestartMaxDelaySec
    * @see {@link ServiceSectionConfig.RestartMaxDelaySec}
    */
-  public setRestartMaxDelaySec(restartMaxDelaySec: number | "infinity") {
+  public setRestartMaxDelaySec(restartMaxDelaySec: ServiceSectionConfig["RestartMaxDelaySec"]) {
     this.section.RestartMaxDelaySec = restartMaxDelaySec;
     return this;
   }
@@ -1367,7 +1435,7 @@ export class ServiceSectionBuilder {
    * Set service TimeoutStartSec
    * @see {@link ServiceSectionConfig.TimeoutStartSec}
    */
-  public setTimeoutStartSec(timeoutStartSec: string) {
+  public setTimeoutStartSec(timeoutStartSec: ServiceSectionConfig["TimeoutStartSec"]) {
     this.section.TimeoutStartSec = timeoutStartSec;
     return this;
   }
@@ -1376,7 +1444,7 @@ export class ServiceSectionBuilder {
    * Set service TimeoutStopSec
    * @see {@link ServiceSectionConfig.TimeoutStopSec}
    */
-  public setTimeoutStopSec(timeoutStopSec: string) {
+  public setTimeoutStopSec(timeoutStopSec: ServiceSectionConfig["TimeoutStopSec"]) {
     this.section.TimeoutStopSec = timeoutStopSec;
     return this;
   }
@@ -1385,7 +1453,7 @@ export class ServiceSectionBuilder {
    * Set service TimeoutAbortSec
    * @see {@link ServiceSectionConfig.TimeoutAbortSec}
    */
-  public setTimeoutAbortSec(timeoutAbortSec: string) {
+  public setTimeoutAbortSec(timeoutAbortSec: ServiceSectionConfig["TimeoutAbortSec"]) {
     this.section.TimeoutAbortSec = timeoutAbortSec;
     return this;
   }
@@ -1394,7 +1462,7 @@ export class ServiceSectionBuilder {
    * Set service TimeoutSec
    * @see {@link ServiceSectionConfig.TimeoutSec}
    */
-  public setTimeoutSec(timeoutSec: string) {
+  public setTimeoutSec(timeoutSec: ServiceSectionConfig["TimeoutSec"]) {
     this.section.TimeoutSec = timeoutSec;
     return this;
   }
@@ -1425,7 +1493,7 @@ export class ServiceSectionBuilder {
    * Set service RuntimeMaxSec
    * @see {@link ServiceSectionConfig.RuntimeMaxSec}
    */
-  public setRuntimeMaxSec(runtimeMaxSec: number | "infinity") {
+  public setRuntimeMaxSec(runtimeMaxSec: ServiceSectionConfig["RuntimeMaxSec"]) {
     this.section.RuntimeMaxSec = runtimeMaxSec;
     return this;
   }
@@ -1435,7 +1503,7 @@ export class ServiceSectionBuilder {
    * @see {@link ServiceSectionConfig.RuntimeRandomizedExtraSec}
    */
   public setRuntimeRandomizedExtraSec(
-    runtimeRandomizedExtraSec: number,
+    runtimeRandomizedExtraSec: ServiceSectionConfig["RuntimeRandomizedExtraSec"],
   ) {
     this.section.RuntimeRandomizedExtraSec = runtimeRandomizedExtraSec;
     return this;
@@ -1445,7 +1513,7 @@ export class ServiceSectionBuilder {
    * Set service WatchdogSec
    * @see {@link ServiceSectionConfig.WatchdogSec}
    */
-  public setWatchdogSec(watchdogSec: string) {
+  public setWatchdogSec(watchdogSec: ServiceSectionConfig["WatchdogSec"]) {
     this.section.WatchdogSec = watchdogSec;
     return this;
   }
