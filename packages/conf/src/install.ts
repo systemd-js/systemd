@@ -9,7 +9,7 @@ import { implement } from "./utils.js";
  * The following specifiers are interpreted in the Install section: %a, %b, %B, %g, %G, %H,
  * %i, %j, %l, %m, %n, %N, %o, %p, %u, %U, %v, %w, %W, %%. For their meaning see the next
  * section.
- * @see https://manpages.ubuntu.com/manpages/noble/en/man5/systemd.unit.5.html#[install]%20section%20options
+ * @see https://manpages.ubuntu.com/manpages/resolute/man5/systemd.unit.5.html#install-section-options
  */
 export interface InstallSectionConfig {
   /**
