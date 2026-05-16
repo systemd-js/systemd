@@ -2,7 +2,7 @@ import { z } from "zod";
 import { implement } from "./utils.js";
 
 /**
- * @see https://manpages.ubuntu.com/manpages/noble/en/man5/systemd.exec.5.html
+ * @see https://manpages.ubuntu.com/manpages/resolute/man5/systemd.exec.5.html
  */
 export interface ExecSectionConfig {
   // PATHS

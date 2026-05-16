@@ -15,7 +15,7 @@ import { implement } from "./utils.js";
   The kill procedure configuration options are configured in the [Service], [Socket],
   [Mount] or [Swap] section, depending on the unit type.
 
- * @see https://manpages.ubuntu.com/manpages/noble/en/man5/systemd.kill.5.html
+ * @see https://manpages.ubuntu.com/manpages/resolute/man5/systemd.kill.5.html
  */
 export interface KillSectionConfig {
   /**

@@ -12,7 +12,7 @@ import type { AbstractUnit, Unit } from "./types.js";
 
 /**
  * Timer section of a systemd unit file.
- * @see https://manpages.ubuntu.com/manpages/noble/en/man5/systemd.timer.5.html
+ * @see https://manpages.ubuntu.com/manpages/resolute/man5/systemd.timer.5.html
  */
 export interface TimerSectionConfig {
   /**
@@ -198,6 +198,57 @@ export interface TimerSectionConfig {
   FixedRandomDelay?: boolean;
 
   /**
+  RandomizedOffsetSec=
+    Offsets the timer by a stable, randomly-selected, and evenly distributed amount of
+    time between 0 and the specified time value. Defaults to 0, indicating that no such
+    offset shall be applied. The offset is chosen deterministically, and is derived the
+    same way as FixedRandomDelay=, see above. The offset is added on top of the next
+    determined elapsing time. This setting only has an effect on timers configured with
+    OnCalendar=, and it can be combined with RandomizedDelaySec=.
+
+    Much like RandomizedDelaySec=, this setting is for distributing timer events to
+    prevent them from firing all at once. However, this setting is most useful to
+    prevent resource congestion on a remote service, from a fleet of
+    similarly-configured clients. Unlike RandomizedDelaySec=, this setting applies its
+    offset with no regard to manager startup time. This maintains the periodicity of
+    configured OnCalendar= events across manager restarts.
+
+    For example, let's say you're running a backup service and have a fleet of laptops
+    that wish to make backups weekly. To distribute load on the backup service, each
+    laptop should randomly pick a weekday to upload its backups. This could be
+    achieved by setting OnCalendar= to "weekly", and then configuring a
+    RandomizedDelaySec= of "5 days" with FixedRandomDelay= enabled. Let's say that
+    some laptop randomly chooses a delay of 4 days. If this laptop is restarted more
+    often than that, then the timer will never fire: on each fresh boot, the 4 day
+    delay is restarted and will not be finished by the time of the next shutdown.
+    Instead, you should use RandomizedOffsetSec=, which will maintain the configured
+    weekly cadence of timer events, even across reboots.
+
+    Added in version 258.
+  */
+  RandomizedOffsetSec?: number | string;
+
+  /**
+  DeferReactivation=
+    Takes a boolean argument. When enabled, the timer schedules the next elapse based
+    on the trigger unit entering inactivity, instead of the last trigger time. This is
+    most apparent in the case where the service unit takes longer to run than the
+    timer interval. With this setting enabled, the timer will schedule the next elapse
+    based on when the service finishes running, and so it will have to wait until the
+    next realtime elapse time to trigger. Otherwise, the default behavior is for the
+    timer unit to immediately trigger again once the service finishes running. This
+    happens because the timer schedules the next elapse based on the previous trigger
+    time, and since the interval is shorter than the service runtime, that elapse will
+    be in the past, causing it to immediately trigger once done.
+
+    This setting has an effect only if a realtime timer has been specified with
+    OnCalendar=. Defaults to false.
+
+    Added in version 257.
+  */
+  DeferReactivation?: boolean;
+
+  /**
   OnClockChange=, OnTimezoneChange=
     These options take boolean arguments. When true, the service unit will be triggered
     when the system clock (CLOCK_REALTIME) jumps relative to the monotonic clock
@@ -208,6 +259,7 @@ export interface TimerSectionConfig {
     Added in version 242.
   */
   OnClockChange?: boolean;
+  OnTimezoneChange?: boolean;
 
   /**
   Unit=
@@ -272,8 +324,6 @@ export interface TimerSectionConfig {
     multiple times. Defaults to true.
 
     Added in version 229.
-
-  Check systemd.unit(5), systemd.exec(5), and systemd.kill(5) for more settings.
   */
   RemainAfterElapse?: boolean;
 }
@@ -296,7 +346,10 @@ export const TimerSectionConfigSchema = implement<TimerSectionConfig>().with({
   AccuracySec: z.union([z.number(), z.string()]).optional(),
   RandomizedDelaySec: z.union([z.number(), z.string()]).optional(),
   FixedRandomDelay: z.boolean().optional(),
+  RandomizedOffsetSec: z.union([z.number(), z.string()]).optional(),
+  DeferReactivation: z.boolean().optional(),
   OnClockChange: z.boolean().optional(),
+  OnTimezoneChange: z.boolean().optional(),
   Unit: z.string().optional(),
   Persistent: z.boolean().optional(),
   WakeSystem: z.boolean().optional(),
@@ -340,8 +393,7 @@ export class TimerSectionBuilder {
   }
 
   /**
-   * Validate and return the UnitSection
-   * @returns {TimerSection}
+   * Validate and return the TimerSection
    */
   public toObject() {
     return TimerSectionSchema.parse(this.section);
@@ -448,6 +500,28 @@ export class TimerSectionBuilder {
   }
 
   /**
+   * Set timer RandomizedOffsetSec
+   * @see {@link TimerSectionConfig.RandomizedOffsetSec}
+   */
+  public setRandomizedOffsetSec(
+    randomizedOffsetSec?: TimerSectionConfig["RandomizedOffsetSec"],
+  ) {
+    this.section.RandomizedOffsetSec = randomizedOffsetSec;
+    return this;
+  }
+
+  /**
+   * Set timer DeferReactivation
+   * @see {@link TimerSectionConfig.DeferReactivation}
+   */
+  public setDeferReactivation(
+    deferReactivation?: TimerSectionConfig["DeferReactivation"],
+  ) {
+    this.section.DeferReactivation = deferReactivation;
+    return this;
+  }
+
+  /**
    * Set timer OnClockChange
    * @see {@link TimerSectionConfig.OnClockChange}
    */
@@ -455,6 +529,17 @@ export class TimerSectionBuilder {
     onClockChange?: TimerSectionConfig["OnClockChange"],
   ) {
     this.section.OnClockChange = onClockChange;
+    return this;
+  }
+
+  /**
+   * Set timer OnTimezoneChange
+   * @see {@link TimerSectionConfig.OnTimezoneChange}
+   */
+  public setOnTimezoneChange(
+    onTimezoneChange?: TimerSectionConfig["OnTimezoneChange"],
+  ) {
+    this.section.OnTimezoneChange = onTimezoneChange;
     return this;
   }
 
@@ -531,7 +616,6 @@ export class Timer implements AbstractUnit {
 
   /**
    * Get the [Timer] section of the timer
-   * @returns {TimerSectionBuilder}
    */
   public getTimerSection() {
     return this.timerSection;
@@ -539,7 +623,6 @@ export class Timer implements AbstractUnit {
 
   /**
    * Get the [Unit] section of the timer
-   * @returns {UnitSectionBuilder}
    */
   public getUnitSection() {
     return this.unitSection;
@@ -547,7 +630,6 @@ export class Timer implements AbstractUnit {
 
   /**
    * Get the [Install] section of the timer
-   * @returns {InstallSectionBuilder}
    */
   public getInstallSection() {
     return this.installSection;

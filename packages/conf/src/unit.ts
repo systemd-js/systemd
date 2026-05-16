@@ -2,8 +2,55 @@ import { z } from "zod";
 import { implement } from "./utils.js";
 
 /**
+ * Allowed values for FailureAction=, SuccessAction=, JobTimeoutAction=, and
+ * StartLimitAction=. See systemd.unit(5).
+ */
+export const UNIT_ACTION_VALUES = [
+  "none",
+  "reboot",
+  "reboot-force",
+  "reboot-immediate",
+  "poweroff",
+  "poweroff-force",
+  "poweroff-immediate",
+  "exit",
+  "exit-force",
+  "soft-reboot",
+  "soft-reboot-force",
+  "kexec",
+  "kexec-force",
+  "halt",
+  "halt-force",
+  "halt-immediate",
+] as const;
+
+export type UnitAction = (typeof UNIT_ACTION_VALUES)[number];
+
+/**
+ * Allowed values for OnSuccessJobMode= and OnFailureJobMode=. See systemd.unit(5).
+ */
+export const UNIT_JOB_MODE_VALUES = [
+  "fail",
+  "replace",
+  "replace-irreversibly",
+  "isolate",
+  "flush",
+  "ignore-dependencies",
+  "ignore-requirements",
+] as const;
+
+export type UnitJobMode = (typeof UNIT_JOB_MODE_VALUES)[number];
+
+/**
+ * Allowed values for CollectMode=. See systemd.unit(5).
+ */
+export const UNIT_COLLECT_MODE_VALUES = ["inactive", "inactive-or-failed"] as const;
+
+export type UnitCollectMode = (typeof UNIT_COLLECT_MODE_VALUES)[number];
+
+/**
  * UnitSection
- * @see https://manpages.ubuntu.com/manpages/noble/en/man5/systemd.unit.5.html
+ * @see https://manpages.ubuntu.com/manpages/resolute/man5/systemd.unit.5.html
  */
 export interface UnitSection {
   /**
@@ -90,7 +137,7 @@ export interface UnitSection {
 
     Added in version 201.
   */
-  Requires?: string;
+  Requires?: string[] | string;
 
   /**
   Requisite=
@@ -106,7 +153,7 @@ export interface UnitSection {
 
     Added in version 201.
   */
-  Requisite?: string;
+  Requisite?: string[] | string;
 
   /**
   BindsTo=
@@ -133,7 +180,7 @@ export interface UnitSection {
 
     Added in version 201.
   */
-  BindsTo?: string;
+  BindsTo?: string[] | string;
 
   /**
   PartOf=
@@ -148,7 +195,7 @@ export interface UnitSection {
 
     Added in version 201.
   */
-  PartOf?: string;
+  PartOf?: string[] | string;
 
   /**
   Upholds=
@@ -165,7 +212,7 @@ export interface UnitSection {
 
     Added in version 249.
   */
-  Upholds?: string;
+  Upholds?: string[] | string;
 
   /**
   Conflicts=
@@ -189,7 +236,7 @@ export interface UnitSection {
 
     Added in version 201.
   */
-  Conflicts?: string;
+  Conflicts?: string[] | string;
 
   /**
   Before=, After=
@@ -240,7 +287,7 @@ export interface UnitSection {
 
     Added in version 201.
   */
-  OnFailure?: string;
+  OnFailure?: string[] | string;
 
   /**
   OnSuccess=
@@ -249,7 +296,7 @@ export interface UnitSection {
 
     Added in version 249.
   */
-  OnSuccess?: string;
+  OnSuccess?: string[] | string;
 
   /**
   PropagatesReloadTo=, ReloadPropagatedFrom=
@@ -260,7 +307,7 @@ export interface UnitSection {
 
     Added in version 201.
   */
-  PropagatesReloadTo?: string;
+  PropagatesReloadTo?: string[] | string;
 
   /**
   PropagatesStopTo=, StopPropagatedFrom=
@@ -271,7 +318,7 @@ export interface UnitSection {
 
     Added in version 249.
   */
-  PropagatesStopTo?: string;
+  PropagatesStopTo?: string[] | string;
 
   /**
   JoinsNamespaceOf=
@@ -291,7 +338,7 @@ export interface UnitSection {
 
     Added in version 209.
   */
-  JoinsNamespaceOf?: string;
+  JoinsNamespaceOf?: string[] | string;
 
   /**
   RequiresMountsFor=
@@ -303,7 +350,19 @@ export interface UnitSection {
     this unit.
 
     Added in version 201.
+  */
+  RequiresMountsFor?: string[] | string;
 
+  /**
+  WantsMountsFor=
+    Same as RequiresMountsFor=, but adds dependencies of type Wants= instead of
+    Requires=.
+
+    Added in version 256.
+  */
+  WantsMountsFor?: string[] | string;
+
+  /**
   OnSuccessJobMode=, OnFailureJobMode=
     Takes a value of "fail", "replace", "replace-irreversibly", "isolate", "flush",
     "ignore-dependencies" or "ignore-requirements". Defaults to "replace". Specifies how
@@ -312,14 +371,21 @@ export interface UnitSection {
     only a single unit may be listed in OnSuccess=/OnFailure=.
 
     Added in version 209.
+  */
+  OnSuccessJobMode?: UnitJobMode;
+  OnFailureJobMode?: UnitJobMode;
 
+  /**
   IgnoreOnIsolate=
     Takes a boolean argument. If true, this unit will not be stopped when isolating
     another unit. Defaults to false for service, target, socket, timer, and path units,
     and true for slice, scope, device, swap, mount, and automount units.
 
     Added in version 201.
+  */
+  IgnoreOnIsolate?: boolean;
 
+  /**
   StopWhenUnneeded=
     Takes a boolean argument. If true, this unit will be stopped when it is no longer
     used. Note that, in order to minimize the work to be executed, systemd will not stop
@@ -328,7 +394,10 @@ export interface UnitSection {
     up if no other active unit requires it. Defaults to false.
 
     Added in version 201.
+  */
+  StopWhenUnneeded?: boolean;
 
+  /**
   RefuseManualStart=, RefuseManualStop=
     Takes a boolean argument. If true, this unit can only be activated or deactivated
     indirectly. In this case, explicit start-up or termination requested by the user is
@@ -339,7 +408,11 @@ export interface UnitSection {
     options default to false.
 
     Added in version 201.
+  */
+  RefuseManualStart?: boolean;
+  RefuseManualStop?: boolean;
 
+  /**
   AllowIsolate=
     Takes a boolean argument. If true, this unit may be used with the systemctl isolate
     command. Otherwise, this will be refused. It probably is a good idea to leave this
@@ -348,7 +421,10 @@ export interface UnitSection {
     false.
 
     Added in version 201.
+  */
+  AllowIsolate?: boolean;
 
+  /**
   DefaultDependencies=
     Takes a boolean argument. If yes, (the default), a few default dependencies will
     implicitly be created for the unit. The actual dependencies created depend on the unit
@@ -360,7 +436,10 @@ export interface UnitSection {
     no, this option does not disable all implicit dependencies, just non-essential ones.
 
     Added in version 201.
+  */
+  DefaultDependencies?: boolean;
 
+  /**
   SurviveFinalKillSignal=
     Takes a boolean argument. Defaults to no. If yes, processes belonging to this unit
     will not be sent the final "SIGTERM" and "SIGKILL" signals during the final phase of
@@ -369,7 +448,10 @@ export interface UnitSection {
     Daemons for the Root File System[2], which however continues to be supported.
 
     Added in version 255.
+  */
+  SurviveFinalKillSignal?: boolean;
 
+  /**
   CollectMode=
     Tweaks the "garbage collection" algorithm for this unit. Takes one of inactive or
     inactive-or-failed. If set to inactive the unit will be unloaded if it is in the
@@ -384,7 +466,10 @@ export interface UnitSection {
     is stored in the logging subsystem. Defaults to inactive.
 
     Added in version 236.
+  */
+  CollectMode?: UnitCollectMode;
 
+  /**
   FailureAction=, SuccessAction=
     Configure the action to take when the unit stops and enters a failed state or inactive
     state. Takes one of none, reboot, reboot-force, reboot-immediate, poweroff,
@@ -410,7 +495,11 @@ export interface UnitSection {
     that too, but does not go through the shutdown transaction beforehand.
 
     Added in version 236.
+  */
+  FailureAction?: UnitAction;
+  SuccessAction?: UnitAction;
 
+  /**
   FailureActionExitStatus=, SuccessActionExitStatus=
     Controls the exit status to propagate back to an invoking container manager (in case
     of a system service) or service manager (in case of a user manager) when the
@@ -420,7 +509,11 @@ export interface UnitSection {
     request default behaviour.
 
     Added in version 240.
+  */
+  FailureActionExitStatus?: number | string;
+  SuccessActionExitStatus?: number | string;
 
+  /**
   JobTimeoutSec=, JobRunningTimeoutSec=
     JobTimeoutSec= specifies a timeout for the whole job that starts running when the job
     is queued.  JobRunningTimeoutSec= specifies a timeout that starts running when the
@@ -439,7 +532,11 @@ export interface UnitSection {
     to abort only the job waiting for the unit state to change.
 
     Added in version 201.
+  */
+  JobTimeoutSec?: number | string;
+  JobRunningTimeoutSec?: number | string;
 
+  /**
   JobTimeoutAction=, JobTimeoutRebootArgument=
     JobTimeoutAction= optionally configures an additional action to take when the timeout
     is hit, see description of JobTimeoutSec= and JobRunningTimeoutSec= above. It takes
@@ -449,7 +546,11 @@ export interface UnitSection {
     reboot(2) system call.
 
     Added in version 240.
+  */
+  JobTimeoutAction?: UnitAction;
+  JobTimeoutRebootArgument?: string;
 
+  /**
   StartLimitIntervalSec=interval, StartLimitBurst=burst
     Configure unit start rate limiting. Units which are started more than burst times
     within an interval time span are not permitted to start any more. Use
@@ -484,7 +585,11 @@ export interface UnitSection {
     unit types whose activation may either never fail, or may succeed only a single time.
 
     Added in version 229.
+  */
+  StartLimitIntervalSec?: number | string;
+  StartLimitBurst?: number;
 
+  /**
   StartLimitAction=
     Configure an additional action to take if the rate limit configured with
     StartLimitIntervalSec= and StartLimitBurst= is hit. Takes the same values as the
@@ -492,398 +597,445 @@ export interface UnitSection {
     trigger no action except that the start will not be permitted. Defaults to none.
 
     Added in version 229.
+  */
+  StartLimitAction?: UnitAction;
 
+  /**
   RebootArgument=
-      Configure the optional argument for the reboot(2) system call if StartLimitAction= or
-      FailureAction= is a reboot action. This works just like the optional argument to
-      systemctl reboot command.
+    Configure the optional argument for the reboot(2) system call if StartLimitAction= or
+    FailureAction= is a reboot action. This works just like the optional argument to
+    systemctl reboot command.
 
-      Added in version 229.
+    Added in version 229.
+  */
+  RebootArgument?: string;
 
+  /**
   SourcePath=
-      A path to a configuration file this unit has been generated from. This is primarily
-      useful for implementation of generator tools that convert configuration from an
-      external configuration file format into native unit files. This functionality should
-      not be used in normal units.
+    A path to a configuration file this unit has been generated from. This is primarily
+    useful for implementation of generator tools that convert configuration from an
+    external configuration file format into native unit files. This functionality should
+    not be used in normal units.
 
-      Added in version 201.
+    Added in version 201.
+  */
+  SourcePath?: string;
 
-Conditions and Asserts
-  Unit files may also include a number of Condition...= and Assert...= settings. Before the
-  unit is started, systemd will verify that the specified conditions and asserts are true.
-  If not, the starting of the unit will be (mostly silently) skipped (in case of
-  conditions), or aborted with an error message (in case of asserts). Failing conditions or
-  asserts will not result in the unit being moved into the "failed" state. The conditions
-  and asserts are checked at the time the queued start job is to be executed. The ordering
-  dependencies are still respected, so other units are still pulled in and ordered as if
-  this unit was successfully activated, and the conditions and asserts are executed the
-  precise moment the unit would normally start and thus can validate system state after the
-  units ordered before completed initialization. Use condition expressions for skipping
-  units that do not apply to the local system, for example because the kernel or runtime
-  environment doesn't require their functionality.
-
-  If multiple conditions are specified, the unit will be executed if all of them apply (i.e.
-  a logical AND is applied). Condition checks can use a pipe symbol ("|") after the equals
-  sign ("Condition...=|..."), which causes the condition to become a triggering condition.
-  If at least one triggering condition is defined for a unit, then the unit will be started
-  if at least one of the triggering conditions of the unit applies and all of the regular
-  (i.e. non-triggering) conditions apply. If you prefix an argument with the pipe symbol and
-  an exclamation mark, the pipe symbol must be passed first, the exclamation second. If any
-  of these options is assigned the empty string, the list of conditions is reset completely,
-  all previous condition settings (of any kind) will have no effect.
-
-  The AssertArchitecture=, AssertVirtualization=, ... options are similar to conditions but
-  cause the start job to fail (instead of being skipped). The failed check is logged. Units
-  with unmet conditions are considered to be in a clean state and will be garbage collected
-  if they are not referenced. This means that when queried, the condition failure may or may
-  not show up in the state of the unit.
-
-  Note that neither assertion nor condition expressions result in unit state changes. Also
-  note that both are checked at the time the job is to be executed, i.e. long after
-  depending jobs and it itself were queued. Thus, neither condition nor assertion
-  expressions are suitable for conditionalizing unit dependencies.
-
-  The condition verb of systemd-analyze(1) can be used to test condition and assert
-  expressions.
-
-  Except for ConditionPathIsSymbolicLink=, all path checks follow symlinks.
-
+  /**
   ConditionArchitecture=
-      Check whether the system is running on a specific architecture. Takes one of "x86",
-      "x86-64", "ppc", "ppc-le", "ppc64", "ppc64-le", "ia64", "parisc", "parisc64", "s390",
-      "s390x", "sparc", "sparc64", "mips", "mips-le", "mips64", "mips64-le", "alpha", "arm",
-      "arm-be", "arm64", "arm64-be", "sh", "sh64", "m68k", "tilegx", "cris", "arc",
-      "arc-be", or "native".
+    Check whether the system is running on a specific architecture. Takes one of "x86",
+    "x86-64", "ppc", "ppc-le", "ppc64", "ppc64-le", "ia64", "parisc", "parisc64", "s390",
+    "s390x", "sparc", "sparc64", "mips", "mips-le", "mips64", "mips64-le", "alpha", "arm",
+    "arm-be", "arm64", "arm64-be", "sh", "sh64", "m68k", "tilegx", "cris", "arc",
+    "arc-be", or "native".
 
-      The architecture is determined from the information returned by uname(2) and is thus
-      subject to personality(2). Note that a Personality= setting in the same unit file has
-      no effect on this condition. A special architecture name "native" is mapped to the
-      architecture the system manager itself is compiled for. The test may be negated by
-      prepending an exclamation mark.
+    The architecture is determined from the information returned by uname(2) and is thus
+    subject to personality(2). Note that a Personality= setting in the same unit file has
+    no effect on this condition. A special architecture name "native" is mapped to the
+    architecture the system manager itself is compiled for. The test may be negated by
+    prepending an exclamation mark.
 
-      Added in version 201.
+    Before the unit is started, systemd will verify that the specified conditions are
+    true. If not, the starting of the unit will be (mostly silently) skipped. Failing
+    conditions or asserts will not result in the unit being moved into the "failed" state.
+    Conditions are checked at the time the queued start job is to be executed. Use the
+    pipe symbol ("|") after the equals sign to mark a condition as triggering: if at least
+    one triggering condition is defined, the unit will be started when at least one of the
+    triggering conditions applies and all of the regular (non-triggering) conditions
+    apply. If a pipe symbol and an exclamation mark are used together, the pipe must come
+    first. Assigning the empty string resets the list of conditions.
 
+    Added in version 201.
+  */
+  ConditionArchitecture?: string[] | string;
+
+  /**
   ConditionFirmware=
-      Check whether the system's firmware is of a certain type. The following values are
-      possible:
+    Check whether the system's firmware is of a certain type. The following values are
+    possible:
 
-      •   "uefi" matches systems with EFI.
+    •   "uefi" matches systems with EFI.
 
-      •   "device-tree" matches systems with a device tree.
+    •   "device-tree" matches systems with a device tree.
 
-      •   "device-tree-compatible(value)" matches systems with a device tree that are
-          compatible with "value".
+    •   "device-tree-compatible(value)" matches systems with a device tree that are
+        compatible with "value".
 
-      •   "smbios-field(field operator value)" matches systems with a SMBIOS field
-          containing a certain value.  field is the name of the SMBIOS field exposed as
-          "sysfs" attribute file below /sys/class/dmi/id/.  operator is one of "<", "<=",
-          ">=", ">", "==", "<>" for version comparisons, "=" and "!=" for literal string
-          comparisons, or "$=", "!$=" for shell-style glob comparisons.  value is the
-          expected value of the SMBIOS field value (possibly containing shell style globs in
-          case "$="/"!$=" is used).
+    •   "smbios-field(field operator value)" matches systems with a SMBIOS field
+        containing a certain value.  field is the name of the SMBIOS field exposed as
+        "sysfs" attribute file below /sys/class/dmi/id/.  operator is one of "<", "<=",
+        ">=", ">", "==", "<>" for version comparisons, "=" and "!=" for literal string
+        comparisons, or "$=", "!$=" for shell-style glob comparisons.  value is the
+        expected value of the SMBIOS field value (possibly containing shell style globs in
+        case "$="/"!$=" is used).
 
-      Added in version 249.
+    Added in version 249.
+  */
+  ConditionFirmware?: string[] | string;
 
+  /**
   ConditionVirtualization=
-      Check whether the system is executed in a virtualized environment and optionally test
-      whether it is a specific implementation. Takes either boolean value to check if being
-      executed in any virtualized environment, or one of "vm" and "container" to test
-      against a generic type of virtualization solution, or one of "qemu", "kvm", "amazon",
-      "zvm", "vmware", "microsoft", "oracle", "powervm", "xen", "bochs", "uml", "bhyve",
-      "qnx", "apple", "sre", "openvz", "lxc", "lxc-libvirt", "systemd-nspawn", "docker",
-      "podman", "rkt", "wsl", "proot", "pouch", "acrn" to test against a specific
-      implementation, or "private-users" to check whether we are running in a user
-      namespace. See systemd-detect-virt(1) for a full list of known virtualization
-      technologies and their identifiers. If multiple virtualization technologies are
-      nested, only the innermost is considered. The test may be negated by prepending an
-      exclamation mark.
+    Check whether the system is executed in a virtualized environment and optionally test
+    whether it is a specific implementation. Takes either boolean value to check if being
+    executed in any virtualized environment, or one of "vm" and "container" to test
+    against a generic type of virtualization solution, or one of "qemu", "kvm", "amazon",
+    "zvm", "vmware", "microsoft", "oracle", "powervm", "xen", "bochs", "uml", "bhyve",
+    "qnx", "apple", "sre", "openvz", "lxc", "lxc-libvirt", "systemd-nspawn", "docker",
+    "podman", "rkt", "wsl", "proot", "pouch", "acrn" to test against a specific
+    implementation, or "private-users" to check whether we are running in a user
+    namespace. See systemd-detect-virt(1) for a full list of known virtualization
+    technologies and their identifiers. If multiple virtualization technologies are
+    nested, only the innermost is considered. The test may be negated by prepending an
+    exclamation mark.
 
-      Added in version 244.
+    Added in version 244.
+  */
+  ConditionVirtualization?: string[] | string;
 
+  /**
   ConditionHost=
-      ConditionHost= may be used to match against the hostname or machine ID of the host.
-      This either takes a hostname string (optionally with shell style globs) which is
-      tested against the locally set hostname as returned by gethostname(2), or a machine ID
-      formatted as string (see machine-id(5)). The test may be negated by prepending an
-      exclamation mark.
+    ConditionHost= may be used to match against the hostname or machine ID of the host.
+    This either takes a hostname string (optionally with shell style globs) which is
+    tested against the locally set hostname as returned by gethostname(2), or a machine ID
+    formatted as string (see machine-id(5)). The test may be negated by prepending an
+    exclamation mark.
 
-      Added in version 244.
+    Added in version 244.
+  */
+  ConditionHost?: string[] | string;
 
+  /**
   ConditionKernelCommandLine=
-      ConditionKernelCommandLine= may be used to check whether a specific kernel command
-      line option is set (or if prefixed with the exclamation mark — unset). The argument
-      must either be a single word, or an assignment (i.e. two words, separated by "="). In
-      the former case the kernel command line is searched for the word appearing as is, or
-      as left hand side of an assignment. In the latter case, the exact assignment is looked
-      for with right and left hand side matching. This operates on the kernel command line
-      communicated to userspace via /proc/cmdline, except when the service manager is
-      invoked as payload of a container manager, in which case the command line of PID 1 is
-      used instead (i.e.  /proc/1/cmdline).
+    ConditionKernelCommandLine= may be used to check whether a specific kernel command
+    line option is set (or if prefixed with the exclamation mark — unset). The argument
+    must either be a single word, or an assignment (i.e. two words, separated by "="). In
+    the former case the kernel command line is searched for the word appearing as is, or
+    as left hand side of an assignment. In the latter case, the exact assignment is looked
+    for with right and left hand side matching. This operates on the kernel command line
+    communicated to userspace via /proc/cmdline, except when the service manager is
+    invoked as payload of a container manager, in which case the command line of PID 1 is
+    used instead (i.e.  /proc/1/cmdline).
 
-      Added in version 244.
+    Added in version 244.
+  */
+  ConditionKernelCommandLine?: string[] | string;
 
+  /**
   ConditionKernelVersion=
-      ConditionKernelVersion= may be used to check whether the kernel version (as reported
-      by uname -r) matches a certain expression, or if prefixed with the exclamation mark,
-      does not match. The argument must be a list of (potentially quoted) expressions. Each
-      expression starts with one of "=" or "!=" for string comparisons, "<", "<=", "==",
-      "<>", ">=", ">" for version comparisons, or "$=", "!$=" for a shell-style glob match.
-      If no operator is specified, "$=" is implied.
+    ConditionKernelVersion= may be used to check whether the kernel version (as reported
+    by uname -r) matches a certain expression, or if prefixed with the exclamation mark,
+    does not match. The argument must be a list of (potentially quoted) expressions. Each
+    expression starts with one of "=" or "!=" for string comparisons, "<", "<=", "==",
+    "<>", ">=", ">" for version comparisons, or "$=", "!$=" for a shell-style glob match.
+    If no operator is specified, "$=" is implied.
 
-      Note that using the kernel version string is an unreliable way to determine which
-      features are supported by a kernel, because of the widespread practice of backporting
-      drivers, features, and fixes from newer upstream kernels into older versions provided
-      by distributions. Hence, this check is inherently unportable and should not be used
-      for units which may be used on different distributions.
+    Note that using the kernel version string is an unreliable way to determine which
+    features are supported by a kernel, because of the widespread practice of backporting
+    drivers, features, and fixes from newer upstream kernels into older versions provided
+    by distributions. Hence, this check is inherently unportable and should not be used
+    for units which may be used on different distributions.
 
-      Added in version 244.
+    Added in version 244.
+  */
+  ConditionKernelVersion?: string[] | string;
 
+  /**
+  ConditionVersion=
+    ConditionVersion= may be used to check whether a software version matches a certain
+    expression, or if prefixed with the exclamation mark, does not match. The first
+    argument is the software whose version has to be checked. Currently "kernel",
+    "systemd" and "glibc" are supported. If this argument is omitted, "kernel" is implied.
+    The second argument must be a list of (potentially quoted) expressions. Each
+    expression starts with one of "=" or "!=" for string comparisons, "<", "<=", "==",
+    "<>", ">=", ">" for version comparisons, or "$=", "!$=" for a shell-style glob match.
+    If no operator is specified, "$=" is implied.
+
+    Added in version 258.
+  */
+  ConditionVersion?: string[] | string;
+
+  /**
   ConditionCredential=
-      ConditionCredential= may be used to check whether a credential by the specified name
-      was passed into the service manager. See System and Service Credentials[3] for details
-      about credentials. If used in services for the system service manager this may be used
-      to conditionalize services based on system credentials passed in. If used in services
-      for the per-user service manager this may be used to conditionalize services based on
-      credentials passed into the unit@.service service instance belonging to the user. The
-      argument must be a valid credential name.
+    ConditionCredential= may be used to check whether a credential by the specified name
+    was passed into the service manager. See System and Service Credentials[3] for details
+    about credentials. If used in services for the system service manager this may be used
+    to conditionalize services based on system credentials passed in. If used in services
+    for the per-user service manager this may be used to conditionalize services based on
+    credentials passed into the unit@.service service instance belonging to the user. The
+    argument must be a valid credential name.
 
-      Added in version 252.
+    Added in version 252.
+  */
+  ConditionCredential?: string[] | string;
 
+  /**
   ConditionEnvironment=
-      ConditionEnvironment= may be used to check whether a specific environment variable is
-      set (or if prefixed with the exclamation mark — unset) in the service manager's
-      environment block. The argument may be a single word, to check if the variable with
-      this name is defined in the environment block, or an assignment ("name=value"), to
-      check if the variable with this exact value is defined. Note that the environment
-      block of the service manager itself is checked, i.e. not any variables defined with
-      Environment= or EnvironmentFile=, as described above. This is particularly useful when
-      the service manager runs inside a containerized environment or as per-user service
-      manager, in order to check for variables passed in by the enclosing container manager
-      or PAM.
+    ConditionEnvironment= may be used to check whether a specific environment variable is
+    set (or if prefixed with the exclamation mark — unset) in the service manager's
+    environment block. The argument may be a single word, to check if the variable with
+    this name is defined in the environment block, or an assignment ("name=value"), to
+    check if the variable with this exact value is defined. Note that the environment
+    block of the service manager itself is checked, i.e. not any variables defined with
+    Environment= or EnvironmentFile=, as described above. This is particularly useful when
+    the service manager runs inside a containerized environment or as per-user service
+    manager, in order to check for variables passed in by the enclosing container manager
+    or PAM.
 
-      Added in version 246.
+    Added in version 246.
+  */
+  ConditionEnvironment?: string[] | string;
 
+  /**
   ConditionSecurity=
-      ConditionSecurity= may be used to check whether the given security technology is
-      enabled on the system. Currently, the following values are recognized:
+    ConditionSecurity= may be used to check whether the given security technology is
+    enabled on the system. Currently, the recognized values include "selinux", "apparmor",
+    "tomoyo", "smack", "ima", "audit", "uefi-secureboot", "tpm2", "cvm", and
+    "measured-uki" (the last added in version 255). The test may be negated by prepending
+    an exclamation mark.
 
-      Table 3. Recognized security technologies
-      ┌────────────────┬──────────────────────────────────┐
-      │Value           │ Description                      │
-      ├────────────────┼──────────────────────────────────┤
-      │selinux         │ SELinux MAC                      │
-      ├────────────────┼──────────────────────────────────┤
-      │apparmor        │ AppArmor MAC                     │
-      ├────────────────┼──────────────────────────────────┤
-      │tomoyo          │ Tomoyo MAC                       │
-      ├────────────────┼──────────────────────────────────┤
-      │smack           │ SMACK MAC                        │
-      ├────────────────┼──────────────────────────────────┤
-      │ima             │ Integrity Measurement            │
-      │                │ Architecture (IMA)               │
-      ├────────────────┼──────────────────────────────────┤
-      │audit           │ Linux Audit Framework            │
-      ├────────────────┼──────────────────────────────────┤
-      │uefi-secureboot │ UEFI SecureBoot                  │
-      ├────────────────┼──────────────────────────────────┤
-      │tpm2            │ Trusted Platform Module 2.0      │
-      │                │ (TPM2)                           │
-      ├────────────────┼──────────────────────────────────┤
-      │cvm             │ Confidential virtual machine     │
-      │                │ (SEV/TDX)                        │
-      ├────────────────┼──────────────────────────────────┤
-      │measured-uki    │ Unified Kernel Image with PCR 11 │
-      │                │ Measurements, as per systemd-    │
-      │                │ stub(7). Added in version 255.   │
-      └────────────────┴──────────────────────────────────┘
-      The test may be negated by prepending an exclamation mark.
+    Added in version 244.
+  */
+  ConditionSecurity?: string[] | string;
 
-      Added in version 244.
-
+  /**
   ConditionCapability=
-      Check whether the given capability exists in the capability bounding set of the
-      service manager (i.e. this does not check whether capability is actually available in
-      the permitted or effective sets, see capabilities(7) for details). Pass a capability
-      name such as "CAP_MKNOD", possibly prefixed with an exclamation mark to negate the
-      check.
+    Check whether the given capability exists in the capability bounding set of the
+    service manager (i.e. this does not check whether capability is actually available in
+    the permitted or effective sets, see capabilities(7) for details). Pass a capability
+    name such as "CAP_MKNOD", possibly prefixed with an exclamation mark to negate the
+    check.
 
-      Added in version 244.
+    Added in version 244.
+  */
+  ConditionCapability?: string[] | string;
 
+  /**
   ConditionACPower=
-      Check whether the system has AC power, or is exclusively battery powered at the time
-      of activation of the unit. This takes a boolean argument. If set to "true", the
-      condition will hold only if at least one AC connector of the system is connected to a
-      power source, or if no AC connectors are known. Conversely, if set to "false", the
-      condition will hold only if there is at least one AC connector known and all AC
-      connectors are disconnected from a power source.
+    Check whether the system has AC power, or is exclusively battery powered at the time
+    of activation of the unit. This takes a boolean argument. If set to "true", the
+    condition will hold only if at least one AC connector of the system is connected to a
+    power source, or if no AC connectors are known. Conversely, if set to "false", the
+    condition will hold only if there is at least one AC connector known and all AC
+    connectors are disconnected from a power source.
 
-      Added in version 244.
+    Added in version 244.
+  */
+  ConditionACPower?: string[] | string;
 
+  /**
   ConditionNeedsUpdate=
-      Takes one of /var/ or /etc/ as argument, possibly prefixed with a "!"  (to invert the
-      condition). This condition may be used to conditionalize units on whether the
-      specified directory requires an update because /usr/'s modification time is newer than
-      the stamp file .updated in the specified directory. This is useful to implement
-      offline updates of the vendor operating system resources in /usr/ that require
-      updating of /etc/ or /var/ on the next following boot. Units making use of this
-      condition should order themselves before systemd-update-done.service(8), to make sure
-      they run before the stamp file's modification time gets reset indicating a completed
-      update.
+    Takes one of /var/ or /etc/ as argument, possibly prefixed with a "!" (to invert the
+    condition). This condition may be used to conditionalize units on whether the
+    specified directory requires an update because /usr/'s modification time is newer than
+    the stamp file .updated in the specified directory. This is useful to implement
+    offline updates of the vendor operating system resources in /usr/ that require
+    updating of /etc/ or /var/ on the next following boot. Units making use of this
+    condition should order themselves before systemd-update-done.service(8), to make sure
+    they run before the stamp file's modification time gets reset indicating a completed
+    update.
 
-      If the systemd.condition-needs-update= option is specified on the kernel command line
-      (taking a boolean), it will override the result of this condition check, taking
-      precedence over any file modification time checks. If the kernel command line option
-      is used, systemd-update-done.service will not have immediate effect on any following
-      ConditionNeedsUpdate= checks, until the system is rebooted where the kernel command
-      line option is not specified anymore.
+    If the systemd.condition-needs-update= option is specified on the kernel command line
+    (taking a boolean), it will override the result of this condition check, taking
+    precedence over any file modification time checks. If the kernel command line option
+    is used, systemd-update-done.service will not have immediate effect on any following
+    ConditionNeedsUpdate= checks, until the system is rebooted where the kernel command
+    line option is not specified anymore.
 
-      Note that to make this scheme effective, the timestamp of /usr/ should be explicitly
-      updated after its contents are modified. The kernel will automatically update
-      modification timestamp on a directory only when immediate children of a directory are
-      modified; an modification of nested files will not automatically result in mtime of
-      /usr/ being updated.
+    Note that to make this scheme effective, the timestamp of /usr/ should be explicitly
+    updated after its contents are modified. The kernel will automatically update
+    modification timestamp on a directory only when immediate children of a directory are
+    modified; an modification of nested files will not automatically result in mtime of
+    /usr/ being updated.
 
-      Also note that if the update method includes a call to execute appropriate post-update
-      steps itself, it should not touch the timestamp of /usr/. In a typical distribution
-      packaging scheme, packages will do any required update steps as part of the
-      installation or upgrade, to make package contents immediately usable.
-      ConditionNeedsUpdate= should be used with other update mechanisms where such an
-      immediate update does not happen.
+    Also note that if the update method includes a call to execute appropriate post-update
+    steps itself, it should not touch the timestamp of /usr/. In a typical distribution
+    packaging scheme, packages will do any required update steps as part of the
+    installation or upgrade, to make package contents immediately usable.
+    ConditionNeedsUpdate= should be used with other update mechanisms where such an
+    immediate update does not happen.
 
-      Added in version 244.
+    Added in version 244.
+  */
+  ConditionNeedsUpdate?: string[] | string;
 
+  /**
   ConditionFirstBoot=
-      Takes a boolean argument. This condition may be used to conditionalize units on
-      whether the system is booting up for the first time. This roughly means that /etc/ was
-      unpopulated when the system started booting (for details, see "First Boot Semantics"
-      in machine-id(5)). First boot is considered finished (this condition will evaluate as
-      false) after the manager has finished the startup phase.
+    Takes a boolean argument. This condition may be used to conditionalize units on
+    whether the system is booting up for the first time. This roughly means that /etc/ was
+    unpopulated when the system started booting (for details, see "First Boot Semantics"
+    in machine-id(5)). First boot is considered finished (this condition will evaluate as
+    false) after the manager has finished the startup phase.
 
-      This condition may be used to populate /etc/ on the first boot after factory reset, or
-      when a new system instance boots up for the first time.
+    This condition may be used to populate /etc/ on the first boot after factory reset, or
+    when a new system instance boots up for the first time.
 
-      For robustness, units with ConditionFirstBoot=yes should order themselves before
-      first-boot-complete.target and pull in this passive target with Wants=. This ensures
-      that in a case of an aborted first boot, these units will be re-run during the next
-      system startup.
+    For robustness, units with ConditionFirstBoot=yes should order themselves before
+    first-boot-complete.target and pull in this passive target with Wants=. This ensures
+    that in a case of an aborted first boot, these units will be re-run during the next
+    system startup.
 
-      If the systemd.condition-first-boot= option is specified on the kernel command line
-      (taking a boolean), it will override the result of this condition check, taking
-      precedence over /etc/machine-id existence checks.
+    If the systemd.condition-first-boot= option is specified on the kernel command line
+    (taking a boolean), it will override the result of this condition check, taking
+    precedence over /etc/machine-id existence checks.
 
-      Added in version 244.
+    Added in version 244.
+  */
+  ConditionFirstBoot?: string[] | string;
 
+  /**
   ConditionPathExists=
-      Check for the existence of a file. If the specified absolute path name does not exist,
-      the condition will fail. If the absolute path name passed to ConditionPathExists= is
-      prefixed with an exclamation mark ("!"), the test is negated, and the unit is only
-      started if the path does not exist.
+    Check for the existence of a file. If the specified absolute path name does not exist,
+    the condition will fail. If the absolute path name passed to ConditionPathExists= is
+    prefixed with an exclamation mark ("!"), the test is negated, and the unit is only
+    started if the path does not exist.
 
-      Added in version 244.
+    Added in version 244.
+  */
+  ConditionPathExists?: string[] | string;
 
+  /**
   ConditionPathExistsGlob=
-      ConditionPathExistsGlob= is similar to ConditionPathExists=, but checks for the
-      existence of at least one file or directory matching the specified globbing pattern.
+    ConditionPathExistsGlob= is similar to ConditionPathExists=, but checks for the
+    existence of at least one file or directory matching the specified globbing pattern.
 
-      Added in version 244.
+    Added in version 244.
+  */
+  ConditionPathExistsGlob?: string[] | string;
 
+  /**
   ConditionPathIsDirectory=
-      ConditionPathIsDirectory= is similar to ConditionPathExists= but verifies that a
-      certain path exists and is a directory.
+    ConditionPathIsDirectory= is similar to ConditionPathExists= but verifies that a
+    certain path exists and is a directory.
 
-      Added in version 244.
+    Added in version 244.
+  */
+  ConditionPathIsDirectory?: string[] | string;
 
+  /**
   ConditionPathIsSymbolicLink=
-      ConditionPathIsSymbolicLink= is similar to ConditionPathExists= but verifies that a
-      certain path exists and is a symbolic link.
+    ConditionPathIsSymbolicLink= is similar to ConditionPathExists= but verifies that a
+    certain path exists and is a symbolic link.
 
-      Added in version 244.
+    Added in version 244.
+  */
+  ConditionPathIsSymbolicLink?: string[] | string;
 
+  /**
   ConditionPathIsMountPoint=
-      ConditionPathIsMountPoint= is similar to ConditionPathExists= but verifies that a
-      certain path exists and is a mount point.
+    ConditionPathIsMountPoint= is similar to ConditionPathExists= but verifies that a
+    certain path exists and is a mount point.
 
-      Added in version 244.
+    Added in version 244.
+  */
+  ConditionPathIsMountPoint?: string[] | string;
 
+  /**
   ConditionPathIsReadWrite=
-      ConditionPathIsReadWrite= is similar to ConditionPathExists= but verifies that the
-      underlying file system is readable and writable (i.e. not mounted read-only).
+    ConditionPathIsReadWrite= is similar to ConditionPathExists= but verifies that the
+    underlying file system is readable and writable (i.e. not mounted read-only).
 
-      Added in version 244.
+    Added in version 244.
+  */
+  ConditionPathIsReadWrite?: string[] | string;
 
+  /**
   ConditionPathIsEncrypted=
-      ConditionPathIsEncrypted= is similar to ConditionPathExists= but verifies that the
-      underlying file system's backing block device is encrypted using dm-crypt/LUKS. Note
-      that this check does not cover ext4 per-directory encryption, and only detects block
-      level encryption. Moreover, if the specified path resides on a file system on top of a
-      loopback block device, only encryption above the loopback device is detected. It is
-      not detected whether the file system backing the loopback block device is encrypted.
+    ConditionPathIsEncrypted= is similar to ConditionPathExists= but verifies that the
+    underlying file system's backing block device is encrypted using dm-crypt/LUKS. Note
+    that this check does not cover ext4 per-directory encryption, and only detects block
+    level encryption. Moreover, if the specified path resides on a file system on top of a
+    loopback block device, only encryption above the loopback device is detected. It is
+    not detected whether the file system backing the loopback block device is encrypted.
 
-      Added in version 246.
+    Added in version 246.
+  */
+  ConditionPathIsEncrypted?: string[] | string;
 
+  /**
   ConditionDirectoryNotEmpty=
-      ConditionDirectoryNotEmpty= is similar to ConditionPathExists= but verifies that a
-      certain path exists and is a non-empty directory.
+    ConditionDirectoryNotEmpty= is similar to ConditionPathExists= but verifies that a
+    certain path exists and is a non-empty directory.
 
-      Added in version 244.
+    Added in version 244.
+  */
+  ConditionDirectoryNotEmpty?: string[] | string;
 
+  /**
   ConditionFileNotEmpty=
-      ConditionFileNotEmpty= is similar to ConditionPathExists= but verifies that a certain
-      path exists and refers to a regular file with a non-zero size.
+    ConditionFileNotEmpty= is similar to ConditionPathExists= but verifies that a certain
+    path exists and refers to a regular file with a non-zero size.
 
-      Added in version 244.
+    Added in version 244.
+  */
+  ConditionFileNotEmpty?: string[] | string;
 
+  /**
   ConditionFileIsExecutable=
-      ConditionFileIsExecutable= is similar to ConditionPathExists= but verifies that a
-      certain path exists, is a regular file, and marked executable.
+    ConditionFileIsExecutable= is similar to ConditionPathExists= but verifies that a
+    certain path exists, is a regular file, and marked executable.
 
-      Added in version 244.
+    Added in version 244.
+  */
+  ConditionFileIsExecutable?: string[] | string;
 
+  /**
   ConditionUser=
-      ConditionUser= takes a numeric "UID", a UNIX user name, or the special value
-      "@system". This condition may be used to check whether the service manager is running
-      as the given user. The special value "@system" can be used to check if the user id is
-      within the system user range. This option is not useful for system services, as the
-      system manager exclusively runs as the root user, and thus the test result is
-      constant.
+    ConditionUser= takes a numeric "UID", a UNIX user name, or the special value
+    "@system". This condition may be used to check whether the service manager is running
+    as the given user. The special value "@system" can be used to check if the user id is
+    within the system user range. This option is not useful for system services, as the
+    system manager exclusively runs as the root user, and thus the test result is
+    constant.
 
-      Added in version 244.
+    Added in version 244.
+  */
+  ConditionUser?: string[] | string;
 
+  /**
   ConditionGroup=
-      ConditionGroup= is similar to ConditionUser= but verifies that the service manager's
-      real or effective group, or any of its auxiliary groups, match the specified group or
-      GID. This setting does not support the special value "@system".
+    ConditionGroup= is similar to ConditionUser= but verifies that the service manager's
+    real or effective group, or any of its auxiliary groups, match the specified group or
+    GID. This setting does not support the special value "@system".
 
-      Added in version 244.
+    Added in version 244.
+  */
+  ConditionGroup?: string[] | string;
 
+  /**
   ConditionControlGroupController=
-      Check whether given cgroup controllers (e.g.  "cpu") are available for use on the
-      system or whether the legacy v1 cgroup or the modern v2 cgroup hierarchy is used.
+    Check whether given cgroup controllers (e.g.  "cpu") are available for use on the
+    system or whether the legacy v1 cgroup or the modern v2 cgroup hierarchy is used.
 
-      Multiple controllers may be passed with a space separating them; in this case the
-      condition will only pass if all listed controllers are available for use. Controllers
-      unknown to systemd are ignored. Valid controllers are "cpu", "io", "memory", and
-      "pids". Even if available in the kernel, a particular controller may not be available
-      if it was disabled on the kernel command line with cgroup_disable=controller.
+    Multiple controllers may be passed with a space separating them; in this case the
+    condition will only pass if all listed controllers are available for use. Controllers
+    unknown to systemd are ignored. Valid controllers are "cpu", "io", "memory", and
+    "pids". Even if available in the kernel, a particular controller may not be available
+    if it was disabled on the kernel command line with cgroup_disable=controller.
 
-      Alternatively, two special strings "v1" and "v2" may be specified (without any
-      controller names).  "v2" will pass if the unified v2 cgroup hierarchy is used, and
-      "v1" will pass if the legacy v1 hierarchy or the hybrid hierarchy are used. Note that
-      legacy or hybrid hierarchies have been deprecated. See systemd(1) for more
-      information.
+    Alternatively, two special strings "v1" and "v2" may be specified (without any
+    controller names).  "v2" will pass if the unified v2 cgroup hierarchy is used, and
+    "v1" will pass if the legacy v1 hierarchy or the hybrid hierarchy are used. Note that
+    legacy or hybrid hierarchies have been deprecated. See systemd(1) for more
+    information.
 
-      Added in version 244.
+    Added in version 244.
+  */
+  ConditionControlGroupController?: string[] | string;
 
+  /**
   ConditionMemory=
-      Verify that the specified amount of system memory is available to the current system.
-      Takes a memory size in bytes as argument, optionally prefixed with a comparison
-      operator "<", "<=", "=" (or "=="), "!=" (or "<>"), ">=", ">". On bare-metal systems
-      compares the amount of physical memory in the system with the specified size, adhering
-      to the specified comparison operator. In containers compares the amount of memory
-      assigned to the container instead.
+    Verify that the specified amount of system memory is available to the current system.
+    Takes a memory size in bytes as argument, optionally prefixed with a comparison
+    operator "<", "<=", "=" (or "=="), "!=" (or "<>"), ">=", ">". On bare-metal systems
+    compares the amount of physical memory in the system with the specified size, adhering
+    to the specified comparison operator. In containers compares the amount of memory
+    assigned to the container instead.
 
-      Added in version 244.
+    Added in version 244.
+  */
+  ConditionMemory?: string[] | string;
 
+  /**
   ConditionCPUs=
     Verify that the specified number of CPUs is available to the current system. Takes a
     number of CPUs as argument, optionally prefixed with a comparison operator "<", "<=",
@@ -896,151 +1048,239 @@ Conditions and Asserts
     container and not the physically available ones.
 
     Added in version 244.
+  */
+  ConditionCPUs?: string[] | string;
 
+  /**
   ConditionCPUFeature=
-      Verify that a given CPU feature is available via the "CPUID" instruction. This
-      condition only does something on i386 and x86-64 processors. On other processors it is
-      assumed that the CPU does not support the given feature. It checks the leaves "1",
-      "7", "0x80000001", and "0x80000007". Valid values are: "fpu", "vme", "de", "pse",
-      "tsc", "msr", "pae", "mce", "cx8", "apic", "sep", "mtrr", "pge", "mca", "cmov", "pat",
-      "pse36", "clflush", "mmx", "fxsr", "sse", "sse2", "ht", "pni", "pclmul", "monitor",
-      "ssse3", "fma3", "cx16", "sse4_1", "sse4_2", "movbe", "popcnt", "aes", "xsave",
-      "osxsave", "avx", "f16c", "rdrand", "bmi1", "avx2", "bmi2", "rdseed", "adx", "sha_ni",
-      "syscall", "rdtscp", "lm", "lahf_lm", "abm", "constant_tsc".
+    Verify that a given CPU feature is available via the "CPUID" instruction. This
+    condition only does something on i386 and x86-64 processors. On other processors it is
+    assumed that the CPU does not support the given feature. It checks the leaves "1",
+    "7", "0x80000001", and "0x80000007". Valid values are: "fpu", "vme", "de", "pse",
+    "tsc", "msr", "pae", "mce", "cx8", "apic", "sep", "mtrr", "pge", "mca", "cmov", "pat",
+    "pse36", "clflush", "mmx", "fxsr", "sse", "sse2", "ht", "pni", "pclmul", "monitor",
+    "ssse3", "fma3", "cx16", "sse4_1", "sse4_2", "movbe", "popcnt", "aes", "xsave",
+    "osxsave", "avx", "f16c", "rdrand", "bmi1", "avx2", "bmi2", "rdseed", "adx", "sha_ni",
+    "syscall", "rdtscp", "lm", "lahf_lm", "abm", "constant_tsc".
 
-      Added in version 248.
+    Added in version 248.
+  */
+  ConditionCPUFeature?: string[] | string;
 
+  /**
   ConditionOSRelease=
-      Verify that a specific "key=value" pair is set in the host's os-release(5).
+    Verify that a specific "key=value" pair is set in the host's os-release(5).
 
-      Other than exact string matching (with "=" and "!="), relative comparisons are
-      supported for versioned parameters (e.g.  "VERSION_ID"; with "<", "<=", "==", "<>",
-      ">=", ">"), and shell-style wildcard comparisons ("*", "?", "[]") are supported with
-      the "$=" (match) and "!$=" (non-match).
+    Other than exact string matching (with "=" and "!="), relative comparisons are
+    supported for versioned parameters (e.g.  "VERSION_ID"; with "<", "<=", "==", "<>",
+    ">=", ">"), and shell-style wildcard comparisons ("*", "?", "[]") are supported with
+    the "$=" (match) and "!$=" (non-match).
 
-      Added in version 249.
+    Added in version 249.
+  */
+  ConditionOSRelease?: string[] | string;
 
+  /**
   ConditionMemoryPressure=, ConditionCPUPressure=, ConditionIOPressure=
-      Verify that the overall system (memory, CPU or IO) pressure is below or equal to a
-      threshold. This setting takes a threshold value as argument. It can be specified as a
-      simple percentage value, suffixed with "%", in which case the pressure will be
-      measured as an average over the last five minutes before the attempt to start the unit
-      is performed. Alternatively, the average timespan can also be specified using "/" as a
-      separator, for example: "10%/1min". The supported timespans match what the kernel
-      provides, and are limited to "10sec", "1min" and "5min". The "full" PSI will be
-      checked first, and if not found "some" will be checked. For more details, see the
-      documentation on PSI (Pressure Stall Information)[4].
+    Verify that the overall system (memory, CPU or IO) pressure is below or equal to a
+    threshold. This setting takes a threshold value as argument. It can be specified as a
+    simple percentage value, suffixed with "%", in which case the pressure will be
+    measured as an average over the last five minutes before the attempt to start the unit
+    is performed. Alternatively, the average timespan can also be specified using "/" as a
+    separator, for example: "10%/1min". The supported timespans match what the kernel
+    provides, and are limited to "10sec", "1min" and "5min". The "full" PSI will be
+    checked first, and if not found "some" will be checked. For more details, see the
+    documentation on PSI (Pressure Stall Information)[4].
 
-      Optionally, the threshold value can be prefixed with the slice unit under which the
-      pressure will be checked, followed by a ":". If the slice unit is not specified, the
-      overall system pressure will be measured, instead of a particular cgroup's.
+    Optionally, the threshold value can be prefixed with the slice unit under which the
+    pressure will be checked, followed by a ":". If the slice unit is not specified, the
+    overall system pressure will be measured, instead of a particular cgroup's.
 
-      Added in version 250.
+    Added in version 250.
+  */
+  ConditionMemoryPressure?: string[] | string;
+  ConditionCPUPressure?: string[] | string;
+  ConditionIOPressure?: string[] | string;
 
+  /**
+  ConditionKernelModuleLoaded=
+    Test whether the specified kernel module has been loaded and is already fully
+    initialized.
+
+    Added in version 258.
+  */
+  ConditionKernelModuleLoaded?: string[] | string;
+
+  /**
   AssertArchitecture=, AssertVirtualization=, AssertHost=, AssertKernelCommandLine=,
-  AssertKernelVersion=, AssertCredential=, AssertEnvironment=, AssertSecurity=,
-  AssertCapability=, AssertACPower=, AssertNeedsUpdate=, AssertFirstBoot=,
+  AssertKernelVersion=, AssertVersion=, AssertCredential=, AssertEnvironment=,
+  AssertSecurity=, AssertCapability=, AssertACPower=, AssertNeedsUpdate=, AssertFirstBoot=,
   AssertPathExists=, AssertPathExistsGlob=, AssertPathIsDirectory=,
   AssertPathIsSymbolicLink=, AssertPathIsMountPoint=, AssertPathIsReadWrite=,
   AssertPathIsEncrypted=, AssertDirectoryNotEmpty=, AssertFileNotEmpty=,
   AssertFileIsExecutable=, AssertUser=, AssertGroup=, AssertControlGroupController=,
   AssertMemory=, AssertCPUs=, AssertCPUFeature=, AssertOSRelease=, AssertMemoryPressure=,
-  AssertCPUPressure=, AssertIOPressure=
-      Similar to the ConditionArchitecture=, ConditionVirtualization=, ..., condition
-      settings described above, these settings add assertion checks to the start-up of the
-      unit. However, unlike the conditions settings, any assertion setting that is not met
-      results in failure of the start job (which means this is logged loudly). Note that
-      hitting a configured assertion does not cause the unit to enter the "failed" state (or
-      in fact result in any state change of the unit), it affects only the job queued for
-      it. Use assertion expressions for units that cannot operate when specific requirements
-      are not met, and when this is something the administrator or user should look into.
+  AssertCPUPressure=, AssertIOPressure=, AssertKernelModuleLoaded=
+    Similar to the ConditionArchitecture=, ConditionVirtualization=, ..., condition
+    settings described above, these settings add assertion checks to the start-up of the
+    unit. However, unlike the conditions settings, any assertion setting that is not met
+    results in failure of the start job (which means this is logged loudly). Note that
+    hitting a configured assertion does not cause the unit to enter the "failed" state (or
+    in fact result in any state change of the unit), it affects only the job queued for
+    it. Use assertion expressions for units that cannot operate when specific requirements
+    are not met, and when this is something the administrator or user should look into.
 
-      Added in version 218.
-
-MAPPING OF UNIT PROPERTIES TO THEIR INVERSES
-  Unit settings that create a relationship with a second unit usually show up in properties
-  of both units, for example in systemctl show output. In some cases the name of the
-  property is the same as the name of the configuration setting, but not always. This table
-  lists the properties that are shown on two units which are connected through some
-  dependency, and shows which property on "source" unit corresponds to which property on the
-  "target" unit.
-
-  Table 4.  Forward and reverse unit properties
-  ┌──────────────────────┬───────────────────────┬───────────────────────────────────────┐
-  │"Forward" property    │ "Reverse" property    │ Where used                            │
-  ├──────────────────────┼───────────────────────┼───────────────────────────────────────┤
-  │Before=               │ After=                │                                       │
-  ├──────────────────────┼───────────────────────┤ [Unit] section                        │
-  │After=                │ Before=               │                                       │
-  ├──────────────────────┼───────────────────────┼──────────────────┬────────────────────┤
-  │Requires=             │ RequiredBy=           │ [Unit] section   │[Install] section   │
-  ├──────────────────────┼───────────────────────┼──────────────────┼────────────────────┤
-  │Wants=                │ WantedBy=             │ [Unit] section   │[Install] section   │
-  ├──────────────────────┼───────────────────────┼──────────────────┼────────────────────┤
-  │Upholds=              │ UpheldBy=             │ [Unit] section   │[Install] section   │
-  ├──────────────────────┼───────────────────────┼──────────────────┼────────────────────┤
-  │PartOf=               │ ConsistsOf=           │ [Unit] section   │an automatic        │
-  │                      │                       │                  │property            │
-  ├──────────────────────┼───────────────────────┼──────────────────┼────────────────────┤
-  │BindsTo=              │ BoundBy=              │ [Unit] section   │an automatic        │
-  │                      │                       │                  │property            │
-  ├──────────────────────┼───────────────────────┼──────────────────┼────────────────────┤
-  │Requisite=            │ RequisiteOf=          │ [Unit] section   │an automatic        │
-  │                      │                       │                  │property            │
-  ├──────────────────────┼───────────────────────┼──────────────────┼────────────────────┤
-  │Conflicts=            │ ConflictedBy=         │ [Unit] section   │an automatic        │
-  │                      │                       │                  │property            │
-  ├──────────────────────┼───────────────────────┼──────────────────┴────────────────────┤
-  │Triggers=             │ TriggeredBy=          │ Automatic properties, see notes below │
-  ├──────────────────────┼───────────────────────┼───────────────────────────────────────┤
-  │PropagatesReloadTo=   │ ReloadPropagatedFrom= │                                       │
-  ├──────────────────────┼───────────────────────┤ [Unit] section                        │
-  │ReloadPropagatedFrom= │ PropagatesReloadTo=   │                                       │
-  ├──────────────────────┼───────────────────────┼───────────────────────────────────────┤
-  │PropagatesStopTo=     │ StopPropagatedFrom=   │                                       │
-  ├──────────────────────┼───────────────────────┤ [Unit] section                        │
-  │StopPropagatedFrom=   │ PropagatesStopTo=     │                                       │
-  ├──────────────────────┼───────────────────────┼──────────────────┬────────────────────┤
-  │Following=            │ n/a                   │ An automatic     │                    │
-  │                      │                       │ property         │                    │
-  └──────────────────────┴───────────────────────┴──────────────────┴────────────────────┘
-
-  Note: WantedBy=, RequiredBy=, and UpheldBy= are used in the [Install] section to create
-  symlinks in .wants/, .requires/, and .upholds/ directories. They cannot be used directly
-  as a unit configuration setting.
-
-  Note: ConsistsOf=, BoundBy=, RequisiteOf=, ConflictedBy= are created implicitly along with
-  their reverses and cannot be specified directly.
-
-  Note: Triggers= is created implicitly between a socket, path unit, or an automount unit,
-  and the unit they activate. By default a unit with the same name is triggered, but this
-  can be overridden using Sockets=, Service=, and Unit= settings. See systemd.service(5),
-  systemd.socket(5), systemd.path(5), and systemd.automount(5) for details.  TriggeredBy= is
-  created implicitly on the triggered unit.
-
-  Note: Following= is used to group device aliases and points to the "primary" device unit
-  that systemd is using to track device state, usually corresponding to a sysfs path. It
-  does not show up in the "target" unit.
+    Added in version 218.
   */
+  AssertArchitecture?: string[] | string;
+  AssertVirtualization?: string[] | string;
+  AssertHost?: string[] | string;
+  AssertKernelCommandLine?: string[] | string;
+  AssertKernelVersion?: string[] | string;
+  AssertVersion?: string[] | string;
+  AssertCredential?: string[] | string;
+  AssertEnvironment?: string[] | string;
+  AssertSecurity?: string[] | string;
+  AssertCapability?: string[] | string;
+  AssertACPower?: string[] | string;
+  AssertNeedsUpdate?: string[] | string;
+  AssertFirstBoot?: string[] | string;
+  AssertPathExists?: string[] | string;
+  AssertPathExistsGlob?: string[] | string;
+  AssertPathIsDirectory?: string[] | string;
+  AssertPathIsSymbolicLink?: string[] | string;
+  AssertPathIsMountPoint?: string[] | string;
+  AssertPathIsReadWrite?: string[] | string;
+  AssertPathIsEncrypted?: string[] | string;
+  AssertDirectoryNotEmpty?: string[] | string;
+  AssertFileNotEmpty?: string[] | string;
+  AssertFileIsExecutable?: string[] | string;
+  AssertUser?: string[] | string;
+  AssertGroup?: string[] | string;
+  AssertControlGroupController?: string[] | string;
+  AssertMemory?: string[] | string;
+  AssertCPUs?: string[] | string;
+  AssertCPUFeature?: string[] | string;
+  AssertOSRelease?: string[] | string;
+  AssertMemoryPressure?: string[] | string;
+  AssertCPUPressure?: string[] | string;
+  AssertIOPressure?: string[] | string;
+  AssertKernelModuleLoaded?: string[] | string;
 }
+
+const stringOrArray = z.union([z.string(), z.array(z.string())]).optional();
 
 export const UnitSectionSchema = implement<UnitSection>().with({
   Description: z.string().optional(),
-  Documentation: z.union([z.string(), z.array(z.string())]).optional(),
-  Wants: z.union([z.string(), z.array(z.string())]).optional(),
-  Requires: z.string().optional(),
-  Requisite: z.string().optional(),
-  BindsTo: z.string().optional(),
-  PartOf: z.string().optional(),
-  Upholds: z.string().optional(),
-  Conflicts: z.string().optional(),
-  After: z.union([z.string(), z.array(z.string())]).optional(),
-  Before: z.union([z.string(), z.array(z.string())]).optional(),
-  OnFailure: z.string().optional(),
-  OnSuccess: z.string().optional(),
-  PropagatesReloadTo: z.string().optional(),
-  PropagatesStopTo: z.string().optional(),
-  JoinsNamespaceOf: z.string().optional(),
+  Documentation: stringOrArray,
+  Wants: stringOrArray,
+  Requires: stringOrArray,
+  Requisite: stringOrArray,
+  BindsTo: stringOrArray,
+  PartOf: stringOrArray,
+  Upholds: stringOrArray,
+  Conflicts: stringOrArray,
+  After: stringOrArray,
+  Before: stringOrArray,
+  OnFailure: stringOrArray,
+  OnSuccess: stringOrArray,
+  PropagatesReloadTo: stringOrArray,
+  PropagatesStopTo: stringOrArray,
+  JoinsNamespaceOf: stringOrArray,
+  RequiresMountsFor: stringOrArray,
+  WantsMountsFor: stringOrArray,
+  OnSuccessJobMode: z.enum(UNIT_JOB_MODE_VALUES).optional(),
+  OnFailureJobMode: z.enum(UNIT_JOB_MODE_VALUES).optional(),
+  IgnoreOnIsolate: z.boolean().optional(),
+  StopWhenUnneeded: z.boolean().optional(),
+  RefuseManualStart: z.boolean().optional(),
+  RefuseManualStop: z.boolean().optional(),
+  AllowIsolate: z.boolean().optional(),
+  DefaultDependencies: z.boolean().optional(),
+  SurviveFinalKillSignal: z.boolean().optional(),
+  CollectMode: z.enum(UNIT_COLLECT_MODE_VALUES).optional(),
+  FailureAction: z.enum(UNIT_ACTION_VALUES).optional(),
+  SuccessAction: z.enum(UNIT_ACTION_VALUES).optional(),
+  FailureActionExitStatus: z.union([z.number(), z.string()]).optional(),
+  SuccessActionExitStatus: z.union([z.number(), z.string()]).optional(),
+  JobTimeoutSec: z.union([z.number(), z.string()]).optional(),
+  JobRunningTimeoutSec: z.union([z.number(), z.string()]).optional(),
+  JobTimeoutAction: z.enum(UNIT_ACTION_VALUES).optional(),
+  JobTimeoutRebootArgument: z.string().optional(),
+  StartLimitIntervalSec: z.union([z.number(), z.string()]).optional(),
+  StartLimitBurst: z.number().optional(),
+  StartLimitAction: z.enum(UNIT_ACTION_VALUES).optional(),
+  RebootArgument: z.string().optional(),
+  SourcePath: z.string().optional(),
+  ConditionArchitecture: stringOrArray,
+  ConditionFirmware: stringOrArray,
+  ConditionVirtualization: stringOrArray,
+  ConditionHost: stringOrArray,
+  ConditionKernelCommandLine: stringOrArray,
+  ConditionKernelVersion: stringOrArray,
+  ConditionVersion: stringOrArray,
+  ConditionCredential: stringOrArray,
+  ConditionEnvironment: stringOrArray,
+  ConditionSecurity: stringOrArray,
+  ConditionCapability: stringOrArray,
+  ConditionACPower: stringOrArray,
+  ConditionNeedsUpdate: stringOrArray,
+  ConditionFirstBoot: stringOrArray,
+  ConditionPathExists: stringOrArray,
+  ConditionPathExistsGlob: stringOrArray,
+  ConditionPathIsDirectory: stringOrArray,
+  ConditionPathIsSymbolicLink: stringOrArray,
+  ConditionPathIsMountPoint: stringOrArray,
+  ConditionPathIsReadWrite: stringOrArray,
+  ConditionPathIsEncrypted: stringOrArray,
+  ConditionDirectoryNotEmpty: stringOrArray,
+  ConditionFileNotEmpty: stringOrArray,
+  ConditionFileIsExecutable: stringOrArray,
+  ConditionUser: stringOrArray,
+  ConditionGroup: stringOrArray,
+  ConditionControlGroupController: stringOrArray,
+  ConditionMemory: stringOrArray,
+  ConditionCPUs: stringOrArray,
+  ConditionCPUFeature: stringOrArray,
+  ConditionOSRelease: stringOrArray,
+  ConditionMemoryPressure: stringOrArray,
+  ConditionCPUPressure: stringOrArray,
+  ConditionIOPressure: stringOrArray,
+  ConditionKernelModuleLoaded: stringOrArray,
+  AssertArchitecture: stringOrArray,
+  AssertVirtualization: stringOrArray,
+  AssertHost: stringOrArray,
+  AssertKernelCommandLine: stringOrArray,
+  AssertKernelVersion: stringOrArray,
+  AssertVersion: stringOrArray,
+  AssertCredential: stringOrArray,
+  AssertEnvironment: stringOrArray,
+  AssertSecurity: stringOrArray,
+  AssertCapability: stringOrArray,
+  AssertACPower: stringOrArray,
+  AssertNeedsUpdate: stringOrArray,
+  AssertFirstBoot: stringOrArray,
+  AssertPathExists: stringOrArray,
+  AssertPathExistsGlob: stringOrArray,
+  AssertPathIsDirectory: stringOrArray,
+  AssertPathIsSymbolicLink: stringOrArray,
+  AssertPathIsMountPoint: stringOrArray,
+  AssertPathIsReadWrite: stringOrArray,
+  AssertPathIsEncrypted: stringOrArray,
+  AssertDirectoryNotEmpty: stringOrArray,
+  AssertFileNotEmpty: stringOrArray,
+  AssertFileIsExecutable: stringOrArray,
+  AssertUser: stringOrArray,
+  AssertGroup: stringOrArray,
+  AssertControlGroupController: stringOrArray,
+  AssertMemory: stringOrArray,
+  AssertCPUs: stringOrArray,
+  AssertCPUFeature: stringOrArray,
+  AssertOSRelease: stringOrArray,
+  AssertMemoryPressure: stringOrArray,
+  AssertCPUPressure: stringOrArray,
+  AssertIOPressure: stringOrArray,
+  AssertKernelModuleLoaded: stringOrArray,
 });
 
 export class UnitSectionBuilder {
@@ -1052,7 +1292,6 @@ export class UnitSectionBuilder {
 
   /**
    * Validate and return the UnitSection
-   * @returns {UnitSection}
    */
   public toObject() {
     return UnitSectionSchema.parse(this.section);
@@ -1061,7 +1300,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.Description}
    */
-  public setDescription(description?: string) {
+  public setDescription(description?: UnitSection["Description"]) {
     this.section.Description = description;
     return this;
   }
@@ -1069,7 +1308,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.Documentation}
    */
-  public setDocumentation(documentation?: string[] | string) {
+  public setDocumentation(documentation?: UnitSection["Documentation"]) {
     this.section.Documentation = documentation;
     return this;
   }
@@ -1077,7 +1316,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.Wants}
    */
-  public setWants(wants?: string) {
+  public setWants(wants?: UnitSection["Wants"]) {
     this.section.Wants = wants;
     return this;
   }
@@ -1085,7 +1324,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.Requires}
    */
-  public setRequires(requires?: string) {
+  public setRequires(requires?: UnitSection["Requires"]) {
     this.section.Requires = requires;
     return this;
   }
@@ -1093,7 +1332,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.Requisite}
    */
-  public setRequisite(requisite?: string) {
+  public setRequisite(requisite?: UnitSection["Requisite"]) {
     this.section.Requisite = requisite;
     return this;
   }
@@ -1101,7 +1340,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.BindsTo}
    */
-  public setBindsTo(bindsTo?: string) {
+  public setBindsTo(bindsTo?: UnitSection["BindsTo"]) {
     this.section.BindsTo = bindsTo;
     return this;
   }
@@ -1109,7 +1348,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.PartOf}
    */
-  public setPartOf(partOf?: string) {
+  public setPartOf(partOf?: UnitSection["PartOf"]) {
     this.section.PartOf = partOf;
     return this;
   }
@@ -1117,7 +1356,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.Upholds}
    */
-  public setUpholds(upholds?: string) {
+  public setUpholds(upholds?: UnitSection["Upholds"]) {
     this.section.Upholds = upholds;
     return this;
   }
@@ -1125,7 +1364,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.Conflicts}
    */
-  public setConflicts(conflicts?: string) {
+  public setConflicts(conflicts?: UnitSection["Conflicts"]) {
     this.section.Conflicts = conflicts;
     return this;
   }
@@ -1133,7 +1372,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.After}
    */
-  public setAfter(after?: string[] | string) {
+  public setAfter(after?: UnitSection["After"]) {
     this.section.After = after;
     return this;
   }
@@ -1141,7 +1380,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.Before}
    */
-  public setBefore(before?: string[] | string) {
+  public setBefore(before?: UnitSection["Before"]) {
     this.section.Before = before;
     return this;
   }
@@ -1149,7 +1388,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.OnFailure}
    */
-  public setOnFailure(onFailure?: string) {
+  public setOnFailure(onFailure?: UnitSection["OnFailure"]) {
     this.section.OnFailure = onFailure;
     return this;
   }
@@ -1157,7 +1396,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.OnSuccess}
    */
-  public setOnSuccess(onSuccess?: string) {
+  public setOnSuccess(onSuccess?: UnitSection["OnSuccess"]) {
     this.section.OnSuccess = onSuccess;
     return this;
   }
@@ -1165,7 +1404,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.PropagatesReloadTo}
    */
-  public setPropagatesReloadTo(propagatesReloadTo?: string) {
+  public setPropagatesReloadTo(propagatesReloadTo?: UnitSection["PropagatesReloadTo"]) {
     this.section.PropagatesReloadTo = propagatesReloadTo;
     return this;
   }
@@ -1173,7 +1412,7 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.PropagatesStopTo}
    */
-  public setPropagatesStopTo(propagatesStopTo?: string) {
+  public setPropagatesStopTo(propagatesStopTo?: UnitSection["PropagatesStopTo"]) {
     this.section.PropagatesStopTo = propagatesStopTo;
     return this;
   }
@@ -1181,8 +1420,760 @@ export class UnitSectionBuilder {
   /**
    * @see {@link UnitSection.JoinsNamespaceOf}
    */
-  public setJoinsNamespaceOf(joinsNamespaceOf?: string) {
+  public setJoinsNamespaceOf(joinsNamespaceOf?: UnitSection["JoinsNamespaceOf"]) {
     this.section.JoinsNamespaceOf = joinsNamespaceOf;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.RequiresMountsFor}
+   */
+  public setRequiresMountsFor(requiresMountsFor?: UnitSection["RequiresMountsFor"]) {
+    this.section.RequiresMountsFor = requiresMountsFor;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.WantsMountsFor}
+   */
+  public setWantsMountsFor(wantsMountsFor?: UnitSection["WantsMountsFor"]) {
+    this.section.WantsMountsFor = wantsMountsFor;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.OnSuccessJobMode}
+   */
+  public setOnSuccessJobMode(onSuccessJobMode?: UnitSection["OnSuccessJobMode"]) {
+    this.section.OnSuccessJobMode = onSuccessJobMode;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.OnFailureJobMode}
+   */
+  public setOnFailureJobMode(onFailureJobMode?: UnitSection["OnFailureJobMode"]) {
+    this.section.OnFailureJobMode = onFailureJobMode;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.IgnoreOnIsolate}
+   */
+  public setIgnoreOnIsolate(ignoreOnIsolate?: UnitSection["IgnoreOnIsolate"]) {
+    this.section.IgnoreOnIsolate = ignoreOnIsolate;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.StopWhenUnneeded}
+   */
+  public setStopWhenUnneeded(stopWhenUnneeded?: UnitSection["StopWhenUnneeded"]) {
+    this.section.StopWhenUnneeded = stopWhenUnneeded;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.RefuseManualStart}
+   */
+  public setRefuseManualStart(refuseManualStart?: UnitSection["RefuseManualStart"]) {
+    this.section.RefuseManualStart = refuseManualStart;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.RefuseManualStop}
+   */
+  public setRefuseManualStop(refuseManualStop?: UnitSection["RefuseManualStop"]) {
+    this.section.RefuseManualStop = refuseManualStop;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AllowIsolate}
+   */
+  public setAllowIsolate(allowIsolate?: UnitSection["AllowIsolate"]) {
+    this.section.AllowIsolate = allowIsolate;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.DefaultDependencies}
+   */
+  public setDefaultDependencies(defaultDependencies?: UnitSection["DefaultDependencies"]) {
+    this.section.DefaultDependencies = defaultDependencies;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.SurviveFinalKillSignal}
+   */
+  public setSurviveFinalKillSignal(surviveFinalKillSignal?: UnitSection["SurviveFinalKillSignal"]) {
+    this.section.SurviveFinalKillSignal = surviveFinalKillSignal;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.CollectMode}
+   */
+  public setCollectMode(collectMode?: UnitSection["CollectMode"]) {
+    this.section.CollectMode = collectMode;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.FailureAction}
+   */
+  public setFailureAction(failureAction?: UnitSection["FailureAction"]) {
+    this.section.FailureAction = failureAction;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.SuccessAction}
+   */
+  public setSuccessAction(successAction?: UnitSection["SuccessAction"]) {
+    this.section.SuccessAction = successAction;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.FailureActionExitStatus}
+   */
+  public setFailureActionExitStatus(failureActionExitStatus?: UnitSection["FailureActionExitStatus"]) {
+    this.section.FailureActionExitStatus = failureActionExitStatus;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.SuccessActionExitStatus}
+   */
+  public setSuccessActionExitStatus(successActionExitStatus?: UnitSection["SuccessActionExitStatus"]) {
+    this.section.SuccessActionExitStatus = successActionExitStatus;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.JobTimeoutSec}
+   */
+  public setJobTimeoutSec(jobTimeoutSec?: UnitSection["JobTimeoutSec"]) {
+    this.section.JobTimeoutSec = jobTimeoutSec;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.JobRunningTimeoutSec}
+   */
+  public setJobRunningTimeoutSec(jobRunningTimeoutSec?: UnitSection["JobRunningTimeoutSec"]) {
+    this.section.JobRunningTimeoutSec = jobRunningTimeoutSec;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.JobTimeoutAction}
+   */
+  public setJobTimeoutAction(jobTimeoutAction?: UnitSection["JobTimeoutAction"]) {
+    this.section.JobTimeoutAction = jobTimeoutAction;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.JobTimeoutRebootArgument}
+   */
+  public setJobTimeoutRebootArgument(jobTimeoutRebootArgument?: UnitSection["JobTimeoutRebootArgument"]) {
+    this.section.JobTimeoutRebootArgument = jobTimeoutRebootArgument;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.StartLimitIntervalSec}
+   */
+  public setStartLimitIntervalSec(startLimitIntervalSec?: UnitSection["StartLimitIntervalSec"]) {
+    this.section.StartLimitIntervalSec = startLimitIntervalSec;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.StartLimitBurst}
+   */
+  public setStartLimitBurst(startLimitBurst?: UnitSection["StartLimitBurst"]) {
+    this.section.StartLimitBurst = startLimitBurst;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.StartLimitAction}
+   */
+  public setStartLimitAction(startLimitAction?: UnitSection["StartLimitAction"]) {
+    this.section.StartLimitAction = startLimitAction;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.RebootArgument}
+   */
+  public setRebootArgument(rebootArgument?: UnitSection["RebootArgument"]) {
+    this.section.RebootArgument = rebootArgument;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.SourcePath}
+   */
+  public setSourcePath(sourcePath?: UnitSection["SourcePath"]) {
+    this.section.SourcePath = sourcePath;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionArchitecture}
+   */
+  public setConditionArchitecture(conditionArchitecture?: UnitSection["ConditionArchitecture"]) {
+    this.section.ConditionArchitecture = conditionArchitecture;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionFirmware}
+   */
+  public setConditionFirmware(conditionFirmware?: UnitSection["ConditionFirmware"]) {
+    this.section.ConditionFirmware = conditionFirmware;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionVirtualization}
+   */
+  public setConditionVirtualization(conditionVirtualization?: UnitSection["ConditionVirtualization"]) {
+    this.section.ConditionVirtualization = conditionVirtualization;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionHost}
+   */
+  public setConditionHost(conditionHost?: UnitSection["ConditionHost"]) {
+    this.section.ConditionHost = conditionHost;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionKernelCommandLine}
+   */
+  public setConditionKernelCommandLine(conditionKernelCommandLine?: UnitSection["ConditionKernelCommandLine"]) {
+    this.section.ConditionKernelCommandLine = conditionKernelCommandLine;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionKernelVersion}
+   */
+  public setConditionKernelVersion(conditionKernelVersion?: UnitSection["ConditionKernelVersion"]) {
+    this.section.ConditionKernelVersion = conditionKernelVersion;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionVersion}
+   */
+  public setConditionVersion(conditionVersion?: UnitSection["ConditionVersion"]) {
+    this.section.ConditionVersion = conditionVersion;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionCredential}
+   */
+  public setConditionCredential(conditionCredential?: UnitSection["ConditionCredential"]) {
+    this.section.ConditionCredential = conditionCredential;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionEnvironment}
+   */
+  public setConditionEnvironment(conditionEnvironment?: UnitSection["ConditionEnvironment"]) {
+    this.section.ConditionEnvironment = conditionEnvironment;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionSecurity}
+   */
+  public setConditionSecurity(conditionSecurity?: UnitSection["ConditionSecurity"]) {
+    this.section.ConditionSecurity = conditionSecurity;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionCapability}
+   */
+  public setConditionCapability(conditionCapability?: UnitSection["ConditionCapability"]) {
+    this.section.ConditionCapability = conditionCapability;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionACPower}
+   */
+  public setConditionACPower(conditionACPower?: UnitSection["ConditionACPower"]) {
+    this.section.ConditionACPower = conditionACPower;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionNeedsUpdate}
+   */
+  public setConditionNeedsUpdate(conditionNeedsUpdate?: UnitSection["ConditionNeedsUpdate"]) {
+    this.section.ConditionNeedsUpdate = conditionNeedsUpdate;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionFirstBoot}
+   */
+  public setConditionFirstBoot(conditionFirstBoot?: UnitSection["ConditionFirstBoot"]) {
+    this.section.ConditionFirstBoot = conditionFirstBoot;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionPathExists}
+   */
+  public setConditionPathExists(conditionPathExists?: UnitSection["ConditionPathExists"]) {
+    this.section.ConditionPathExists = conditionPathExists;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionPathExistsGlob}
+   */
+  public setConditionPathExistsGlob(conditionPathExistsGlob?: UnitSection["ConditionPathExistsGlob"]) {
+    this.section.ConditionPathExistsGlob = conditionPathExistsGlob;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionPathIsDirectory}
+   */
+  public setConditionPathIsDirectory(conditionPathIsDirectory?: UnitSection["ConditionPathIsDirectory"]) {
+    this.section.ConditionPathIsDirectory = conditionPathIsDirectory;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionPathIsSymbolicLink}
+   */
+  public setConditionPathIsSymbolicLink(conditionPathIsSymbolicLink?: UnitSection["ConditionPathIsSymbolicLink"]) {
+    this.section.ConditionPathIsSymbolicLink = conditionPathIsSymbolicLink;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionPathIsMountPoint}
+   */
+  public setConditionPathIsMountPoint(conditionPathIsMountPoint?: UnitSection["ConditionPathIsMountPoint"]) {
+    this.section.ConditionPathIsMountPoint = conditionPathIsMountPoint;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionPathIsReadWrite}
+   */
+  public setConditionPathIsReadWrite(conditionPathIsReadWrite?: UnitSection["ConditionPathIsReadWrite"]) {
+    this.section.ConditionPathIsReadWrite = conditionPathIsReadWrite;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionPathIsEncrypted}
+   */
+  public setConditionPathIsEncrypted(conditionPathIsEncrypted?: UnitSection["ConditionPathIsEncrypted"]) {
+    this.section.ConditionPathIsEncrypted = conditionPathIsEncrypted;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionDirectoryNotEmpty}
+   */
+  public setConditionDirectoryNotEmpty(conditionDirectoryNotEmpty?: UnitSection["ConditionDirectoryNotEmpty"]) {
+    this.section.ConditionDirectoryNotEmpty = conditionDirectoryNotEmpty;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionFileNotEmpty}
+   */
+  public setConditionFileNotEmpty(conditionFileNotEmpty?: UnitSection["ConditionFileNotEmpty"]) {
+    this.section.ConditionFileNotEmpty = conditionFileNotEmpty;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionFileIsExecutable}
+   */
+  public setConditionFileIsExecutable(conditionFileIsExecutable?: UnitSection["ConditionFileIsExecutable"]) {
+    this.section.ConditionFileIsExecutable = conditionFileIsExecutable;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionUser}
+   */
+  public setConditionUser(conditionUser?: UnitSection["ConditionUser"]) {
+    this.section.ConditionUser = conditionUser;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionGroup}
+   */
+  public setConditionGroup(conditionGroup?: UnitSection["ConditionGroup"]) {
+    this.section.ConditionGroup = conditionGroup;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionControlGroupController}
+   */
+  public setConditionControlGroupController(conditionControlGroupController?: UnitSection["ConditionControlGroupController"]) {
+    this.section.ConditionControlGroupController = conditionControlGroupController;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionMemory}
+   */
+  public setConditionMemory(conditionMemory?: UnitSection["ConditionMemory"]) {
+    this.section.ConditionMemory = conditionMemory;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionCPUs}
+   */
+  public setConditionCPUs(conditionCPUs?: UnitSection["ConditionCPUs"]) {
+    this.section.ConditionCPUs = conditionCPUs;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionCPUFeature}
+   */
+  public setConditionCPUFeature(conditionCPUFeature?: UnitSection["ConditionCPUFeature"]) {
+    this.section.ConditionCPUFeature = conditionCPUFeature;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionOSRelease}
+   */
+  public setConditionOSRelease(conditionOSRelease?: UnitSection["ConditionOSRelease"]) {
+    this.section.ConditionOSRelease = conditionOSRelease;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionMemoryPressure}
+   */
+  public setConditionMemoryPressure(conditionMemoryPressure?: UnitSection["ConditionMemoryPressure"]) {
+    this.section.ConditionMemoryPressure = conditionMemoryPressure;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionCPUPressure}
+   */
+  public setConditionCPUPressure(conditionCPUPressure?: UnitSection["ConditionCPUPressure"]) {
+    this.section.ConditionCPUPressure = conditionCPUPressure;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionIOPressure}
+   */
+  public setConditionIOPressure(conditionIOPressure?: UnitSection["ConditionIOPressure"]) {
+    this.section.ConditionIOPressure = conditionIOPressure;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.ConditionKernelModuleLoaded}
+   */
+  public setConditionKernelModuleLoaded(conditionKernelModuleLoaded?: UnitSection["ConditionKernelModuleLoaded"]) {
+    this.section.ConditionKernelModuleLoaded = conditionKernelModuleLoaded;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertArchitecture}
+   */
+  public setAssertArchitecture(assertArchitecture?: UnitSection["AssertArchitecture"]) {
+    this.section.AssertArchitecture = assertArchitecture;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertVirtualization}
+   */
+  public setAssertVirtualization(assertVirtualization?: UnitSection["AssertVirtualization"]) {
+    this.section.AssertVirtualization = assertVirtualization;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertHost}
+   */
+  public setAssertHost(assertHost?: UnitSection["AssertHost"]) {
+    this.section.AssertHost = assertHost;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertKernelCommandLine}
+   */
+  public setAssertKernelCommandLine(assertKernelCommandLine?: UnitSection["AssertKernelCommandLine"]) {
+    this.section.AssertKernelCommandLine = assertKernelCommandLine;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertKernelVersion}
+   */
+  public setAssertKernelVersion(assertKernelVersion?: UnitSection["AssertKernelVersion"]) {
+    this.section.AssertKernelVersion = assertKernelVersion;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertVersion}
+   */
+  public setAssertVersion(assertVersion?: UnitSection["AssertVersion"]) {
+    this.section.AssertVersion = assertVersion;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertCredential}
+   */
+  public setAssertCredential(assertCredential?: UnitSection["AssertCredential"]) {
+    this.section.AssertCredential = assertCredential;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertEnvironment}
+   */
+  public setAssertEnvironment(assertEnvironment?: UnitSection["AssertEnvironment"]) {
+    this.section.AssertEnvironment = assertEnvironment;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertSecurity}
+   */
+  public setAssertSecurity(assertSecurity?: UnitSection["AssertSecurity"]) {
+    this.section.AssertSecurity = assertSecurity;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertCapability}
+   */
+  public setAssertCapability(assertCapability?: UnitSection["AssertCapability"]) {
+    this.section.AssertCapability = assertCapability;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertACPower}
+   */
+  public setAssertACPower(assertACPower?: UnitSection["AssertACPower"]) {
+    this.section.AssertACPower = assertACPower;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertNeedsUpdate}
+   */
+  public setAssertNeedsUpdate(assertNeedsUpdate?: UnitSection["AssertNeedsUpdate"]) {
+    this.section.AssertNeedsUpdate = assertNeedsUpdate;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertFirstBoot}
+   */
+  public setAssertFirstBoot(assertFirstBoot?: UnitSection["AssertFirstBoot"]) {
+    this.section.AssertFirstBoot = assertFirstBoot;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertPathExists}
+   */
+  public setAssertPathExists(assertPathExists?: UnitSection["AssertPathExists"]) {
+    this.section.AssertPathExists = assertPathExists;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertPathExistsGlob}
+   */
+  public setAssertPathExistsGlob(assertPathExistsGlob?: UnitSection["AssertPathExistsGlob"]) {
+    this.section.AssertPathExistsGlob = assertPathExistsGlob;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertPathIsDirectory}
+   */
+  public setAssertPathIsDirectory(assertPathIsDirectory?: UnitSection["AssertPathIsDirectory"]) {
+    this.section.AssertPathIsDirectory = assertPathIsDirectory;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertPathIsSymbolicLink}
+   */
+  public setAssertPathIsSymbolicLink(assertPathIsSymbolicLink?: UnitSection["AssertPathIsSymbolicLink"]) {
+    this.section.AssertPathIsSymbolicLink = assertPathIsSymbolicLink;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertPathIsMountPoint}
+   */
+  public setAssertPathIsMountPoint(assertPathIsMountPoint?: UnitSection["AssertPathIsMountPoint"]) {
+    this.section.AssertPathIsMountPoint = assertPathIsMountPoint;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertPathIsReadWrite}
+   */
+  public setAssertPathIsReadWrite(assertPathIsReadWrite?: UnitSection["AssertPathIsReadWrite"]) {
+    this.section.AssertPathIsReadWrite = assertPathIsReadWrite;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertPathIsEncrypted}
+   */
+  public setAssertPathIsEncrypted(assertPathIsEncrypted?: UnitSection["AssertPathIsEncrypted"]) {
+    this.section.AssertPathIsEncrypted = assertPathIsEncrypted;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertDirectoryNotEmpty}
+   */
+  public setAssertDirectoryNotEmpty(assertDirectoryNotEmpty?: UnitSection["AssertDirectoryNotEmpty"]) {
+    this.section.AssertDirectoryNotEmpty = assertDirectoryNotEmpty;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertFileNotEmpty}
+   */
+  public setAssertFileNotEmpty(assertFileNotEmpty?: UnitSection["AssertFileNotEmpty"]) {
+    this.section.AssertFileNotEmpty = assertFileNotEmpty;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertFileIsExecutable}
+   */
+  public setAssertFileIsExecutable(assertFileIsExecutable?: UnitSection["AssertFileIsExecutable"]) {
+    this.section.AssertFileIsExecutable = assertFileIsExecutable;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertUser}
+   */
+  public setAssertUser(assertUser?: UnitSection["AssertUser"]) {
+    this.section.AssertUser = assertUser;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertGroup}
+   */
+  public setAssertGroup(assertGroup?: UnitSection["AssertGroup"]) {
+    this.section.AssertGroup = assertGroup;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertControlGroupController}
+   */
+  public setAssertControlGroupController(assertControlGroupController?: UnitSection["AssertControlGroupController"]) {
+    this.section.AssertControlGroupController = assertControlGroupController;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertMemory}
+   */
+  public setAssertMemory(assertMemory?: UnitSection["AssertMemory"]) {
+    this.section.AssertMemory = assertMemory;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertCPUs}
+   */
+  public setAssertCPUs(assertCPUs?: UnitSection["AssertCPUs"]) {
+    this.section.AssertCPUs = assertCPUs;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertCPUFeature}
+   */
+  public setAssertCPUFeature(assertCPUFeature?: UnitSection["AssertCPUFeature"]) {
+    this.section.AssertCPUFeature = assertCPUFeature;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertOSRelease}
+   */
+  public setAssertOSRelease(assertOSRelease?: UnitSection["AssertOSRelease"]) {
+    this.section.AssertOSRelease = assertOSRelease;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertMemoryPressure}
+   */
+  public setAssertMemoryPressure(assertMemoryPressure?: UnitSection["AssertMemoryPressure"]) {
+    this.section.AssertMemoryPressure = assertMemoryPressure;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertCPUPressure}
+   */
+  public setAssertCPUPressure(assertCPUPressure?: UnitSection["AssertCPUPressure"]) {
+    this.section.AssertCPUPressure = assertCPUPressure;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertIOPressure}
+   */
+  public setAssertIOPressure(assertIOPressure?: UnitSection["AssertIOPressure"]) {
+    this.section.AssertIOPressure = assertIOPressure;
+    return this;
+  }
+
+  /**
+   * @see {@link UnitSection.AssertKernelModuleLoaded}
+   */
+  public setAssertKernelModuleLoaded(assertKernelModuleLoaded?: UnitSection["AssertKernelModuleLoaded"]) {
+    this.section.AssertKernelModuleLoaded = assertKernelModuleLoaded;
     return this;
   }
 }
