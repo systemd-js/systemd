@@ -4,6 +4,13 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.11.0](https://github.com/systemd-js/systemd/compare/v0.10.0...v0.11.0) (2026-05-16)
+
+### Features
+
+* **conf:** sync remaining sections to systemd v259 (resolute) ([3bb0bee](https://github.com/systemd-js/systemd/commit/3bb0bee384b06dad0e0b88c6cc67b6fa043cc7b3)), closes [#install-section-options](https://github.com/systemd-js/systemd/issues/install-section-options) - by @chyzwar
+* **conf:** sync resource/service sections to systemd v257 (resolute) ([19ae460](https://github.com/systemd-js/systemd/commit/19ae460e3bc60d9a0b95dc780b2b0f0661d9608c)) - by @chyzwar
+
 ## [0.10.0](https://github.com/systemd-js/systemd/compare/v0.9.0...v0.10.0) (2025-02-17)
 
 ### Features
