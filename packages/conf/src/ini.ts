@@ -7,22 +7,18 @@ function readValue(value: string): boolean | number | string {
   ) {
     return true;
   }
-  if (trimmed === "1") {
-    console.warn("Ambiguous boolean value: 1, use yes or true instead");
-    return true;
-  }
   if (
     trimmed === "false" || trimmed === "no" || trimmed === "off"
   ) {
     return false;
   }
-  if (trimmed === "0") {
-    console.warn("Ambiguous boolean value: 0, use no or false instead");
-    return false;
-  }
 
+  // Only coerce when it round-trips exactly, so octal/leading-zero values
+  // (UMask=0077), hex, and "0"/"1" reach the Zod schema, which knows the type.
   const numberValue = Number(trimmed);
-  return isFinite(numberValue) ? numberValue : trimmed;
+  return Number.isFinite(numberValue) && String(numberValue) === trimmed
+    ? numberValue
+    : trimmed;
 }
 
 /**
