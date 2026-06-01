@@ -1,5 +1,6 @@
 import { describe, expect, test } from "vitest";
 import { INI } from "../ini.js";
+import { Service } from "../service.js";
 
 describe("INI - fromObject and toObject", () => {
   test("should return same object", () => {
@@ -128,5 +129,44 @@ describe("INI - fromString and toString", () => {
     const result = INI.fromString(dataIni).toString();
 
     expect(result.trim()).toStrictEqual(dataIni.trim());
+  });
+});
+
+describe("INI - value coercion", () => {
+  test("should keep octal / leading-zero values as strings", () => {
+    const result = INI.fromString("[X]\nUMask=0077").toObject();
+
+    expect(result).toEqual({ X: { UMask: "0077" } });
+  });
+
+  test("should parse 0 and 1 as numbers, not booleans", () => {
+    const result = INI.fromString("[X]\nA=0\nB=1\nC=200").toObject();
+
+    expect(result).toEqual({ X: { A: 0, B: 1, C: 200 } });
+  });
+
+  test("should keep infinity tokens as strings", () => {
+    const result = INI.fromString("[X]\nA=infinity\nB=Infinity\nC=-infinity").toObject();
+
+    expect(result).toEqual({ X: { A: "infinity", B: "Infinity", C: "-infinity" } });
+  });
+
+  test("should not throw on a unit with UMask / RestartSec=1 / OOMScoreAdjust=0", () => {
+    const unit = [
+      "[Unit]",
+      "Description=x",
+      "[Service]",
+      "ExecStart=/bin/true",
+      "UMask=0022",
+      "RestartSec=1",
+      "OOMScoreAdjust=0",
+    ].join("\n");
+
+    const service = Service.fromINI(INI.fromString(unit));
+    const ini = service.toINIString();
+
+    expect(ini).toContain("UMask=0022");
+    expect(ini).toContain("RestartSec=1");
+    expect(ini).toContain("OOMScoreAdjust=0");
   });
 });
