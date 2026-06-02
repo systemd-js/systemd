@@ -4,6 +4,12 @@
 All notable changes to this project will be documented in this file.
 See [Conventional Commits](https://conventionalcommits.org) for commit guidelines.
 
+## [0.11.1](https://github.com/systemd-js/systemd/compare/v0.11.0...v0.11.1) (2026-06-02)
+
+### Bug Fixes
+
+* **conf:** stop INI parser corrupting octal and 0/1 values ([631918c](https://github.com/systemd-js/systemd/commit/631918c1aaea151da782807f52c80b6bf3d916ac)) - by @chyzwar
+
 ## [0.11.0](https://github.com/systemd-js/systemd/compare/v0.10.0...v0.11.0) (2026-05-16)
 
 ### Features
