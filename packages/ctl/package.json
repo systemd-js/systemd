@@ -6,7 +6,8 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/systemd-js/systemd"
+    "url": "git+https://github.com/systemd-js/systemd.git",
+    "directory": "packages/ctl"
   },
   "sideEffects": false,
   "publishConfig": {
@@ -40,5 +41,9 @@
     "eslint": "^10.3.0",
     "typescript": "^6.0.3",
     "vitest": "^4.1.6"
+  },
+  "homepage": "https://github.com/systemd-js/systemd/tree/master/packages/ctl#readme",
+  "bugs": {
+    "url": "https://github.com/systemd-js/systemd/issues"
   }
 }
