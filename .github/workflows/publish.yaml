@@ -5,8 +5,8 @@ name: Publish
 #   I tried to use github registry to publish public packages,
 #   but packages in github require auth to install even if package is public.
 #
-#   Npm token will not be configured without registry-url set in actions/setup-node
-#   To configure authToken for npm both registry-url and secret is needed.
+#   Publishing uses npm trusted publishing (OIDC), no NPM_TOKEN secret.
+#   Job needs id-token: write, trusted publisher is configured per package on npmjs.com
 #   When publishing public package, publishConfig.access need to be configured on each package
 #
 #   Lerna need fetch-depth: 0 (full fetch) on checkout to be able generate full changelog
@@ -26,6 +26,9 @@ jobs:
   publish:
     if: github.event.pull_request.merged == true
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      id-token: write
 
     steps:
     - name: "Checkout"
@@ -37,7 +40,6 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '24'
-        registry-url: 'https://registry.npmjs.org'
         cache: 'yarn'
 
     - name: Install
@@ -60,7 +62,6 @@ jobs:
 
     - name: "Version and publish"
       env:
-        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         echo "Version"
